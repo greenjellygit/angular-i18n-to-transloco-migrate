@@ -1,0 +1,9 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "migrator": {
+      "description": "A blank schematic.",
+      "factory": "./migrator/index#migrator"
+    }
+  }
+}
