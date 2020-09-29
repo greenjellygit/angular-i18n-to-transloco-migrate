@@ -1,0 +1,10 @@
+.parent {
+  display: flex;
+  flex-direction: column;
+}
+
+.parent > * {
+  display: flex;
+  padding: 5px;
+  margin: 10px;
+}
