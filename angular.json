@@ -57,6 +57,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "pl": {
+              "aot": true,
+              "outputPath": "dist/",
+              "i18nFile": "src/i18n/messages.pl.xlf",
+              "i18nFormat": "xlf",
+              "i18nLocale": "pl",
+              "i18nMissingTranslation": "error"
             }
           }
         },
@@ -68,6 +76,9 @@
           "configurations": {
             "production": {
               "browserTarget": "i18n-migrate-test:build:production"
+            },
+            "pl": {
+              "browserTarget": "i18n-migrate-test:build:pl"
             }
           }
         },
@@ -105,6 +116,21 @@
             "exclude": [
               "**/node_modules/**"
             ]
+          }
+        },
+        "xliffmerge": {
+          "builder": "@ngx-i18nsupport/tooling:xliffmerge",
+          "options": {
+            "xliffmergeOptions": {
+              "i18nFormat": "xlf",
+              "srcDir": "src/i18n",
+              "genDir": "src/i18n",
+              "defaultLanguage": "en",
+              "languages": [
+                "en",
+                "pl"
+              ]
+            }
           }
         },
         "e2e": {

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
+	<file original="ng2.template" datatype="plaintext" xml:space="preserve" source-language="en" target-language="en">
+		<header>
+			<tool tool-id="lokalise.com" tool-name="Lokalise"/>
+		</header>
+		<body>
+			<trans-unit id="app.component.full" datatype="html">
+				<source>Text content - full i18n tag with the description and the key</source>
+				<target>Text content - full i18n tag with the description and the key</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">1</context>
+				</context-group>
+				<note priority="1" from="meaning">Pełne i18n wraz z opisem i kluczem</note>
+			</trans-unit>
+			<trans-unit id="0580fecd3a7108db3dd65baac7d40b05e480e070" datatype="html">
+				<source>Text content - simplest i18n tag only</source>
+				<target>Text content - simplest i18n tag only</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">2</context>
+				</context-group>
+			</trans-unit>
+			<trans-unit id="app.component.input-placeholder-full" datatype="html">
+				<source>to provide</source>
+				<target state="final">to provide</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">3</context>
+				</context-group>
+				<note priority="1" from="meaning">Pełne i18n dla placeholdera z opisem i kluczem</note>
+			</trans-unit>
+			<trans-unit id="e1b7b1a93396f3974f248767ec6f8e9b99e2bdd3" datatype="html">
+				<source>to provide</source>
+				<target>to provide</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">4</context>
+				</context-group>
+			</trans-unit>
+			<trans-unit id="app.component.input-many-attributes-placeholder" datatype="html">
+				<source>to provide</source>
+				<target state="final">to provide</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">6</context>
+				</context-group>
+				<note priority="1" from="meaning">Kilka atrybutów i18n w tym samym komponencie - placeholder</note>
+			</trans-unit><trans-unit id="app.component.input-many-attributes-title" datatype="html">
+        <source>to provide - title</source><target state="final">to provide - title</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="meaning">Kilka atrybutów i18n w tym samym komponencie - title</note>
+      </trans-unit>
+			<trans-unit id="app.component.child-translate" datatype="html">
+				<source>Text content - this is child</source>
+				<target>Text content - this is child</target>
+				<note priority="1" from="meaning">Tłumaczenie dzieci</note>
+			<context-group purpose="location">
+        <context context-type="sourcefile">src/app/app.component.html</context>
+        <context context-type="linenumber">14</context>
+      </context-group>
+      </trans-unit>
+      <trans-unit id="app.component.parent-title" datatype="html">
+        <source>to provide - title 2</source>
+        <target state="final">Title for nested child</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <note priority="1" from="meaning">Tłumaczone 'title' dla parenta</note>
+      </trans-unit>
+		</body>
+	</file>
+</xliff>
