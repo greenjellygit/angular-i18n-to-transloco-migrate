@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "A blank schematics",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && cd .. && schematics migrator:migrator",
+    "build-ttb": "tsc -p tsconfig.json && cd ../../TeamToolbox/ttb/atb-parent/atb-frontend && schematics migrator:migrator",
     "test": "npm run build && jasmine src/**/*_spec.js"
   },
   "keywords": [
@@ -15,6 +16,10 @@
   "dependencies": {
     "@angular-devkit/core": "^9.0.4",
     "@angular-devkit/schematics": "^9.0.4",
+    "@types/jsdom": "^16.2.4",
+    "glob": "^7.1.6",
+    "jsdom": "^16.4.0",
+    "node-recursive-directory": "^1.2.0",
     "typescript": "~3.7.4"
   },
   "devDependencies": {
