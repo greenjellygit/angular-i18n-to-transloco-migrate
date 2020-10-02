@@ -14,7 +14,17 @@ export class AngularParseUtils {
     return parser.parse(filePath, tree.read(filePath).toString());
   }
 
-  public static retrieveI18nMap(filePath: string, fileContent: string): I18nMap {
+  public static parseTemplateFile(filePath: string, tree: Tree): ParsedFile {
+    try {
+      const i18nMap = AngularParseUtils.retrieveI18nMap(filePath, tree.read(filePath).toString());
+      return {filePath, i18nMap, parseStatus: 'SUCCESS'};
+    } catch (a) {
+      console.warn('Cannot parse file: ' + filePath);
+      return {filePath, i18nMap: null, parseStatus: 'ERROR'};
+    }
+  }
+
+  private static retrieveI18nMap(filePath: string, fileContent: string): I18nMap {
     const treeWithI18n = this.parseAsTreeWithI18n(filePath, fileContent);
     const i18nMessages: I18nMap = {};
     this.recursiveSearch(treeWithI18n.rootNodes, i18nMessages);
@@ -51,7 +61,6 @@ export class AngularParseUtils {
 
 }
 
-
 export interface I18nMap {
   [key: string]: MessageWithName;
 }
@@ -59,4 +68,10 @@ export interface I18nMap {
 export interface MessageWithName {
   message: Message;
   name: string;
+}
+
+export interface ParsedFile {
+  filePath: string;
+  i18nMap: I18nMap;
+  parseStatus: 'ERROR' | 'SUCCESS';
 }
