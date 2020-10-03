@@ -1,5 +1,13 @@
 import {JSDOM} from 'jsdom';
 
+
+function parseFile(parsedTemplate: any) {
+  /*  const fileDom = cheerio.load(FileUtils.loadFile(parsedTemplate.filePath), {
+      xmlMode: true,
+      decodeEntities: false
+    });*/
+}
+
 function parseTemplateFile(filePath: string, dom: JSDOM, regex: RegExp): ParsedTemplateFile {
   const i18nTags = [];
 
