@@ -1,3 +1,4 @@
+import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
 import {computeDigest} from '@angular/compiler/src/i18n/digest';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
@@ -15,13 +16,13 @@ export class AngularParseUtils {
   }
 
   public static parseTemplateFile(filePath: string): ParsedFile {
+    const content = fs.readFileSync(filePath, {encoding: 'utf-8'});
     try {
-      const template = fs.readFileSync(filePath, {encoding: 'utf-8'});
-      const i18nMap = AngularParseUtils.retrieveI18nMap(filePath, template);
-      return {filePath, i18nMap, parseStatus: 'SUCCESS'};
+      const i18nMap = AngularParseUtils.retrieveI18nMap(filePath, content);
+      return {filePath, i18nMap, content, parseStatus: 'SUCCESS'};
     } catch (a) {
       console.warn('Cannot parse file: ' + filePath);
-      return {filePath, i18nMap: null, parseStatus: 'ERROR'};
+      return {filePath, i18nMap: null, content, parseStatus: 'ERROR'};
     }
   }
 
@@ -47,9 +48,10 @@ export class AngularParseUtils {
     for (const node of rootNodes) {
       const element = node as html.Element;
       if (!!element.i18n) {
+        const type = element.constructor.name === 'Attribute' ? 'ATTR' : 'TAG';
         const message = element.i18n as Message;
         message.id = this.getMessageId(message);
-        i18nMap[message.id] = {message, name: element.name};
+        i18nMap[message.id] = {message, name: element.name, type};
       }
       if (!!element.children) {
         this.recursiveSearch(element.children, i18nMap);
@@ -69,10 +71,12 @@ export interface I18nMap {
 export interface TemplateElement {
   message: Message;
   name: string;
+  type: 'ATTR' | 'TAG';
 }
 
 export interface ParsedFile {
   filePath: string;
   i18nMap: I18nMap;
+  content: string;
   parseStatus: 'ERROR' | 'SUCCESS';
 }

@@ -8,6 +8,10 @@ export class FileUtils {
     return glob.sync(pattern, {});
   }
 
+  static loadFile(filePath: string): string {
+    return fs.readFileSync(filePath).toString();
+  }
+
   public static writeToFile(json: any, filePath: string): void {
     const directoryName = path.dirname(filePath);
     if (!fs.existsSync(directoryName)) {

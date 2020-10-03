@@ -22,6 +22,10 @@ export interface TransLocoFile {
 }
 
 export interface TransLocoEntries {
+  [group: string]: JsonKey;
+}
+
+export interface JsonKey {
   [key: string]: string;
 }
 
