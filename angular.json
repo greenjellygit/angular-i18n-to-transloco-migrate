@@ -9,6 +9,10 @@
           "pl": {
             "translation": "src/i18n/messages.pl.xlf",
             "baseHref": ""
+          },
+          "en": {
+            "translation": "src/i18n/messages.en.xlf",
+            "baseHref": ""
           }
         }
       },

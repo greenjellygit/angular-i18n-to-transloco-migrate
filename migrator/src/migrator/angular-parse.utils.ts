@@ -1,4 +1,3 @@
-import {Tree} from '@angular-devkit/schematics';
 import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
 import {computeDigest} from '@angular/compiler/src/i18n/digest';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
@@ -6,17 +5,19 @@ import * as html from '@angular/compiler/src/ml_parser/ast';
 import {I18nMetaVisitor} from '@angular/compiler/src/render3/view/i18n/meta';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import {Xliff1TranslationParser} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/xliff1_translation_parser';
+import * as fs from 'fs';
 
 export class AngularParseUtils {
 
-  public static parseXlfFile(filePath: string, tree: Tree): ParsedTranslationBundle {
+  public static parseXlfFile(filePath: string): ParsedTranslationBundle {
     const parser = new Xliff1TranslationParser();
-    return parser.parse(filePath, tree.read(filePath).toString());
+    return parser.parse(filePath, fs.readFileSync(filePath).toString());
   }
 
-  public static parseTemplateFile(filePath: string, tree: Tree): ParsedFile {
+  public static parseTemplateFile(filePath: string): ParsedFile {
     try {
-      const i18nMap = AngularParseUtils.retrieveI18nMap(filePath, tree.read(filePath).toString());
+      const template = fs.readFileSync(filePath, {encoding: 'utf-8'});
+      const i18nMap = AngularParseUtils.retrieveI18nMap(filePath, template);
       return {filePath, i18nMap, parseStatus: 'SUCCESS'};
     } catch (a) {
       console.warn('Cannot parse file: ' + filePath);
@@ -62,10 +63,10 @@ export class AngularParseUtils {
 }
 
 export interface I18nMap {
-  [key: string]: MessageWithName;
+  [key: string]: TemplateElement;
 }
 
-export interface MessageWithName {
+export interface TemplateElement {
   message: Message;
   name: string;
 }

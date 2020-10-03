@@ -1,51 +1,44 @@
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
-import {filter, map} from 'rxjs/operators';
-import {AngularParseUtils} from './angular-parse.utils';
+import {AngularParseUtils, TemplateElement} from './angular-parse.utils';
 import {FileUtils} from './file.utils';
+import {SchematicsUtils} from './schematics.utils';
+import {StringUtils} from './string.utils';
+import {LocaleConfig, TransLocoFile, TransLocoUtils} from './trans-loco.utils';
 
 export function migrator(_options: any): Rule {
 
+  function updateTransLocoFiles(messageId: string, translationKey: string, transLocoFiles: TransLocoFile[], localeConfigs: LocaleConfig[]) {
+    for (const locoFile of transLocoFiles) {
+      const localeElement = localeConfigs.find(locale => locale.lang === locoFile.lang).bundle.translations[messageId];
+      locoFile.entries[translationKey] = localeElement.text;
+    }
+  }
+
+  function updateTemplateFile(translationKey: string, templateElement: TemplateElement) {
+      console.log(templateElement);
+  }
+
   return (tree: Tree, _context: SchematicContext) => {
 
-    const enI18n = AngularParseUtils.parseXlfFile('src/i18n/messages.en.xlf', tree);
-    const plI18n = AngularParseUtils.parseXlfFile('src/i18n/messages.pl.xlf', tree);
+    const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
+      .map(filePath => AngularParseUtils.parseTemplateFile(filePath))
+      .filter(parsedFile => parsedFile.parseStatus === 'SUCCESS');
 
-    FileUtils.findFiles('src/**/*.html')
-      .pipe(
-        map(filePath => AngularParseUtils.parseTemplateFile(filePath, tree)),
-        filter(parsedFile => parsedFile.parseStatus === 'SUCCESS')
-      )
-      .subscribe(parsedFile => {
-        console.log(parsedFile);
-      });
+    const localeConfigs: LocaleConfig[] = SchematicsUtils.getDefaultProjectLocales();
+    const transLocoFiles = TransLocoUtils.initializeLocoFiles(localeConfigs);
 
-    // const locoTranslateFiles = initializeLocoFiles();
-    //
-    // for (let file of files) {
-    //   for (let messageId of Object.keys(file.i18nElements)) {
-    //     const translationElement = translations[messageId];
-    //     const i18nElement = i18nElements[messageId];
-    //
-    //     const translationKey = prepareTranslationKey(messageId);
-    //     for (const lang of translationElement.langs) {
-    //       locoTranslateFiles[lang][translationKey] = prepareTranslationContent(translationElement[lang]);
-    //     }
-    //
-    //     updateTemplate(i18nElement, translationKey);
-    //   }
-    // }
+    for (const parsedTemplate of parsedTemplateFiles) {
+      for (const messageId of Object.keys(parsedTemplate.i18nMap)) {
+        const templateElement = parsedTemplate.i18nMap[messageId];
+        const translationKey = StringUtils.underscore(messageId);
+        updateTransLocoFiles(messageId, translationKey, transLocoFiles, localeConfigs);
+        updateTemplateFile(translationKey, templateElement);
+      }
+    }
 
+    // TransLocoUtils.saveTransLocoFiles('src/transloco/', transLocoFiles);
 
     return tree;
   };
 
-}
-
-export interface LocoTranslateFile {
-  lang: string;
-  entries: LocoTranslateEntries;
-}
-
-export interface LocoTranslateEntries {
-  [key: string]: string;
 }
