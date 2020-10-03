@@ -16,7 +16,9 @@
   "dependencies": {
     "@angular-devkit/core": "^9.0.4",
     "@angular-devkit/schematics": "^9.0.4",
+    "@ngneat/transloco": "^2.19.1",
     "@types/jsdom": "^16.2.4",
+    "fs": "0.0.1-security",
     "glob": "^7.1.6",
     "jsdom": "^16.4.0",
     "node-recursive-directory": "^1.2.0",
