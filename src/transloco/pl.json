@@ -1,0 +1,16 @@
+{
+  "app_component": {
+    "full": "Treść tekstowa - pełny tag i18n z opisem i kluczem",
+    "input_placeholder_full": "zapewnić - input-placeholder-full",
+    "input_many_attributes_placeholder": "Dużo atrybutów na inpucie - tytuł",
+    "input_many_attributes_title": "Wiele atrybutów i18n (tytuł)",
+    "child_translate": "Treść tekstowa - to jest dziecko",
+    "child_translate_interpolation": "Treść tekstowa - to jest dziecko - interpolacja - '{{el}}'",
+    "child_translate_html": "Zawartość tekstowa - to jest dziecko - <span class=\"asd\"><b>HTML</b></span>",
+    "parent_title": "Tytuł zagnieżdżonego elementu"
+  },
+  "no_group": {
+    "0580fecd3a7108db3dd65baac7d40b05e480e070": "Treść tekstowa - tylko najprostszy znacznik i18n",
+    "e1b7b1a93396f3974f248767ec6f8e9b99e2bdd3": "zapewnić"
+  }
+}

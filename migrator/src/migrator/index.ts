@@ -30,13 +30,15 @@ export function migrator(_options: any): Rule {
     const message = templateElement.message;
     const startOffset = message.nodes[0].sourceSpan.start.offset;
     const endOffset = message.nodes[message.nodes.length - 1].sourceSpan.end.offset;
+    const filePath = message.sources[0].filePath;
 
     if (templateElement.type === 'TAG') {
       const tagContent = `{{'${translationKey.group}.${translationKey.id}' | transloco}}`;
-
-      // const recorder = tree.beginUpdate(TEMPLATE_PATH);
+      const recorder = tree.beginUpdate(filePath);
+      recorder.remove(startOffset, endOffset - startOffset);
+      recorder.insertLeft(startOffset, tagContent);
+      tree.commitUpdate(recorder);
     }
-    console.log(translationKey.id + ' --> (' + parsedTemplateContent.substring(startOffset, endOffset) + ')');
   }
 
   function prepareTranslationKey(messageId: string): TranslationKey {
