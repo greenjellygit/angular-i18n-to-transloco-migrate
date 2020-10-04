@@ -2,6 +2,7 @@ import {WorkspaceSchema} from '@angular-devkit/core/src/experimental/workspace';
 import {SchematicsException} from '@angular-devkit/schematics';
 import * as fs from 'fs';
 import {AngularParseUtils} from './angular-parse.utils';
+import {ParsedLocaleConfig} from './trans-loco.utils';
 
 export class SchematicsUtils {
 
@@ -14,14 +15,17 @@ export class SchematicsUtils {
     return JSON.parse(workspaceContent);
   }
 
-  public static getDefaultProjectLocales() {
+  public static getDefaultProjectLocales(): ParsedLocaleConfig {
     const config = SchematicsUtils.readProjectConfig();
     const localesConfig = config.projects[config.defaultProject].i18n.locales as any;
     return Object.keys(localesConfig).map(name => ({
       lang: name,
       filePath: localesConfig[name].translation,
       bundle: AngularParseUtils.parseXlfFile(localesConfig[name].translation)
-    }));
+    })).reduce((json, value) => {
+      json[value.lang] = value;
+      return json;
+    }, {});
   }
 
 }

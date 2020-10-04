@@ -15,7 +15,7 @@ export class TranslocoHttpLoader implements TranslocoLoader {
   constructor(private http: HttpClient) {}
 
   getTranslation(lang: string) {
-    return this.http.get<Translation>(`/assets/i18n/${lang}.json`);
+    return this.http.get<Translation>(`assets/i18n/${lang}.json`);
   }
 }
 
@@ -25,8 +25,9 @@ export class TranslocoHttpLoader implements TranslocoLoader {
     {
       provide: TRANSLOCO_CONFIG,
       useValue: translocoConfig({
-        availableLangs: ['en', 'es'],
-        defaultLang: 'en',
+        availableLangs: ['en', 'pl'],
+        defaultLang: 'pl',
+        fallbackLang: 'pl',
         // Remove this option if your application doesn't support changing language in runtime.
         reRenderOnLangChange: true,
         prodMode: environment.production,

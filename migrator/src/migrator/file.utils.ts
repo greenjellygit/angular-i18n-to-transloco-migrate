@@ -12,13 +12,17 @@ export class FileUtils {
     return fs.readFileSync(filePath).toString();
   }
 
-  public static writeToFile(json: any, filePath: string): void {
+  public static writeJsonToFile(json: any, filePath: string): void {
+    const fileContent = JSON.stringify(json, null, 2);
+    this.writeToFile(fileContent, filePath);
+  }
+
+  public static writeToFile(content: string, filePath: string): void {
     const directoryName = path.dirname(filePath);
     if (!fs.existsSync(directoryName)) {
       fs.mkdirSync(directoryName);
     }
-    const fileContent = JSON.stringify(json, null, 2);
-    fs.writeFileSync(filePath, fileContent, 'utf8');
+    fs.writeFileSync(filePath, content, 'utf8');
   }
 
 }
