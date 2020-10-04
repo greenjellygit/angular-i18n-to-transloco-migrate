@@ -1,4 +1,4 @@
-# Tool for migration from i18n native localize library to transloco (because transcolo migrator not working as expect :) )
+# Tool for migration from i18n native localize library to transloco (because transloco migrator not working as expect :) )
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.23.
 
