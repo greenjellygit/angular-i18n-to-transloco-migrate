@@ -1,0 +1,17 @@
+{
+  "app_component": {
+    "child_translate_interpolation_html": "Text content - this is html child with interpolation - <span><b>{{var0}}{{var1}}</b></span>",
+    "child_translate_html": "Text content - this is child - <span class=\"asd\"><b>HTML</b></span>",
+    "child_translate_interpolation": "Text content - this is child - interpolation - '{{var0}}'",
+    "child_translate": "Text content - this is child",
+    "parent_title": "Title of nested element",
+    "input_many_attributes_title": "Many attributes i18n (title)",
+    "input_many_attributes_placeholder": "Many attributes on input - title",
+    "input_placeholder_full": "to provide - input-placeholder-full",
+    "full": "Text content - full i18n tag with the description and the key"
+  },
+  "no_group": {
+    "e1b7b1a93396f3974f248767ec6f8e9b99e2bdd3": "to provide",
+    "0580fecd3a7108db3dd65baac7d40b05e480e070": "Text content - simplest i18n tag only"
+  }
+}
