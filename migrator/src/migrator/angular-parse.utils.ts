@@ -58,7 +58,10 @@ export class AngularParseUtils {
         const message = element.i18n as Message;
         const source = element.sourceSpan.start;
         message.id = this.getMessageId(message);
-        i18nMap[message.id] = {message, name: element.name, type, startCol: source.col, startLine: source.line};
+        const hasHtml = Object.keys(message.placeholders).some(placeholder => placeholder.startsWith('START_'));
+        const hasInterpolation = message.placeholders.hasOwnProperty('INTERPOLATION');
+        const hasClass = Object.values(message.placeholders).some(value => value.indexOf('class=') > -1);
+        i18nMap[message.id] = {message, name: element.name, type, startCol: source.col, startLine: source.line, hasHtml, hasInterpolation, hasClass};
       }
       if (!!element.children) {
         this.recursiveSearch(element.children, i18nMap);
@@ -81,6 +84,9 @@ export interface TemplateElement {
   startLine: number;
   startCol: number;
   type: 'ATTR' | 'TAG';
+  hasHtml: boolean;
+  hasInterpolation: boolean;
+  hasClass: boolean;
 }
 
 export interface ParsedFile {

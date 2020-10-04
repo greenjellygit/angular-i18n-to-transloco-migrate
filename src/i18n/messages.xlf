@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="app.component.child-translate-interpolation" datatype="html">
         <source>
-        Text content - this is child - &apos;<x id="INTERPOLATION" equiv-text="{{el}}"/>&apos;
+        Text content - this is child - '<x id="INTERPOLATION" equiv-text="{{el}}"/>'
       </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
@@ -70,7 +70,7 @@
       </trans-unit>
       <trans-unit id="app.component.child-translate-html" datatype="html">
         <source>
-        Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>HTML<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
+        Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/>HTML<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/>
       </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
@@ -78,13 +78,23 @@
         </context-group>
         <note priority="1" from="meaning">Tłumaczenie dzieci z html</note>
       </trans-unit>
+      <trans-unit id="app.component.child-translate-interpolation-html" datatype="html">
+        <source>
+        Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION_1" equiv-text="{{'asd' + el + 'asd'}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/>
+      </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <note priority="1" from="meaning">Tłumaczenie dzieci z interpolacją + html</note>
+      </trans-unit>
       <trans-unit id="app.component.parent-title" datatype="html">
         <source>to provide - title 2</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
-        <note priority="1" from="meaning">Tłumaczone &apos;title&apos; dla parenta</note>
+        <note priority="1" from="meaning">Tłumaczone 'title' dla parenta</note>
       </trans-unit>
     </body>
   </file>
