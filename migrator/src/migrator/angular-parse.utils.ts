@@ -1,4 +1,3 @@
-import {dasherize} from '@angular-devkit/core/src/utils/strings';
 import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
 import {computeDigest} from '@angular/compiler/src/i18n/digest';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
@@ -30,7 +29,14 @@ export class AngularParseUtils {
     const treeWithI18n = this.parseAsTreeWithI18n(filePath, fileContent);
     const i18nMessages: I18nMap = {};
     this.recursiveSearch(treeWithI18n.rootNodes, i18nMessages);
-    return i18nMessages;
+    return this.sortByPosition(i18nMessages);
+  }
+
+  private static sortByPosition(i18nMessages: I18nMap) {
+    return Object.entries(i18nMessages)
+      .sort(([, a], [, b]) => b.startCol - a.startCol)
+      .sort(([, a], [, b]) => b.startLine - a.startLine)
+      .reduce((r, [k, v]) => ({...r, [k]: v}), {});
   }
 
   private static parseAsTreeWithI18n(filePath: string, fileContent: string): ParseTreeResult {
@@ -50,8 +56,9 @@ export class AngularParseUtils {
       if (!!element.i18n) {
         const type = element.constructor.name === 'Attribute' ? 'ATTR' : 'TAG';
         const message = element.i18n as Message;
+        const source = element.sourceSpan.start;
         message.id = this.getMessageId(message);
-        i18nMap[message.id] = {message, name: element.name, type};
+        i18nMap[message.id] = {message, name: element.name, type, startCol: source.col, startLine: source.line};
       }
       if (!!element.children) {
         this.recursiveSearch(element.children, i18nMap);
@@ -71,6 +78,8 @@ export interface I18nMap {
 export interface TemplateElement {
   message: Message;
   name: string;
+  startLine: number;
+  startCol: number;
   type: 'ATTR' | 'TAG';
 }
 

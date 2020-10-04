@@ -18,13 +18,19 @@
     "@angular-devkit/schematics": "^9.0.4",
     "@ngneat/transloco": "^2.19.1",
     "@types/cheerio": "^0.22.0",
+    "@types/js-beautify": "^1.11.0",
     "@types/jsdom": "^16.2.4",
+    "@types/pretty": "^2.0.0",
     "cheerio": "^0.22.0",
+    "clean-html": "^1.5.0",
     "fs": "0.0.1-security",
     "glob": "^7.1.6",
+    "js-beautify": "^1.13.0",
     "jsdom": "^16.4.0",
     "node-recursive-directory": "^1.2.0",
-    "typescript": "~3.7.4"
+    "pretty": "^2.0.0",
+    "typescript": "~3.7.4",
+    "xregexp": "^4.3.0"
   },
   "devDependencies": {
     "@types/node": "^12.11.1",

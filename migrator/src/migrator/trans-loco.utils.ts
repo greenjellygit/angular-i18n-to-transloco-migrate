@@ -3,13 +3,13 @@ import {FileUtils} from './file.utils';
 
 export class TransLocoUtils {
 
-  public static initializeLocoFiles(locales: LocaleConfig[]): TransLocoFile[] {
-    return locales.map(value => ({fileName: `${value.lang}.json`, lang: value.lang, entries: {}}));
+  public static initializeLocoFiles(localeConfig: ParsedLocaleConfig): TransLocoFile[] {
+    return Object.values(localeConfig).map(value => ({fileName: `${value.lang}.json`, lang: value.lang, entries: {}}));
   }
 
   public static saveTransLocoFiles(directoryPath: string, transLocoFiles: TransLocoFile[]): void {
     for (const file of transLocoFiles) {
-      FileUtils.writeToFile(file.entries, directoryPath + file.fileName);
+      FileUtils.writeJsonToFile(file.entries, directoryPath + file.fileName);
     }
   }
 
@@ -27,6 +27,10 @@ export interface TransLocoEntries {
 
 export interface JsonKey {
   [key: string]: string;
+}
+
+export interface ParsedLocaleConfig {
+  [lang: string]: LocaleConfig;
 }
 
 export interface LocaleConfig {

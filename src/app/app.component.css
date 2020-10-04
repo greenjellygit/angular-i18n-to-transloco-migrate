@@ -8,3 +8,9 @@
   padding: 5px;
   margin: 10px;
 }
+
+:host ::ng-deep .asd {
+  background-color: red;
+  display: inline-block;
+  position: relative;
+}

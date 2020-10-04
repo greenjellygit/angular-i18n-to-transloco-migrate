@@ -1,12 +1,14 @@
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import * as XRegExp from 'xregexp';
 import {AngularParseUtils, TemplateElement} from './angular-parse.utils';
 import {FileUtils} from './file.utils';
 import {SchematicsUtils} from './schematics.utils';
 import {StringUtils} from './string.utils';
-import {JsonKey, LocaleConfig, TransLocoFile, TransLocoUtils} from './trans-loco.utils';
+import {JsonKey, ParsedLocaleConfig, TransLocoFile, TransLocoUtils} from './trans-loco.utils';
+import jsBeautify = require('js-beautify');
+import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 
 export function migrator(_options: any): Rule {
-
   function prepareTranslationText(elementText: string, placeholderNames: string[], localeElement: any, templateElement: TemplateElement) {
     if (!!placeholderNames && placeholderNames.length > 0) {
       placeholderNames.forEach(placeholder => {
@@ -16,9 +18,9 @@ export function migrator(_options: any): Rule {
     return elementText;
   }
 
-  function updateTransLocoFiles(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string, transLocoFiles: TransLocoFile[], localeConfigs: LocaleConfig[]) {
+  function updateTransLocoFiles(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string, localeConfigs: ParsedLocaleConfig, transLocoFiles: TransLocoFile[]) {
     for (const locoFile of transLocoFiles) {
-      const localeElement = localeConfigs.find(locale => locale.lang === locoFile.lang).bundle.translations[messageId];
+      const localeElement = localeConfigs[locoFile.lang].bundle.translations[messageId];
       const translationText = prepareTranslationText(localeElement.text, localeElement.placeholderNames, localeElement, templateElement);
 
       locoFile.entries[translationKey.group] = locoFile.entries[translationKey.group] || {} as JsonKey;
@@ -26,19 +28,26 @@ export function migrator(_options: any): Rule {
     }
   }
 
-  function updateTemplateFile(translationKey: TranslationKey, templateElement: TemplateElement, parsedTemplateContent: string, tree: Tree) {
-    const message = templateElement.message;
-    const startOffset = message.nodes[0].sourceSpan.start.offset;
-    const endOffset = message.nodes[message.nodes.length - 1].sourceSpan.end.offset;
-    const filePath = message.sources[0].filePath;
+  function getSourceBounds(message: Message): {startOffset: number, endOffset: number} {
+    const bounds: number[] = message.nodes.map(e => [e.sourceSpan, e['startSourceSpan'], e['endSourceSpan']])
+      .reduce((acc, val) => [...acc, ...val], [])
+      .filter(value => !!value)
+      .map(value => [value.end.offset, value.start.offset])
+      .reduce((acc, val) => [...acc, ...val], []);
+    return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
+  }
 
+  function updateTemplateFile(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string, localeConfigs: ParsedLocaleConfig, templateContent: string) {
+    const sourceBounds = getSourceBounds(templateElement.message);
+    templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
     if (templateElement.type === 'TAG') {
       const tagContent = `{{'${translationKey.group}.${translationKey.id}' | transloco}}`;
-      const recorder = tree.beginUpdate(filePath);
-      recorder.remove(startOffset, endOffset - startOffset);
-      recorder.insertLeft(startOffset, tagContent);
-      tree.commitUpdate(recorder);
+      templateContent = StringUtils.insertLeft(templateContent, sourceBounds.startOffset, tagContent);
+    } else if (templateElement.type === 'ATTR') {
+      const tagContent = `[${templateElement.name}]="'${translationKey.group}.${translationKey.id}' | transloco"`;
+      templateContent = StringUtils.insertLeft(templateContent, sourceBounds.startOffset, tagContent);
     }
+    return templateContent;
   }
 
   function prepareTranslationKey(messageId: string): TranslationKey {
@@ -48,33 +57,43 @@ export function migrator(_options: any): Rule {
 
     if (!!idParts && idParts.length === 2) {
       return {id: StringUtils.underscore(idParts[1]), group: StringUtils.underscore(idParts[0] + group)};
-    } else  {
+    } else {
       return {id: StringUtils.underscore(messageId), group: 'no_group'};
     }
   }
 
-  return (tree: Tree, _context: SchematicContext) => {
+  function removeI18nTagsFromTemplate(filePath: string, templateContent: string) {
+    templateContent = templateContent.replace(XRegExp(/<[a-z 0-9-]+(.|\s)*?(?<!\?)>/g), (a, b, c) => {
+      return a.replace(/\s*i18n-?[a-z]*=".+"\s*|i18n[-a-z]*\s*/g, ' ');
+    });
+    templateContent = jsBeautify.html(templateContent, {wrap_attributes: 'preserve-aligned', indent_size: 2});
+    FileUtils.writeToFile(templateContent, filePath);
+  }
 
+  return (tree: Tree, _context: SchematicContext) => {
     const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
+     // .filter(value => value.indexOf('trial-info-bar') > -1)
       .map(filePath => AngularParseUtils.parseTemplateFile(filePath))
       .filter(parsedFile => parsedFile.parseStatus === 'SUCCESS');
 
-    const localeConfigs: LocaleConfig[] = SchematicsUtils.getDefaultProjectLocales();
+    const localeConfigs: ParsedLocaleConfig = SchematicsUtils.getDefaultProjectLocales();
     const transLocoFiles = TransLocoUtils.initializeLocoFiles(localeConfigs);
 
     for (const parsedTemplate of parsedTemplateFiles) {
-      const parsedTemplateContent = parsedTemplate.content;
+      let templateContent = parsedTemplate.content;
 
       for (const messageId of Object.keys(parsedTemplate.i18nMap)) {
         const templateElement = parsedTemplate.i18nMap[messageId];
         const translationKey = prepareTranslationKey(messageId);
 
-        updateTransLocoFiles(translationKey, templateElement, messageId, transLocoFiles, localeConfigs);
-        updateTemplateFile(translationKey, templateElement, parsedTemplateContent, tree);
+        updateTransLocoFiles(translationKey, templateElement, messageId, localeConfigs, transLocoFiles);
+        templateContent = updateTemplateFile(translationKey, templateElement, messageId, localeConfigs, templateContent);
       }
+
+      removeI18nTagsFromTemplate(parsedTemplate.filePath, templateContent);
     }
 
-    TransLocoUtils.saveTransLocoFiles('src/transloco/', transLocoFiles);
+    TransLocoUtils.saveTransLocoFiles('src/assets/i18n/', transLocoFiles);
 
     return tree;
   };
