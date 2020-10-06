@@ -4,7 +4,6 @@
 }
 
 .parent > * {
-  display: flex;
   padding: 5px;
   margin: 10px;
 }
