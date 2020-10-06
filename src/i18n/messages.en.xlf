@@ -94,13 +94,30 @@
 				<note priority="1" from="meaning">Tłumaczenie dzieci z html</note>
 			</trans-unit>
 			<trans-unit id="app.component.child-translate-interpolation-html" datatype="html">
-				<source>Text content - this is html child with interpolation - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="INTERPOLATION_1" equiv-text="{{'asd' + el + 'asd'}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-				<target>Text content - this is html child with interpolation - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="INTERPOLATION_1" equiv-text="{{'asd' + el + 'asd'}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+				<source>Text content - this is html child with interpolation - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+				<target>Text content - this is html child with interpolation - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
 				<context-group purpose="location">
 					<context context-type="sourcefile">src/app/app.component.html</context>
 					<context context-type="linenumber">27</context>
 				</context-group>
 				<note priority="1" from="meaning">Tłumaczenie dzieci z interpolacją + html</note>
+			</trans-unit>
+			<trans-unit id="people-invite.component.users-limit-info-remaining" datatype="html">
+				<source>You can invite only <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> more <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> before reaching the limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>) for your organization.</source>
+				<target>You can invite only <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> more <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> before reaching the limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>) for your organization.</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">32</context>
+				</context-group>
+				<note priority="1" from="meaning">Informacja o pozostalym limice na zapraszanie użytkowników</note>
+			</trans-unit>
+			<trans-unit id="cd801e3c01db9246e062965a13aab593bed7ebcd" datatype="html">
+				<source>{VAR_PLURAL, plural, =1 {person} other {people} }</source>
+				<target>{VAR_PLURAL, plural, =1 {person} other {people} }</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">33</context>
+				</context-group>
 			</trans-unit>
 		</body>
 	</file>

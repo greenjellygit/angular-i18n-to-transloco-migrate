@@ -28,5 +28,10 @@
         Text content - this is child - <span><b>{{999 + el + 999}}</b></span> <span><b>{{'asd' + el + 'asd'}}</b></span>
       </h5>
     </div>
+    ---
+    <h2 i18n="Informacja o pozostalym limice na zapraszanie użytkowników|@@people-invite.component.users-limit-info-remaining">
+      You can invite only <b>{{maxNumberOfInvitations}}</b> more {maxNumberOfInvitations, plural, =1 {person} other {people}} before reaching the limit (<b>{{numberOfUsersLimit}}</b>) for your organization.
+    </h2>
   </div>
+  <input type="number" (change)="updateInvitationsNUmber($event)"/>
 </div>
