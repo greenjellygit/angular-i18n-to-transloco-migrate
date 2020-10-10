@@ -8,120 +8,89 @@
 			<trans-unit id="app.component.full" datatype="html">
 				<source>Text content - full i18n tag with the description and the key</source>
 				<target>Text content - full i18n tag with the description and the key</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">1</context>
-				</context-group>
+				
 				<note priority="1" from="meaning">Pełne i18n wraz z opisem i kluczem</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">2</context></context-group></trans-unit>
 			<trans-unit id="0580fecd3a7108db3dd65baac7d40b05e480e070" datatype="html">
 				<source>Text content - simplest i18n tag only</source>
 				<target>Text content - simplest i18n tag only</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">2</context>
-				</context-group>
-			</trans-unit>
+				
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">3</context></context-group></trans-unit>
 			<trans-unit id="app.component.input-placeholder-full" datatype="html">
-				<source>to provide - input-placeholder-full</source>
-				<target>to provide - input-placeholder-full</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">3</context>
-				</context-group>
+				<source>to provide</source>
+				<target state="final">to provide</target>
+				
 				<note priority="1" from="meaning">Pełne i18n dla placeholdera z opisem i kluczem</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">5</context></context-group></trans-unit>
 			<trans-unit id="e1b7b1a93396f3974f248767ec6f8e9b99e2bdd3" datatype="html">
 				<source>to provide</source>
 				<target>to provide</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">4</context>
-				</context-group>
-			</trans-unit>
+				
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">6</context></context-group></trans-unit>
 			<trans-unit id="app.component.input-many-attributes-placeholder" datatype="html">
-				<source>Many attributes on input - title</source>
-				<target>Many attributes on input - title</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">6</context>
-				</context-group>
+				<source>to provide</source>
+				<target state="final">to provide</target>
+				
 				<note priority="1" from="meaning">Kilka atrybutów i18n w tym samym komponencie - placeholder</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">9</context></context-group></trans-unit>
 			<trans-unit id="app.component.child-translate" datatype="html">
 				<source>Text content - this is child</source>
 				<target>Text content - this is child</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">12</context>
-				</context-group>
+				
 				<note priority="1" from="meaning">Tłumaczenie dzieci</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">26</context></context-group></trans-unit>
 			<trans-unit id="app.component.input-many-attributes-title" datatype="html">
-				<source>Many attributes i18n (title)</source>
-				<target>Many attributes i18n (title)</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">8</context>
-				</context-group>
+				<source>to provide - title</source>
+				<target state="final">to provide - title</target>
+				
 				<note priority="1" from="meaning">Kilka atrybutów i18n w tym samym komponencie - title</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">10</context></context-group></trans-unit>
 			<trans-unit id="app.component.parent-title" datatype="html">
-				<source>Title of nested element</source>
-				<target>Title of nested element</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">13</context>
-				</context-group>
+				<source>to provide - title 2</source>
+				<target state="final">to provide - title 2</target>
+				
 				<note priority="1" from="meaning">Tłumaczone 'title' dla parenta</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">23</context></context-group></trans-unit>
 			<trans-unit id="app.component.child-translate-interpolation" datatype="html">
-				<source>Text content - this is child - interpolation - '<x id="INTERPOLATION" equiv-text="{{el}}"/>'</source>
-				<target>Text content - this is child - interpolation - '<x id="INTERPOLATION" equiv-text="{{el}}"/>'</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">19</context>
-				</context-group>
+				<source>
+        Text content - this is child - '<x id="INTERPOLATION" equiv-text="{{el}}"/>'
+      </source>
+				<target state="final">
+        Text content - this is child - '<x id="INTERPOLATION" equiv-text="{{el}}"/>'
+      </target>
+				
 				<note priority="1" from="meaning">Tłumaczenie dzieci z interpolacją</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">30</context></context-group></trans-unit>
 			<trans-unit id="app.component.child-translate-html" datatype="html">
-				<source>Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>HTML<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-				<target>Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>HTML<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">24</context>
-				</context-group>
+				<source>Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/>HTML<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/></source>
+				<target>Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/>HTML<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/></target>
+				
 				<note priority="1" from="meaning">Tłumaczenie dzieci z html</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">33</context></context-group></trans-unit>
 			<trans-unit id="app.component.child-translate-interpolation-html" datatype="html">
-				<source>Text content - this is html child with interpolation - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-				<target>Text content - this is html child with interpolation - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">27</context>
-				</context-group>
+				<source>
+        Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION_1" equiv-text="{{'asd' + el + 'asd'}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/>
+      </source>
+				<target state="final">
+        Text content - this is child - <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION" equiv-text="{{999 + el + 999}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/> <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION_1" equiv-text="{{'asd' + el + 'asd'}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/><x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/>
+      </target>
+				
 				<note priority="1" from="meaning">Tłumaczenie dzieci z interpolacją + html</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">36</context></context-group></trans-unit>
 			<trans-unit id="people-invite.component.users-limit-info-remaining" datatype="html">
-				<source>You can invite only <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> more <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> before reaching the limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>) for your organization.</source>
-				<target>You can invite only <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> more <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> before reaching the limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>) for your organization.</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">32</context>
-				</context-group>
+				<source>You can invite only <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/> more <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> before reaching the limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/>) for your organization.</source>
+				<target>You can invite only <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/> more <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> before reaching the limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/>) for your organization.</target>
+				
 				<note priority="1" from="meaning">Informacja o pozostalym limice na zapraszanie użytkowników</note>
-			</trans-unit>
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">41</context></context-group></trans-unit>
 			<trans-unit id="cd801e3c01db9246e062965a13aab593bed7ebcd" datatype="html">
 				<source>{VAR_PLURAL, plural, =1 {person} other {people} }</source>
 				<target>{VAR_PLURAL, plural, =1 {person} other {people} }</target>
-				<context-group purpose="location">
-					<context context-type="sourcefile">src/app/app.component.html</context>
-					<context context-type="linenumber">33</context>
-				</context-group>
-			</trans-unit>
+				
+			<context-group purpose="location"><context context-type="sourcefile">src/app/app.component.html</context><context context-type="linenumber">42</context></context-group></trans-unit>
 			<trans-unit id="addon-required.component.oops" datatype="html">
-				<source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Oops..<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
-				<target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Oops..<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></target>
+				<source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/>Oops..<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/></source>
+				<target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b>"/>Oops..<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b>"/></target>
 				<context-group purpose="location">
 					<context context-type="sourcefile">src/app/app.component.html</context>
 					<context context-type="linenumber">7</context>
@@ -142,20 +111,30 @@
 				<note priority="1" from="meaning">Zaktualizuj</note>
 			</trans-unit>
 			<trans-unit id="teams-edit.component.team-context-singular" datatype="html">
-				<source>Hello this is select: <x id="ICU" equiv-text="{objSelect?.get('context').value, select, UNIT {...} TEAM {...} PROJECT {...}}"/></source>
-				<target>Hello this is select: <x id="ICU" equiv-text="{objSelect?.get('context').value, select, UNIT {...} TEAM {...} PROJECT {...}}"/></target>
+				<source>Hejo tu select: <x id="ICU" equiv-text="{objSelect['context'].value, select, UNIT {...} TEAM {...} PROJECT {...}}"/>
+      <x id="ICU_1" equiv-text="{objSelect, select, 234 {...} ASD {...} zxc {...}}"/></source>
+				<target state="final">Hejo tu select: <x id="ICU" equiv-text="{objSelect['context'].value, select, UNIT {...} TEAM {...} PROJECT {...}}"/>
+      <x id="ICU_1" equiv-text="{objSelect, select, 234 {...} ASD {...} zxc {...}}"/></target>
 				<context-group purpose="location">
 					<context context-type="sourcefile">src/app/app.component.html</context>
 					<context context-type="linenumber">46</context>
 				</context-group>
 				<note priority="1" from="meaning">Rodzaje zespołów (liczba pojedyncza)</note>
 			</trans-unit>
-			<trans-unit id="5392ce9ff9cbecc95d31f9f592afd27a7649d851" datatype="html">
-				<source>{VAR_SELECT, select, UNIT {Unit!} TEAM {Team!} PROJECT {Project!} }</source>
-				<target>{VAR_SELECT, select, UNIT {Unit!} TEAM {Team!} PROJECT {Project!} }</target>
+			<trans-unit id="abd1560b5578f7f365c6b5ec62d8bbabb7579b7f" datatype="html">
+				<source>{VAR_SELECT, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT} }</source>
+				<target>{VAR_SELECT, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT} }</target>
 				<context-group purpose="location">
 					<context context-type="sourcefile">src/app/app.component.html</context>
 					<context context-type="linenumber">46</context>
+				</context-group>
+			</trans-unit>
+			<trans-unit id="e3ef590183a11d36425819aea742c961297083a9" datatype="html">
+				<source>{VAR_SELECT, select, 234 {234} ASD {ASD} zxc {zxc} }</source>
+				<target state="final">{VAR_SELECT, select, 234 {234} ASD {ASD} zxc {zxc} }</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">47</context>
 				</context-group>
 			</trans-unit>
 		</body>
