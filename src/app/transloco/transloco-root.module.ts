@@ -5,9 +5,10 @@ import {
   TranslocoLoader,
   TRANSLOCO_CONFIG,
   translocoConfig,
-  TranslocoModule
+  TranslocoModule, TRANSLOCO_TRANSPILER
 } from '@ngneat/transloco';
 import { Injectable, NgModule } from '@angular/core';
+import {MessageFormatTranspiler} from '@ngneat/transloco-messageformat';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -32,6 +33,10 @@ export class TranslocoHttpLoader implements TranslocoLoader {
         reRenderOnLangChange: true,
         prodMode: environment.production,
       })
+    },
+    {
+      provide: TRANSLOCO_TRANSPILER,
+      useClass: MessageFormatTranspiler
     },
     { provide: TRANSLOCO_LOADER, useClass: TranslocoHttpLoader }
   ]

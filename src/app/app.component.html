@@ -4,10 +4,19 @@
   <div [title]="'Title binding'">Title binding</div>
   <input i18n-placeholder="Pełne i18n dla placeholdera z opisem i kluczem|@@app.component.input-placeholder-full" placeholder="to provide"/>
   <input i18n-placeholder placeholder="to provide"/>
+  <h1 class="page-title" i18n="Oops|@@addon-required.component.oops"><b>Oops..</b></h1>
   <input i18n-placeholder="Kilka atrybutów i18n w tym samym komponencie - placeholder|@@app.component.input-many-attributes-placeholder"
          placeholder="to provide"
          title="to provide - title"
          i18n-title="Kilka atrybutów i18n w tym samym komponencie - title|@@app.component.input-many-attributes-title"/>
+
+  <button mat-raised-button
+          color="primary"
+          class="button-big"
+          [disabled]="123"
+          i18n="Zaktualizuj|@@common.buttons.update">
+    UPDATE
+  </button>
 
   <div i18n-title="Tłumaczone 'title' dla parenta|@@app.component.parent-title"
        class="parent"
@@ -32,6 +41,17 @@
     <h2 i18n="Informacja o pozostalym limice na zapraszanie użytkowników|@@people-invite.component.users-limit-info-remaining">
       You can invite only <b>{{maxNumberOfInvitations}}</b> more {maxNumberOfInvitations, plural, =1 {person} other {people}} before reaching the limit (<b>{{numberOfUsersLimit}}</b>) for your organization.
     </h2>
+    ---
+    <span
+      i18n="Rodzaje zespołów (liczba pojedyncza)|@@teams-edit.component.team-context-singular">Hejo tu select: {objSelect['context'].value, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT}}
+      {objSelect, select, ASD {ASD} zxc {zxc} 234 {234}}</span>
+
+    ss<div [innerHTML]="'common_buttons.myPluralRule' | transloco: {myCount: maxNumberOfInvitations, inter1: 'INTERPOL'}"></div>ss
   </div>
   <input type="number" (change)="updateInvitationsNUmber($event)"/>
+  <select name="cars" (change)="updateSelectValue($event)">
+    <option value="UNIT">-UNIT-</option>
+    <option value="TEAM">-TEAM-</option>
+    <option value="PROJECT">-PROJECT-</option>
+  </select>
 </div>

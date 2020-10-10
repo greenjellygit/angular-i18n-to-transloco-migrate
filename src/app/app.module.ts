@@ -1,10 +1,11 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {HttpClientModule} from '@angular/common/http';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {TranslocoMessageFormatModule} from '@ngneat/transloco-messageformat';
 
-import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
-import { TranslocoRootModule } from './transloco/transloco-root.module';
-import { CamelCaseDirective } from './camel-case.directive';
+import {AppComponent} from './app.component';
+import {CamelCaseDirective} from './camel-case.directive';
+import {TranslocoRootModule} from './transloco/transloco-root.module';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { CamelCaseDirective } from './camel-case.directive';
   imports: [
     BrowserModule,
     HttpClientModule,
-    TranslocoRootModule
+    TranslocoRootModule,
+    TranslocoMessageFormatModule.init()
   ],
   providers: [],
   bootstrap: [AppComponent]

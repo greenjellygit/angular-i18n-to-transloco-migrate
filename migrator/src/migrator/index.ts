@@ -76,7 +76,7 @@ export function migrator(_options: any): Rule {
     templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
     if (templateElement.type === 'TAG') {
       const tagContent = prepareTagContent(translationKey, templateElement);
-      templateContent = StringUtils.insertLeft(templateContent, sourceBounds.startOffset - (templateElement.hasHtml ? 1 : 0), tagContent);
+      templateContent = StringUtils.insertLeft(templateContent, templateElement.hasHtml ? sourceBounds.startOffset - 1 : sourceBounds.startOffset, tagContent);
     } else if (templateElement.type === 'ATTR') {
       const tagContent = `[${templateElement.name}]="'${translationKey.group}.${translationKey.id}' | transloco"`;
       templateContent = StringUtils.insertLeft(templateContent, sourceBounds.startOffset, tagContent);

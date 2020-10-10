@@ -1,6 +1,12 @@
 {
+  "teams_edit_component": {
+    "team_context_singular": "Hello this is select: undefined"
+  },
+  "people_invite_component": {
+    "users_limit_info_remaining": "You can invite only <b>{{var0}}</b> more undefined before reaching the limit (<b>{{var1}}</b>) for your organization."
+  },
   "app_component": {
-    "child_translate_interpolation_html": "Text content - this is html child with interpolation - <span><b>{{var0}}{{var1}}</b></span>",
+    "child_translate_interpolation_html": "Text content - this is html child with interpolation - <span><b>{{var0}}</b></span>",
     "child_translate_html": "Text content - this is child - <span class=\"asd\"><b>HTML</b></span>",
     "child_translate_interpolation": "Text content - this is child - interpolation - '{{var0}}'",
     "child_translate": "Text content - this is child",
@@ -9,6 +15,12 @@
     "input_many_attributes_placeholder": "Many attributes on input - title",
     "input_placeholder_full": "to provide - input-placeholder-full",
     "full": "Text content - full i18n tag with the description and the key"
+  },
+  "common_buttons": {
+    "update": "\n    UPDATE\n  "
+  },
+  "addon_required_component": {
+    "oops": "<b>Oops..</b>"
   },
   "no_group": {
     "e1b7b1a93396f3974f248767ec6f8e9b99e2bdd3": "to provide",
