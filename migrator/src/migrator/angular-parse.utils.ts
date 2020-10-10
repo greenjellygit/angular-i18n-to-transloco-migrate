@@ -1,8 +1,7 @@
-import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser, ParseTreeResult, visitAll} from '@angular/compiler';
+import {DEFAULT_INTERPOLATION_CONFIG, parseTemplate} from '@angular/compiler';
 import {computeDigest} from '@angular/compiler/src/i18n/digest';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-import * as html from '@angular/compiler/src/ml_parser/ast';
-import {I18nMetaVisitor} from '@angular/compiler/src/render3/view/i18n/meta';
+import {Element, Node} from '@angular/compiler/src/render3/r3_ast';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import {Xliff1TranslationParser} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/xliff1_translation_parser';
 import * as fs from 'fs';
@@ -26,9 +25,9 @@ export class AngularParseUtils {
   }
 
   private static retrieveI18nMap(filePath: string, fileContent: string): I18nMap {
-    const treeWithI18n = this.parseAsTreeWithI18n(filePath, fileContent);
+    const template = parseTemplate(fileContent, filePath, {interpolationConfig: DEFAULT_INTERPOLATION_CONFIG, preserveWhitespaces: true, leadingTriviaChars: []});
     const i18nMessages: I18nMap = {};
-    this.recursiveSearch(treeWithI18n.rootNodes, i18nMessages);
+    this.recursiveSearch(template.nodes, i18nMessages);
     return this.sortByPosition(i18nMessages);
   }
 
@@ -39,39 +38,46 @@ export class AngularParseUtils {
       .reduce((r, [k, v]) => ({...r, [k]: v}), {});
   }
 
-  private static parseAsTreeWithI18n(filePath: string, fileContent: string): ParseTreeResult {
-    const htmlParser = new HtmlParser();
-    const parseResult = htmlParser.parse(fileContent, filePath, {tokenizeExpansionForms: true});
-    const visitor = new I18nMetaVisitor(DEFAULT_INTERPOLATION_CONFIG, false);
-    return new ParseTreeResult(visitAll(visitor, parseResult.rootNodes), parseResult.errors);
-  }
-
   private static getMessageId(element: Message) {
     return element.customId || computeDigest(element as Message);
   }
 
-  private static recursiveSearch(rootNodes: html.Node[], i18nMap: I18nMap) {
+  private static recursiveSearch(rootNodes: Node[], i18nMap: I18nMap) {
     for (const node of rootNodes) {
-      const element = node as html.Element;
-      if (!!element.i18n) {
-        const type = element.constructor.name === 'Attribute' ? 'ATTR' : 'TAG';
+      const element = node as Element;
+      if (!!element.i18n && element.i18n.constructor.name === 'Message') {
+        const type = element.constructor.name === 'TextAttribute' ? 'ATTR' : 'TAG';
         const message = element.i18n as Message;
         const source = element.sourceSpan.start;
         message.id = this.getMessageId(message);
+
         const hasHtml = Object.keys(message.placeholders).some(placeholder => placeholder.startsWith('START_'));
         const hasInterpolation = message.placeholders.hasOwnProperty('INTERPOLATION');
         const hasClass = Object.values(message.placeholders).some(value => value.indexOf('class=') > -1);
-        i18nMap[message.id] = {message, name: element.name, type, startCol: source.col, startLine: source.line, hasHtml, hasInterpolation, hasClass};
+        i18nMap[message.id] = {
+          message,
+          name: element.name,
+          type,
+          startCol: source.col,
+          startLine: source.line,
+          hasHtml,
+          hasInterpolation,
+          hasClass
+        };
       }
-      if (!!element.children) {
+
+      if (!!element.children && !this.hasICU(element)) {
         this.recursiveSearch(element.children, i18nMap);
       }
-      if (!!element.attrs) {
-        this.recursiveSearch(element.attrs, i18nMap);
+      if (!!element.attributes) {
+        this.recursiveSearch(element.attributes, i18nMap);
       }
     }
   }
 
+  private static hasICU(value: Element) {
+    return value.i18n && value.i18n['placeholderToMessage'] && value.i18n['placeholderToMessage'].hasOwnProperty('ICU');
+  }
 }
 
 export interface I18nMap {

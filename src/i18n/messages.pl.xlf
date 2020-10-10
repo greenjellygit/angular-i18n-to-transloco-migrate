@@ -104,7 +104,7 @@
 			</trans-unit>
 			<trans-unit id="people-invite.component.users-limit-info-remaining" datatype="html">
 				<source>You can invite only <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> more <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> before reaching the limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>) for your organization.</source>
-				<target>Możesz zaprosić tylko <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> więcej zanim osiągniesz limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>) dla twojej organizacji.</target>
+				<target>Możesz zaprosić tylko <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{maxNumberOfInvitations}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> więcej <x id="ICU" equiv-text="{maxNumberOfInvitations, plural, =1 {...} other {...}}"/> zanim osiągniesz limit (<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION_1" equiv-text="{{numberOfUsersLimit}}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>) dla twojej organizacji.</target>
 				<context-group purpose="location">
 					<context context-type="sourcefile">src/app/app.component.html</context>
 					<context context-type="linenumber">32</context>
@@ -117,6 +117,45 @@
 				<context-group purpose="location">
 					<context context-type="sourcefile">src/app/app.component.html</context>
 					<context context-type="linenumber">33</context>
+				</context-group>
+			</trans-unit>
+			<trans-unit id="addon-required.component.oops" datatype="html">
+				<source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Oops..<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
+				<target><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Upsik..<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">7</context>
+				</context-group>
+				<note priority="1" from="meaning">Oops</note>
+			</trans-unit>
+			<trans-unit id="common.buttons.update" datatype="html">
+				<source>
+    UPDATE
+  </source>
+				<target>
+AKTUALIZACJA
+</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">17</context>
+				</context-group>
+				<note priority="1" from="meaning">Zaktualizuj</note>
+			</trans-unit>
+			<trans-unit id="teams-edit.component.team-context-singular" datatype="html">
+				<source>Hello this is select: <x id="ICU" equiv-text="{objSelect?.get('context').value, select, UNIT {...} TEAM {...} PROJECT {...}}"/></source>
+				<target>Hejo tu select: <x id="ICU" equiv-text="{objSelect?.get('context').value, select, UNIT {...} TEAM {...} PROJECT {...}}"/></target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">46</context>
+				</context-group>
+				<note priority="1" from="meaning">Rodzaje zespołów (liczba pojedyncza)</note>
+			</trans-unit>
+			<trans-unit id="5392ce9ff9cbecc95d31f9f592afd27a7649d851" datatype="html">
+				<source>{VAR_SELECT, select, UNIT {Unit!} TEAM {Team!} PROJECT {Project!} }</source>
+				<target>{VAR_SELECT, select, UNIT {Jednostka!} TEAM {Zespół!} PROJECT {Projekt!} }</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">46</context>
 				</context-group>
 			</trans-unit>
 		</body>

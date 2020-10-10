@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && cd .. && schematics migrator:migrator",
     "build-ttb": "tsc -p tsconfig.json && cd ../../TeamToolbox/ttb/atb-parent/atb-frontend && schematics migrator:migrator",
+    "xi18n": "cd ../../TeamToolbox/ttb/atb-parent/atb-frontend && ng xi18n",
     "test": "npm run build && jasmine src/**/*_spec.js"
   },
   "keywords": [

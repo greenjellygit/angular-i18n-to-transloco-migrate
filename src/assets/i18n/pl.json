@@ -1,6 +1,12 @@
 {
+  "teams_edit_component": {
+    "team_context_singular": "Hejo tu select: undefined"
+  },
+  "people_invite_component": {
+    "users_limit_info_remaining": "Możesz zaprosić tylko <b>{{var0}}</b> więcej undefined zanim osiągniesz limit (<b>{{var1}}</b>) dla twojej organizacji."
+  },
   "app_component": {
-    "child_translate_interpolation_html": "Zawartość tekstowa - to jest dziecko html z interpolacją - <span><b>{{var0}}{{var1}}</b></span>",
+    "child_translate_interpolation_html": "Zawartość tekstowa - to jest dziecko html z interpolacją - <span><b>{{var0}}</b></span>",
     "child_translate_html": "Zawartość tekstowa - to jest dziecko - <span class=\"asd\"><b>HTML</b></span>",
     "child_translate_interpolation": "Treść tekstowa - to jest dziecko - interpolacja - '{{var0}}'",
     "child_translate": "Treść tekstowa - to jest dziecko",
@@ -9,6 +15,12 @@
     "input_many_attributes_placeholder": "Dużo atrybutów na inpucie - tytuł",
     "input_placeholder_full": "zapewnić - input-placeholder-full",
     "full": "Treść tekstowa - pełny tag i18n z opisem i kluczem"
+  },
+  "common_buttons": {
+    "update": "\nAKTUALIZACJA\n"
+  },
+  "addon_required_component": {
+    "oops": "<b>Upsik..</b>"
   },
   "no_group": {
     "e1b7b1a93396f3974f248767ec6f8e9b99e2bdd3": "zapewnić",

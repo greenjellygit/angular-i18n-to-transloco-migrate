@@ -32,11 +32,19 @@
           <context context-type="linenumber">6</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="addon-required.component.oops" datatype="html">
+        <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>Oops..<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <note priority="1" from="meaning">Oops</note>
+      </trans-unit>
       <trans-unit id="app.component.input-many-attributes-placeholder" datatype="html">
         <source>to provide</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">8</context>
+          <context context-type="linenumber">9</context>
         </context-group>
         <note priority="1" from="meaning">Kilka atrybutów i18n w tym samym komponencie - placeholder</note>
       </trans-unit>
@@ -44,9 +52,19 @@
         <source>to provide - title</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">9</context>
+          <context context-type="linenumber">10</context>
         </context-group>
         <note priority="1" from="meaning">Kilka atrybutów i18n w tym samym komponencie - title</note>
+      </trans-unit>
+      <trans-unit id="common.buttons.update" datatype="html">
+        <source>
+    UPDATE
+  </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <note priority="1" from="meaning">Zaktualizuj</note>
       </trans-unit>
       <trans-unit id="app.component.child-translate" datatype="html">
         <source>
@@ -54,7 +72,7 @@
       </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">17</context>
+          <context context-type="linenumber">26</context>
         </context-group>
         <note priority="1" from="meaning">Tłumaczenie dzieci</note>
       </trans-unit>
@@ -64,7 +82,7 @@
       </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">21</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <note priority="1" from="meaning">Tłumaczenie dzieci z interpolacją</note>
       </trans-unit>
@@ -74,7 +92,7 @@
       </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">33</context>
         </context-group>
         <note priority="1" from="meaning">Tłumaczenie dzieci z html</note>
       </trans-unit>
@@ -84,7 +102,7 @@
       </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">27</context>
+          <context context-type="linenumber">36</context>
         </context-group>
         <note priority="1" from="meaning">Tłumaczenie dzieci z interpolacją + html</note>
       </trans-unit>
@@ -94,7 +112,7 @@
     </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">32</context>
+          <context context-type="linenumber">41</context>
         </context-group>
         <note priority="1" from="meaning">Informacja o pozostalym limice na zapraszanie użytkowników</note>
       </trans-unit>
@@ -102,14 +120,29 @@
         <source>{VAR_PLURAL, plural, =1 {person} other {people} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="teams-edit.component.team-context-singular" datatype="html">
+        <source>Hejo tu select: <x id="ICU" equiv-text="{objSelect?.get(&apos;context&apos;).value, select, UNIT {...} TEAM {...} PROJECT {...}}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <note priority="1" from="meaning">Rodzaje zespołów (liczba pojedyncza)</note>
+      </trans-unit>
+      <trans-unit id="5392ce9ff9cbecc95d31f9f592afd27a7649d851" datatype="html">
+        <source>{VAR_SELECT, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT} }</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="app.component.parent-title" datatype="html">
         <source>to provide - title 2</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
-          <context context-type="linenumber">14</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <note priority="1" from="meaning">Tłumaczone &apos;title&apos; dla parenta</note>
       </trans-unit>
