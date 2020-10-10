@@ -53,6 +53,7 @@ export class AngularParseUtils {
 
         const hasHtml = Object.keys(message.placeholders).some(placeholder => placeholder.startsWith('START_'));
         const hasInterpolation = message.placeholders.hasOwnProperty('INTERPOLATION');
+        const hasICU = this.hasICU(element);
         const hasClass = Object.values(message.placeholders).some(value => value.indexOf('class=') > -1);
         i18nMap[message.id] = {
           message,
@@ -62,13 +63,21 @@ export class AngularParseUtils {
           startLine: source.line,
           hasHtml,
           hasInterpolation,
+          hasICU,
           hasClass
         };
       }
 
-      if (!!element.children && !this.hasICU(element)) {
-        this.recursiveSearch(element.children, i18nMap);
+      if (!!element.children) {
+        if (!this.hasICU(element)) {
+          this.recursiveSearch(element.children, i18nMap);
+        } else if (!!element.i18n) {
+          Object.values(element.i18n['placeholderToMessage']).forEach((icuMessage: Message) => {
+            icuMessage.id = this.getMessageId(icuMessage);
+          });
+        }
       }
+
       if (!!element.attributes) {
         this.recursiveSearch(element.attributes, i18nMap);
       }
@@ -92,6 +101,7 @@ export interface TemplateElement {
   type: 'ATTR' | 'TAG';
   hasHtml: boolean;
   hasInterpolation: boolean;
+  hasICU: boolean;
   hasClass: boolean;
 }
 

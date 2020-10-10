@@ -1,5 +1,6 @@
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
+import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import * as XRegExp from 'xregexp';
 import {AngularParseUtils, TemplateElement} from './angular-parse.utils';
 import {FileUtils} from './file.utils';
@@ -10,15 +11,37 @@ import jsBeautify = require('js-beautify');
 
 export function migrator(_options: any): Rule {
 
-  function prepareTranslationText(elementText: string, placeholderNames: string[], localeElement: any, templateElement: TemplateElement) {
+  function getPlaceholderIndex(placeholder: string) {
+    const numberMatches = placeholder.match(/\d+/g);
+    return numberMatches ? +numberMatches[0] : 0;
+  }
+
+  function prepareTranslationText(elementText: string, placeholderNames: string[], localeElement: any, templateElement: TemplateElement, localeBundle: ParsedTranslationBundle) {
     if (!!placeholderNames && placeholderNames.length > 0) {
       placeholderNames.forEach(placeholder => {
-        if (placeholder.indexOf('INTERPOLATION') > -1) {
-          const numberMatches = placeholder.match(/\d+/g);
-          const interpolationIndex = numberMatches ? +numberMatches[0] : 0;
-          elementText = elementText.replace(`{$${placeholder}}`, `{{var${interpolationIndex}}}`);
-        } else {
-          elementText = elementText.replace(`{$${placeholder}}`, templateElement.message.placeholders[placeholder]);
+        const placeholderType = placeholder.split('_')[0];
+        switch (placeholderType) {
+          case 'INTERPOLATION':
+            const interpolationPlaceholderIndex = getPlaceholderIndex(placeholder);
+            elementText = elementText.replace(`{$${placeholder}}`, `{{var${interpolationPlaceholderIndex}}}`);
+            break;
+          case 'ICU':
+            const icuMessageId = templateElement.message.placeholderToMessage[placeholder].id;
+            let icuExpressionText = localeBundle.translations[icuMessageId].text;
+            const hasOthers = icuExpressionText.match(/(\S+)(?= {.+?})/g).some(e => e === 'other');
+            icuExpressionText = hasOthers ? icuExpressionText : StringUtils.remove(icuExpressionText, icuExpressionText.length - 1, 1) + ' other {?}}';
+            elementText = elementText.replace(`{$${placeholder}}`, `${icuExpressionText}`);
+
+            const icuPlaceholderIndex = getPlaceholderIndex(placeholder);
+            const icuMessagePlaceholders = Object.keys(templateElement.message.placeholderToMessage[placeholder].placeholders);
+            for (const icuPlaceholder of icuMessagePlaceholders) {
+              const icuMessagePlaceholderIndex = getPlaceholderIndex(icuPlaceholder) + icuPlaceholderIndex;
+              elementText = elementText.replace(`${icuPlaceholder}`, `icu${icuMessagePlaceholderIndex}`);
+            }
+            break;
+          default:
+            elementText = elementText.replace(`{$${placeholder}}`, templateElement.message.placeholders[placeholder]);
+            break;
         }
       });
     }
@@ -27,8 +50,9 @@ export function migrator(_options: any): Rule {
 
   function updateTransLocoFiles(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string, localeConfigs: ParsedLocaleConfig, transLocoFiles: TransLocoFile[]) {
     for (const locoFile of transLocoFiles) {
-      const localeElement = localeConfigs[locoFile.lang].bundle.translations[messageId];
-      const translationText = prepareTranslationText(localeElement.text, localeElement.placeholderNames, localeElement, templateElement);
+      const localeBundle = localeConfigs[locoFile.lang].bundle;
+      const localeElement = localeBundle.translations[messageId];
+      const translationText = prepareTranslationText(localeElement.text, localeElement.placeholderNames, localeElement, templateElement, localeBundle);
 
       locoFile.entries[translationKey.group] = locoFile.entries[translationKey.group] || {} as JsonKey;
       locoFile.entries[translationKey.group][translationKey.id] = translationText;
@@ -44,26 +68,36 @@ export function migrator(_options: any): Rule {
     return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
   }
 
-  function mapInterpolationPlaceholdersToTransLocoParams(templateElement: TemplateElement) {
-    if (!templateElement.hasInterpolation) {
-      return '';
-    }
-
-    const paramsObject = Object.entries(templateElement.message.placeholders)
+  function mapPlaceholdersToTransLocoParams(templateElement: TemplateElement) {
+    const interpolationParams = Object.entries(templateElement.message.placeholders)
       .filter(e => e[0].indexOf('INTERPOLATION') > -1)
       .map((e, index) => ({[`var${index}`]: e[1].match(/(?<={{)(.*?)(?=}})/g)[0]}))
       .reduce((result, current) => {
         return Object.assign(result, current);
       }, {});
 
-    return ':' + JSON.stringify(paramsObject)
+    const icuParams = Object.entries(templateElement.message.placeholderToMessage)
+      .filter(e => e[0].indexOf('ICU') > -1)
+      .map((e, index) => {
+        return Object.values(e[1].placeholders).map(k => ({[`icu${index}`]: k})).reduce((result, current) => {
+          return Object.assign(result, current);
+        }, {});
+      })
+      .reduce((result, current) => {
+        return Object.assign(result, current);
+      }, {});
+
+    const mergedParamsObject = Object.assign(interpolationParams, icuParams);
+    const isEmpty = Object.keys(mergedParamsObject).length === 0;
+
+    return isEmpty ? '' : ':' + JSON.stringify(Object.assign(interpolationParams, icuParams))
       .replace(/\"/g, '')
       .replace(/\:/g, ': ')
       .replace(/,/g, ', ');
   }
 
   function prepareTagContent(translationKey: TranslationKey, templateElement: TemplateElement) {
-    const params = mapInterpolationPlaceholdersToTransLocoParams(templateElement);
+    const params = mapPlaceholdersToTransLocoParams(templateElement);
     if (templateElement.hasHtml) {
       return ` [innerHtml]="'${translationKey.group}.${translationKey.id}' | transloco${params}"`;
     } else {
