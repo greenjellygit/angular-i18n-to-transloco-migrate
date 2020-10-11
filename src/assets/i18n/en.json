@@ -1,19 +1,19 @@
 {
   "teams_edit_component": {
-    "team_context_singular": "Hejo tu select: {icu0, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT} other {?}}\n      {icu1, select, 234 {234} ASD {ASD} zxc {zxc} other {?}}"
+    "team_context_singular": "Hello this is select: {icu0, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT} other {}}\n      {icu1, select, 234 { {var0}  } ASD {ASD} zxc {<span class=\"blue\">text html</span>} other {}}"
   },
   "people_invite_component": {
     "users_limit_info_remaining": "You can invite only <b>{{var0}}</b> more {icu0, plural, =1 {person} other {people}} before reaching the limit (<b>{{var1}}</b>) for your organization."
   },
   "app_component": {
-    "child_translate_interpolation_html": "\n        Text content - this is child - <span><b>{{var0}}</b></span> <span><b>{{var1}}</b></span>\n      ",
+    "child_translate_interpolation_html": "Text content - this is html child with interpolation - <span><b>{{var0}}</b></span>",
     "child_translate_html": "Text content - this is child - <span class=\"asd\"><b>HTML</b></span>",
-    "child_translate_interpolation": "\n        Text content - this is child - '{{var0}}'\n      ",
+    "child_translate_interpolation": "Text content - this is child - interpolation - '{{var0}}'",
     "child_translate": "Text content - this is child",
-    "parent_title": "to provide - title 2",
-    "input_many_attributes_title": "to provide - title",
-    "input_many_attributes_placeholder": "to provide",
-    "input_placeholder_full": "to provide",
+    "parent_title": "Title of nested element",
+    "input_many_attributes_title": "Many attributes i18n (title)",
+    "input_many_attributes_placeholder": "Many attributes on input - title",
+    "input_placeholder_full": "to provide - input-placeholder-full",
     "full": "Text content - full i18n tag with the description and the key"
   },
   "common_buttons": {

@@ -54,7 +54,13 @@ export class AngularParseUtils {
         const hasHtml = Object.keys(message.placeholders).some(placeholder => placeholder.startsWith('START_'));
         const hasInterpolation = message.placeholders.hasOwnProperty('INTERPOLATION');
         const hasICU = this.hasICU(element);
-        const hasClass = Object.values(message.placeholders).some(value => value.indexOf('class=') > -1);
+        const classes = Object.values(message.placeholders)
+          .filter(e => e.includes('class=')).map(e => {
+            return e.match(/class="(.*?)"/g)
+              .map(k => k.replace('class=', '').replace(/"/g, '').split(' '))
+              .reduce((x, y) => x.concat(y), []); })
+          .reduce((x, y) => x.concat(y), []);
+
         i18nMap[message.id] = {
           message,
           name: element.name,
@@ -64,7 +70,7 @@ export class AngularParseUtils {
           hasHtml,
           hasInterpolation,
           hasICU,
-          hasClass
+          classes
         };
       }
 
@@ -102,7 +108,7 @@ export interface TemplateElement {
   hasHtml: boolean;
   hasInterpolation: boolean;
   hasICU: boolean;
-  hasClass: boolean;
+  classes: string[];
 }
 
 export interface ParsedFile {

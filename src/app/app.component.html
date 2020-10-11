@@ -44,10 +44,22 @@
     ---
     <span
       i18n="Rodzaje zespołów (liczba pojedyncza)|@@teams-edit.component.team-context-singular">Hejo tu select: {objSelect['context'].value, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT}}
-      {objSelect, select, ASD {ASD} zxc {zxc} 234 {234}}</span>
+      {value, select, ASD {ASD} zxc {<span class="blue">HTML</span>} 234 { {{value + 1}} }}</span>
+
+    <div class="requested-bar vertical-and-horizontal-center" i18n="Zażądane przez...|@@addon-card.component.request-by">
+      {addon.requestsCount, plural, =1 {Requested by {{addon.requestsCount}} user} other {Requested by {{addon.requestsCount}} users}}
+    </div>
+
+    <h5 class="card-title">
+      <span  i18n="Nagłówek stwórz nowy zespół|@@teams-edit.component.create-new">CREATE NEW</span>
+      <span  i18n="Nagłówek edytuj zespół|@@teams-edit.component.edit-team">EDIT</span>&nbsp;
+      <span
+        i18n="Rodzaje zespołów (liczba pojedyncza)|@@teams-edit.component.team-context-singular">{formGroup?.get('context').value, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT}}</span>
+    </h5>
 
   </div>
   <input type="number" (change)="updateInvitationsNUmber($event)"/>
+  <input type="text" (change)="updateValue($event)"/>
   <select name="cars" (change)="updateSelectValue($event)">
     <option value="UNIT">-UNIT-</option>
     <option value="TEAM">-TEAM-</option>

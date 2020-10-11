@@ -13,3 +13,8 @@
   display: inline-block;
   position: relative;
 }
+
+:host ::ng-deep .blue {
+  color: blue;
+  font-weight: bold;
+}
