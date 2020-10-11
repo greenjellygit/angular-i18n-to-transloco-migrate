@@ -1,6 +1,12 @@
 {
   "teams_edit_component": {
+    "team_context_singular_zxc": "{VAR_SELECT, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT}}",
+    "edit_team": "EDIT",
+    "create_new": "CREATE NEW",
     "team_context_singular": "Hello this is select: {icu0, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT} other {}}\n      {icu1, select, 234 { {var0}  } ASD {ASD} zxc {<span class=\"blue\">text html</span>} other {}}"
+  },
+  "addon_card_component": {
+    "request_by": "\n      {icu0, plural, =1 {Requested by  {var0}  user} other {Requested by {INTERPOLATION} users}}\n    "
   },
   "people_invite_component": {
     "users_limit_info_remaining": "You can invite only <b>{{var0}}</b> more {icu0, plural, =1 {person} other {people}} before reaching the limit (<b>{{var1}}</b>) for your organization."
