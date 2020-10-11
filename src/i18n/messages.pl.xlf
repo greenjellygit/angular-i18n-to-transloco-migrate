@@ -215,6 +215,15 @@ AKTUALIZACJA
 				</context-group>
 				<note priority="1" from="meaning">Nagłówek edytuj zespół</note>
 			</trans-unit>
+			<trans-unit id="teams-edit.component.team-context-singular-zxc" datatype="html">
+				<source>{VAR_SELECT, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT} }</source>
+				<target>{VAR_SELECT, select, UNIT {JEDNOSTKĘ} TEAM {ZESPÓŁ} PROJECT {PROJEKT} }</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">57</context>
+				</context-group>
+				<note priority="1" from="meaning">Rodzaje zespołów (liczba pojedyncza)</note>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
