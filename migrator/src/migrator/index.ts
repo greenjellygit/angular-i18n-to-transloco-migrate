@@ -2,7 +2,8 @@ import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import * as XRegExp from 'xregexp';
-import {AngularParseUtils, TemplateElement} from './angular-parse.utils';
+import {AngularParseUtils, ParsedFile, TemplateElement} from './angular-parse.utils';
+import {CssUtil} from './css.util';
 import {FileUtils} from './file.utils';
 import {SchematicsUtils} from './schematics.utils';
 import {StringUtils} from './string.utils';
@@ -11,32 +12,39 @@ import jsBeautify = require('js-beautify');
 
 export function migrator(_options: any): Rule {
 
-  function getPlaceholderIndex(placeholder: string) {
-    const numberMatches = placeholder.match(/\d+/g);
-    return numberMatches ? +numberMatches[0] : 0;
-  }
-
   function prepareTranslationText(elementText: string, placeholderNames: string[], localeElement: any, templateElement: TemplateElement, localeBundle: ParsedTranslationBundle) {
     if (!!placeholderNames && placeholderNames.length > 0) {
+
+      let icuIndex = 0;
+      let variableIndex = 0;
       placeholderNames.forEach(placeholder => {
         const placeholderType = placeholder.split('_')[0];
+
         switch (placeholderType) {
           case 'INTERPOLATION':
-            const interpolationPlaceholderIndex = getPlaceholderIndex(placeholder);
-            elementText = elementText.replace(`{$${placeholder}}`, `{{var${interpolationPlaceholderIndex}}}`);
+            elementText = elementText.replace(`{$${placeholder}}`, `{{var${variableIndex++}}}`);
             break;
           case 'ICU':
             const icuMessageId = templateElement.message.placeholderToMessage[placeholder].id;
             let icuExpressionText = localeBundle.translations[icuMessageId].text;
             const hasOthers = icuExpressionText.match(/(\S+)(?= {.+?})/g).some(e => e === 'other');
-            icuExpressionText = hasOthers ? icuExpressionText : StringUtils.remove(icuExpressionText, icuExpressionText.length - 1, 1) + ' other {?}}';
+            icuExpressionText = hasOthers ? icuExpressionText : StringUtils.remove(icuExpressionText, icuExpressionText.length - 1, 1) + ' other {}}';
             elementText = elementText.replace(`{$${placeholder}}`, `${icuExpressionText}`);
 
-            const icuPlaceholderIndex = getPlaceholderIndex(placeholder);
             const icuMessagePlaceholders = Object.keys(templateElement.message.placeholderToMessage[placeholder].placeholders);
             for (const icuPlaceholder of icuMessagePlaceholders) {
-              const icuMessagePlaceholderIndex = getPlaceholderIndex(icuPlaceholder) + icuPlaceholderIndex;
-              elementText = elementText.replace(`${icuPlaceholder}`, `icu${icuMessagePlaceholderIndex}`);
+              const icuPlaceholderType = icuPlaceholder.split('_')[0];
+              switch (icuPlaceholderType) {
+                case 'INTERPOLATION':
+                  elementText = elementText.replace(`{${icuPlaceholder}}`, ` {var${variableIndex++}} `);
+                  break;
+                case 'VAR':
+                  elementText = elementText.replace(`${icuPlaceholder}`, `icu${icuIndex++}`);
+                  break;
+                default:
+                  elementText = elementText.replace(`{${icuPlaceholder}}`, templateElement.message.placeholders[icuPlaceholder]);
+                  break;
+              }
             }
             break;
           default:
@@ -138,6 +146,22 @@ export function migrator(_options: any): Rule {
     FileUtils.writeToFile(templateContent, filePath);
   }
 
+  function updateStyleFile(parsedFile: ParsedFile) {
+    const styleFilePath = ['.scss', '.css']
+      .map(fileType => parsedFile.filePath.split('.html')[0] + fileType)
+      .filter(filePath => FileUtils.isFileExists(filePath))[0];
+
+    const classessToEncapsule = Object.values(parsedFile.i18nMap)
+      .map(value => value.classes)
+      .reduce((x, y) => x.concat(y), []);
+
+    if (!!styleFilePath && classessToEncapsule.length > 0) {
+      const styleFileContent = FileUtils.loadFile(styleFilePath);
+      const updatedContent = CssUtil.encapsulateClasses(styleFileContent, [...new Set(classessToEncapsule)]);
+      FileUtils.writeToFile(updatedContent, styleFilePath);
+    }
+  }
+
   return (tree: Tree, _context: SchematicContext) => {
     const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
       // .filter(value => value.indexOf('trial-info-bar') > -1)
@@ -158,6 +182,7 @@ export function migrator(_options: any): Rule {
         templateContent = updateTemplateFile(translationKey, templateElement, messageId, localeConfigs, templateContent);
       }
 
+      updateStyleFile(parsedTemplate);
       removeI18nTagsFromTemplate(parsedTemplate.filePath, templateContent);
     }
 

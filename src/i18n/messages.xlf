@@ -125,10 +125,14 @@
       </trans-unit>
       <trans-unit id="teams-edit.component.team-context-singular" datatype="html">
         <source>Hejo tu select: <x id="ICU" equiv-text="{objSelect['context'].value, select, UNIT {...} TEAM {...} PROJECT {...}}"/>
-      <x id="ICU_1" equiv-text="{objSelect, select, 234 {...} ASD {...} zxc {...}}"/></source>
+      <x id="ICU_1" equiv-text="{value, select, 234 {...} ASD {...} zxc {...}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">57</context>
         </context-group>
         <note priority="1" from="meaning">Rodzaje zespołów (liczba pojedyncza)</note>
       </trans-unit>
@@ -139,12 +143,45 @@
           <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="e3ef590183a11d36425819aea742c961297083a9" datatype="html">
-        <source>{VAR_SELECT, select, 234 {234} ASD {ASD} zxc {zxc} }</source>
+      <trans-unit id="ba22f05402d1d6fc0d165a2c6c41c7c0b18e94dc" datatype="html">
+        <source>{VAR_SELECT, select, 234 {<x id="INTERPOLATION" equiv-text="{{value + 1}}"/> } ASD {ASD} zxc {<x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span>"/>HTML<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span>"/>} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.html</context>
           <context context-type="linenumber">47</context>
         </context-group>
+      </trans-unit>
+      <trans-unit id="addon-card.component.request-by" datatype="html">
+        <source>
+      <x id="ICU" equiv-text="{addon.requestsCount, plural, =1 {...} other {...}}"/>
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+        <note priority="1" from="meaning">Zażądane przez...</note>
+      </trans-unit>
+      <trans-unit id="de865db318a42a1c4d01275e1a26e02b7ad6955d" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {Requested by <x id="INTERPOLATION" equiv-text="{{addon.requestsCount}}"/> user} other {Requested by <x id="INTERPOLATION" equiv-text="{{addon.requestsCount}}"/> users} }</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="teams-edit.component.create-new" datatype="html">
+        <source>CREATE NEW</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <note priority="1" from="meaning">Nagłówek stwórz nowy zespół</note>
+      </trans-unit>
+      <trans-unit id="teams-edit.component.edit-team" datatype="html">
+        <source>EDIT</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <note priority="1" from="meaning">Nagłówek edytuj zespół</note>
       </trans-unit>
       <trans-unit id="app.component.parent-title" datatype="html">
         <source>to provide - title 2</source>

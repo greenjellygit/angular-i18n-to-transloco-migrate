@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {$e} from 'codelyzer/angular/styles/chars';
 
 @Component({
   selector: 'app-root',
@@ -9,10 +10,17 @@ export class AppComponent {
 
   maxNumberOfInvitations: number = 1;
   numberOfUsersLimit: number = 100;
-  objSelect: any = {context: {
-    value: 'UNIT'
-    }};
+  objSelect: any = {
+    context: {
+      value: 'UNIT'
+    }
+  };
   list: string[] = ['a', 'b', 'c'];
+  value: 'zxc';
+  addon: {requestsCount: string};
+  formGroup: {
+    get: (asd: string) => ({value: 0});
+  };
 
   updateInvitationsNUmber($event: Event) {
     this.maxNumberOfInvitations = +$event.target['value'];
@@ -21,4 +29,10 @@ export class AppComponent {
   updateSelectValue($event: Event) {
     this.objSelect.context.value = $event.target['value'];
   }
+
+  updateValue($event: Event) {
+    this.value = $event.target['value'];
+    this.addon.requestsCount = this.value;
+  }
+
 }
