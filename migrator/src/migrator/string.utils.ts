@@ -13,6 +13,18 @@ export class StringUtils {
     return text.slice(0, startIndex) + text.slice(startIndex + length, text.length);
   }
 
+  public static removeRange(text: string, fromIndex: number, toIndex: number) {
+    return text.slice(0, fromIndex) + text.slice(toIndex, text.length);
+  }
+
+  public static removeWhitespacesAtIndex(text: string, index: number) {
+    let leftPart = text.substring(0, index);
+    leftPart = leftPart.replace(/\s*$/g, '');
+    let rightPart = text.substring(index - 1, text.length);
+    rightPart = rightPart.replace(/^\s*/g, ' ');
+    return leftPart + rightPart;
+  }
+
   public static insertLeft(text: string, startIndex: number, textToInsert: string) {
     return [text.slice(0, startIndex), textToInsert, text.slice(startIndex)].join('');
   }

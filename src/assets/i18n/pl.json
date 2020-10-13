@@ -1,4 +1,19 @@
 {
+  "wall_post_list_item_component": {
+    "new_badge": "\nNowy\n",
+    "important_badge": "Ważny"
+  },
+  "wall_common": {
+    "filter_by_new": "Filtruj według nowego",
+    "filter_by_important": "Filtruj według ważnych"
+  },
+  "sidenav_component": {
+    "profile": "PROFILE"
+  },
+  "common_errors": {
+    "expected_pattern": "oczekiwany wzór",
+    "password_wrong_pattern_error": "Hasło nie jest zgodne z"
+  },
   "teams_edit_component": {
     "team_context_singular_zxc": "{VAR_SELECT, select, UNIT {JEDNOSTKĘ} TEAM {ZESPÓŁ} PROJECT {PROJEKT}}",
     "edit_team": "EDYCJA",
@@ -6,7 +21,7 @@
     "team_context_singular": "Hejo tu select: {icu0, select, UNIT {JEDNOSTKA} TEAM {ZESPÓŁ} PROJECT {PROJEKT} other {}}\n      {icu1, select, 234 { {var0}  } ASD {aesde} zxc {<span class=\"blue\">tekst html-owy</span>} other {}}"
   },
   "addon_card_component": {
-    "request_by": "\n      {icu0, plural, =1 {Żądane przez  {var0}  użytkownika } other {Żądane przez {INTERPOLATION} użytkowników }}\n    "
+    "request_by": "\n      {icu0, plural, =1 {Żądane przez  {var0}  użytkownika } other {Żądane przez  {var0}  użytkowników }}\n    "
   },
   "people_invite_component": {
     "users_limit_info_remaining": "Możesz zaprosić tylko <b>{{var0}}</b> więcej {icu0, plural, =1 {osobę} other {osób}} zanim osiągniesz limit (<b>{{var1}}</b>) dla twojej organizacji."
