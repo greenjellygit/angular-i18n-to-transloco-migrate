@@ -54,10 +54,40 @@
       <span  i18n="Nagłówek stwórz nowy zespół|@@teams-edit.component.create-new">CREATE NEW</span>
       <span  i18n="Nagłówek edytuj zespół|@@teams-edit.component.edit-team">EDIT</span>&nbsp;
       <span
-        i18n="Rodzaje zespołów (liczba pojedyncza)|@@teams-edit.component.team-context-singular-zxc">{formGroup?.get('context').value, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT}}</span>
+        i18n="Rodzaje zespołów (liczba pojedyncza)|@@teams-edit.component.team-context-singular-zxc">{formGroup, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT}}</span>
     </h5>
 
   </div>
+
+  <div>
+    <ng-container i18n="Informacja, że hasło jest nieprawidłowe|@@common.errors.password-wrong-pattern-error">Password does not meet the </ng-container><div class="button-show-dialog" [title]="'app-password-info-dialog'" i18n="Wymagany wzór|@@common.errors.expected-pattern">expected pattern</div>
+  </div>
+
+  <div>
+                  <span class="hide-on-lg-and-up navbar-button-label"
+                        i18n="Profile|@@sidenav.component.profile">PROFILE</span>
+  </div>
+
+  <div>
+    <div class="badges-wrapper">
+      <div *ngIf="post.important"
+           class="badge important-badge"
+           (click)="filterByImportant()"
+           matTooltip="Filter by important"
+           i18n-matTooltip="Pokaż tylko ważne posty|@@wall.common.filter-by-important"
+           i18n="Post oznaczony jako ważny|@@wall-post-list-item.component.important-badge">
+        Important
+      </div>
+      <div *ngIf="post.showNewFlag"
+           class="badge new-badge"
+           (click)="filterByNew()"
+           matTooltip="Filter by new"
+           i18n-matTooltip="Pokaż tylko nowe posty|@@wall.common.filter-by-new"
+           i18n="Post oznaczony jako nowy|@@wall-post-list-item.component.new-badge">
+        New
+      </div>
+  </div>
+
   <input type="number" (change)="updateInvitationsNUmber($event)"/>
   <input type="text" (change)="updateValue($event)"/>
   <select name="cars" (change)="updateSelectValue($event)">
@@ -65,4 +95,5 @@
     <option value="TEAM">-TEAM-</option>
     <option value="PROJECT">-PROJECT-</option>
   </select>
+</div>
 </div>

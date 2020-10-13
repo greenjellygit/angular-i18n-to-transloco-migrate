@@ -36,7 +36,7 @@ export function migrator(_options: any): Rule {
               const icuPlaceholderType = icuPlaceholder.split('_')[0];
               switch (icuPlaceholderType) {
                 case 'INTERPOLATION':
-                  elementText = elementText.replace(`{${icuPlaceholder}}`, ` {var${variableIndex++}} `);
+                  elementText = elementText.replace(new RegExp(`{${icuPlaceholder}}`, 'g'), ` {var${variableIndex++}} `);
                   break;
                 case 'VAR':
                   elementText = elementText.replace(`${icuPlaceholder}`, `icu${icuIndex++}`);
@@ -139,9 +139,14 @@ export function migrator(_options: any): Rule {
   }
 
   function removeI18nTagsFromTemplate(filePath: string, templateContent: string) {
-    templateContent = templateContent.replace(XRegExp(/<[a-z 0-9-]+(.|\s)*?(?<!\?)>/g), (a, b, c) => {
-      return a.replace(/\s*i18n-?[a-z]*=".+?"\s*|i18n[-a-z]*\s*/g, ' ');
-    });
+    const i18nAttributes = AngularParseUtils.findI18nAttributes(templateContent);
+    for (const attr of i18nAttributes) {
+      templateContent = StringUtils.removeRange(templateContent, attr.sourceSpan.start.offset, attr.sourceSpan.end.offset);
+      templateContent = StringUtils.removeWhitespacesAtIndex(templateContent, attr.sourceSpan.start.offset);
+    }
+/*    templateContent = templateContent.replace(XRegExp(/<[a-z 0-9-]+(.|\s)*?(?<!\?)>/g), (a, b, c) => {
+      return a.replace(/\s*i18n-?\S*=".+?"\s*|i18n[-a-z]*\s*!/g, ' ');
+    });*/
     templateContent = jsBeautify.html(templateContent, {wrap_attributes: 'preserve-aligned', indent_size: 2});
     FileUtils.writeToFile(templateContent, filePath);
   }

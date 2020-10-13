@@ -224,6 +224,75 @@ AKTUALIZACJA
 				</context-group>
 				<note priority="1" from="meaning">Rodzaje zespołów (liczba pojedyncza)</note>
 			</trans-unit>
+			<trans-unit id="common.errors.password-wrong-pattern-error" datatype="html">
+				<source>Password does not meet the </source>
+				<target>Hasło nie jest zgodne z</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">63</context>
+				</context-group>
+				<note priority="1" from="meaning">Informacja, że hasło jest nieprawidłowe</note>
+			</trans-unit>
+			<trans-unit id="common.errors.expected-pattern" datatype="html">
+				<source>expected pattern</source>
+				<target>oczekiwany wzór</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">63</context>
+				</context-group>
+				<note priority="1" from="meaning">Wymagany wzór</note>
+			</trans-unit>
+			<trans-unit id="sidenav.component.profile" datatype="html">
+				<source>PROFILE</source>
+				<target>PROFILE</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">68</context>
+				</context-group>
+				<note priority="1" from="meaning">Profile</note>
+			</trans-unit>
+			<trans-unit id="wall-post-list-item.component.important-badge" datatype="html">
+				<source>
+        Important
+      </source>
+				<target>Ważny</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">78</context>
+				</context-group>
+				<note priority="1" from="meaning">Post oznaczony jako ważny</note>
+			</trans-unit>
+			<trans-unit id="wall.common.filter-by-important" datatype="html">
+				<source>Filter by important</source>
+				<target>Filtruj według ważnych</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">76</context>
+				</context-group>
+				<note priority="1" from="meaning">Pokaż tylko ważne posty</note>
+			</trans-unit>
+			<trans-unit id="wall-post-list-item.component.new-badge" datatype="html">
+				<source>
+        New
+      </source>
+				<target>
+Nowy
+</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">86</context>
+				</context-group>
+				<note priority="1" from="meaning">Post oznaczony jako nowy</note>
+			</trans-unit>
+			<trans-unit id="wall.common.filter-by-new" datatype="html">
+				<source>Filter by new</source>
+				<target>Filtruj według nowego</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">84</context>
+				</context-group>
+				<note priority="1" from="meaning">Pokaż tylko nowe posty</note>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

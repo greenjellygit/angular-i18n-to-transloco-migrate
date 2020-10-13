@@ -18,6 +18,7 @@ export class AppComponent {
   list: string[] = ['a', 'b', 'c'];
   value: 'zxc';
   addon: {requestsCount: string};
+  post = {important: true, showNewFlag: true};
   formGroup: {
     get: (asd: string) => ({value: 0});
   };
@@ -35,4 +36,11 @@ export class AppComponent {
     this.addon.requestsCount = this.value;
   }
 
+  filterByImportant() {
+
+  }
+
+  filterByNew() {
+
+  }
 }
