@@ -8,13 +8,13 @@
   margin: 10px;
 }
 
-:host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep .asd {
+.asd {
   background-color: red;
   display: inline-block;
   position: relative;
 }
 
-:host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep :host ::ng-deep .blue {
+:host ::ng-deep .blue {
   color: blue;
   font-weight: bold;
 }
