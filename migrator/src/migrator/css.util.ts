@@ -10,7 +10,7 @@ export class CssUtil {
 
     classesToEncapsulate.forEach(className => {
       const parentSelector = this.getSelectorByClassName($, className);
-      if (!!parentSelector && !this.hasHostAndDeepSelectors(parentSelector)) {
+      if (parentSelector.nodes.length > 0 && !this.hasHostAndDeepSelectors(parentSelector)) {
         const selectorElements = parentSelector.nodes[0].node.value;
         selectorElements.unshift(this.createSelector('space', ' '));
         selectorElements.unshift(this.createSelector('pseudo_class', ':ng-deep'));
@@ -33,7 +33,7 @@ export class CssUtil {
       .has(e => e.node.value === 'ng-deep').nodes.length > 0;
   }
 
-  private static createSelector = (type: string, value: string) => ({type, value: [{type: 'identifier', value}]});
+  private static createSelector = (type: string, value: string) => ({type, index: [{type: 'identifier', value}]});
 
   private static addMissingSemicolons(cssContent: string): string {
     return cssContent.replace(/(^[^}]\s+[^/]\S+:.+)([^/{\r\n;,])$/gm, '$1$2;');

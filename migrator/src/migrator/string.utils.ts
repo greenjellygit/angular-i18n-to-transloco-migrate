@@ -19,9 +19,11 @@ export class StringUtils {
 
   public static removeWhitespacesAtIndex(text: string, index: number) {
     let leftPart = text.substring(0, index);
-    leftPart = leftPart.replace(/\s*$/g, '');
     let rightPart = text.substring(index - 1, text.length);
+
+    leftPart = leftPart.replace(/\s*$/g, '');
     rightPart = rightPart.replace(/^\s*/g, ' ');
+
     return leftPart + rightPart;
   }
 

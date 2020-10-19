@@ -88,12 +88,18 @@
       </div>
   </div>
 
-  <input type="number" (change)="updateInvitationsNUmber($event)"/>
-  <input type="text" (change)="updateValue($event)"/>
-  <select name="cars" (change)="updateSelectValue($event)">
-    <option value="UNIT">-UNIT-</option>
-    <option value="TEAM">-TEAM-</option>
-    <option value="PROJECT">-PROJECT-</option>
-  </select>
-</div>
+    <h5 class="card-title">
+      <span i18n="Nagłówek stwórz nowy zespół|@@teams-edit.component.create-new">CREATE NEW</span>
+      <span i18n="Nagłówek stwórz nowy zespół|@@teams-edit.component.create-new">CREATE NEW</span>
+      <span i18n="Nagłówek stwórz nowy zespół|@@teams-edit.component.create-new">CREATE NEW</span>
+    </h5>
+
+    <input (change)="updateInvitationsNUmber($event)" type="number"/>
+    <input (change)="updateValue($event)" type="text"/>
+    <select (change)="updateSelectValue($event)" name="cars">
+      <option value="UNIT">-UNIT-</option>
+      <option value="TEAM">-TEAM-</option>
+      <option value="PROJECT">-PROJECT-</option>
+    </select>
+  </div>
 </div>
