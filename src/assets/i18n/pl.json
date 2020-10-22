@@ -1,9 +1,9 @@
 {
   "teams_edit_component": {
     "create_new": "TWORZENIE NOWYCH",
-    "team_context_singular_zxc": "{var0, select, UNIT {JEDNOSTKĘ} TEAM {ZESPÓŁ} PROJECT {PROJEKT} other {}}",
+    "team_context_singular_zxc": "{formGroup, select, UNIT {JEDNOSTKĘ} TEAM {ZESPÓŁ} PROJECT {PROJEKT} other {}}",
     "edit_team": "EDYCJA",
-    "team_context_singular": "Hejo tu select: {var0, select, UNIT {JEDNOSTKA} TEAM {ZESPÓŁ} PROJECT {PROJEKT} other {}}\n      {var2, select, 234 { {var1}  } ASD {aesde} zxc {<span class=\"blue\">tekst html-owy</span>} other {}}"
+    "team_context_singular": "Hejo tu select: {objSelectContextValue, select, UNIT {JEDNOSTKA} TEAM {ZESPÓŁ} PROJECT {PROJEKT} other {}}\n      {objSelectContextValue, select, 234 { {value1}  } ASD {aesde} zxc {<span class=\"blue\">tekst html-owy</span>} other {}}"
   },
   "wall_post_list_item_component": {
     "new_badge": "\nNowy\n",
@@ -21,15 +21,15 @@
     "password_wrong_pattern_error": "Hasło nie jest zgodne z"
   },
   "addon_card_component": {
-    "request_by": "\n      {var0, plural, =1 {Żądane przez  {var0}  użytkownika } other {Żądane przez  {var0}  użytkowników }}\n    "
+    "request_by": "\n      {addonRequestsCount, plural, =1 {Żądane przez  {addonRequestsCount}  użytkownika } other {Żądane przez  {addonRequestsCount1}  użytkowników }}\n    "
   },
   "people_invite_component": {
-    "users_limit_info_remaining": "Możesz zaprosić tylko <b>{{var0}}</b> więcej {var0, plural, =1 {osobę} other {osób}} zanim osiągniesz limit (<b>{{var1}}</b>) dla twojej organizacji."
+    "users_limit_info_remaining": "Możesz zaprosić tylko <b>{{maxNumberOfInvitations}}</b> więcej {maxNumberOfInvitations, plural, =1 {osobę} other {osób}} zanim osiągniesz limit (<b>{{numberOfUsersLimit}}</b>) dla twojej organizacji."
   },
   "app_component": {
-    "child_translate_interpolation_html": "Zawartość tekstowa - to jest dziecko html z interpolacją - <span><b>{{var0}}</b></span>",
+    "child_translate_interpolation_html": "Zawartość tekstowa - to jest dziecko html z interpolacją - <span><b>{{var999El999}}</b></span>",
     "child_translate_html": "Zawartość tekstowa - to jest dziecko - <span class=\"asd\"><b>HTML</b></span>",
-    "child_translate_interpolation": "Treść tekstowa - to jest dziecko - interpolacja - '{{var0}}'",
+    "child_translate_interpolation": "Treść tekstowa - to jest dziecko - interpolacja - '{{el}}'",
     "child_translate": "Treść tekstowa - to jest dziecko",
     "parent_title": "Tytuł zagnieżdżonego elementu",
     "input_many_attributes_title": "Wiele atrybutów i18n (tytuł)",

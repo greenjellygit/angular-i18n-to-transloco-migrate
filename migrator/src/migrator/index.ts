@@ -2,6 +2,7 @@ import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import {ParsedTranslation} from '@angular/localize/src/utils';
+import {camelize} from '@ngx-i18nsupport/tooling/src/schematics/schematics-core/utility/strings';
 import {AngularParseUtils, ParsedFile, TemplateElement} from './angular-parse.utils';
 import {ArrayUtils} from './array.utils';
 import {CssUtil} from './css.util';
@@ -14,25 +15,7 @@ import jsBeautify = require('js-beautify');
 
 export function migrator(_options: any): Rule {
 
-  function getOrCreateVariableName(placeholderValue: string, variables: { index: number; map: {} }) {
-    if (!!placeholderValue) {
-      const stripInterpolationRegex = /(?<={{)(.*?)(?=}})/;
-      if (stripInterpolationRegex.test(placeholderValue)) {
-        placeholderValue = placeholderValue.match(stripInterpolationRegex)[0];
-      }
-    }
-
-    if (!variables.map[placeholderValue]) {
-      variables.map[placeholderValue] = `var${variables.index++}`;
-    }
-
-    return variables.map[placeholderValue];
-  }
-
-  function prepareTranslationText(parsedTranslation: ParsedTranslation, message: Message, localeBundle: ParsedTranslationBundle, variables = {
-    index: 0,
-    map: {}
-  }) {
+  function prepareTranslationText(parsedTranslation: ParsedTranslation, message: Message, parsedPlaceholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle) {
     let translationText = parsedTranslation.text;
     const placeholders: string[] = parsedTranslation.placeholderNames.concat(Object.keys(message.placeholders));
 
@@ -41,23 +24,23 @@ export function migrator(_options: any): Rule {
         const placeholderType = placeholder.replace(/_\d+/g, '');
         switch (placeholderType) {
           case 'INTERPOLATION':
-            const interpolationVariableName = getOrCreateVariableName(message.placeholders[placeholder], variables);
+            const parsedPlaceholderInterpolation = parsedPlaceholdersMap[placeholder];
             translationText = translationText
-              .replace(`{$${placeholder}}`, `{{${interpolationVariableName}}}`)
-              .replace(new RegExp(`{${placeholder}}`, 'g'), ` {${interpolationVariableName}} `);
+              .replace(`{$${placeholder}}`, `{{${parsedPlaceholderInterpolation.variableName}}}`)
+              .replace(new RegExp(`{${placeholder}}`, 'g'), ` {${parsedPlaceholderInterpolation.variableName}} `);
             break;
           case 'ICU':
             const icuMessage = message.placeholderToMessage[placeholder];
             const parsedIcuTranslation = localeBundle.translations[icuMessage.id];
-            const icuToText = prepareTranslationText(parsedIcuTranslation, icuMessage, localeBundle, variables);
+            const icuToText = prepareTranslationText(parsedIcuTranslation, icuMessage, parsedPlaceholdersMap, localeBundle);
             translationText = translationText.replace(`{$${placeholder}}`, icuToText);
             break;
           case 'VAR_SELECT':
           case 'VAR_PLURAL':
-            const icuVariableName = getOrCreateVariableName(message.placeholders[placeholder], variables);
+            const parsedPlaceholderPlural = parsedPlaceholdersMap[placeholder];
             const hasOthers = translationText.match(/(\S+)(?= {.+?})/g).some(e => e === 'other');
             translationText = hasOthers ? translationText : StringUtils.remove(translationText, translationText.length - 1, 1) + ' other {}}';
-            translationText = translationText.replace(placeholder, `${icuVariableName}`);
+            translationText = translationText.replace(placeholder, `${parsedPlaceholderPlural.variableName}`);
             break;
           default:
             translationText = translationText
@@ -71,11 +54,12 @@ export function migrator(_options: any): Rule {
     return translationText;
   }
 
-  function updateTransLocoFiles(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string, localeConfigs: ParsedLocaleConfig, transLocoFiles: TransLocoFile[]) {
+  function updateTransLocoFiles(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
+                                localeConfigs: ParsedLocaleConfig, placeholdersMap: ParsedPlaceholdersMap, transLocoFiles: TransLocoFile[]) {
     for (const locoFile of transLocoFiles) {
       const localeBundle = localeConfigs[locoFile.lang].bundle;
       const parsedTranslation = localeBundle.translations[messageId];
-      const translationText = prepareTranslationText(parsedTranslation, templateElement.message, localeBundle);
+      const translationText = prepareTranslationText(parsedTranslation, templateElement.message, placeholdersMap, localeBundle);
 
       locoFile.entries[translationKey.group] = locoFile.entries[translationKey.group] || {} as JsonKey;
       locoFile.entries[translationKey.group][translationKey.id] = translationText;
@@ -91,18 +75,11 @@ export function migrator(_options: any): Rule {
     return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
   }
 
-  function mapPlaceholdersToTransLocoParams(message: Message) {
-    let paramsArray: any[] = collectPlaceholders(message)
+  function mapPlaceholdersToTransLocoParams(parsedPlaceholdersMap: ParsedPlaceholdersMap) {
+    const paramsArray: any[] = Object.entries(parsedPlaceholdersMap)
+      .map(e => ({name: e[0], placeholder: e[1]}))
       .filter(e => e.name.startsWith('INTERPOLATION') || e.name.startsWith('VAR_SELECT') || e.name.startsWith('VAR_PLURAL'))
-      .map((e, index) => {
-        const stripInterpolationRegex = /(?<={{)(.*?)(?=}})/;
-        if (stripInterpolationRegex.test(e.value)) {
-          e.value = e.value.match(stripInterpolationRegex)[0];
-        }
-        return e;
-      });
-    paramsArray = ArrayUtils.removeDuplicates(paramsArray, 'value')
-      .map((e, index) => ({[`var${index}`]: e.value}));
+      .map((e) => ({[`${e.placeholder.variableName}`]: e.placeholder.expression}));
 
     const paramsObject = paramsArray.reduce((result, current) => Object.assign(result, current), {});
 
@@ -112,19 +89,62 @@ export function migrator(_options: any): Rule {
       .replace(/,/g, ', ');
   }
 
-  function collectPlaceholders(message: Message): { name: string, value: string }[] {
+  function removeInterpolation(expression: string): string {
+    const stripInterpolationRegex = /(?<={{)(.*?)(?=}})/;
+    if (stripInterpolationRegex.test(expression)) {
+      expression = expression.match(stripInterpolationRegex)[0];
+    }
+    return expression;
+  }
+
+  function parsePlaceholders(message: Message): ParsedPlaceholdersMap {
+    const placeholders = collectPlaceholders(message);
+    const parsedPlaceholdersMap: ParsedPlaceholdersMap = {};
+
+    const lastIndexOfVariableNameDifferentExpression: {[variableName: string]: number} = {};
+
+    for (const placeholder of placeholders) {
+      if (!!parsedPlaceholdersMap[placeholder.name]) {
+        continue;
+      }
+
+      const expressionWithoutInterpolation = removeInterpolation(placeholder.expression);
+      let variableName = StringUtils.prepareVariableName(expressionWithoutInterpolation);
+
+      const lastIndex = lastIndexOfVariableNameDifferentExpression[variableName];
+      if (lastIndex == null) {
+        lastIndexOfVariableNameDifferentExpression[variableName] = 0;
+      } else {
+        lastIndexOfVariableNameDifferentExpression[variableName]++;
+      }
+
+      const differentExpressionSameVariableName = Object.values(parsedPlaceholdersMap)
+        .some(e => e.variableName === variableName && e.expression !== placeholder.expression);
+      if (differentExpressionSameVariableName) {
+        variableName += lastIndexOfVariableNameDifferentExpression[variableName];
+      }
+
+      parsedPlaceholdersMap[placeholder.name] = {variableName, rawExpression: placeholder.expression, expression: expressionWithoutInterpolation};
+    }
+
+    return parsedPlaceholdersMap;
+  }
+
+  function collectPlaceholders(message: Message): { name: string, expression: string }[] {
     let placeholders = Object.entries(message.placeholders)
-      .map(e => ({name: e[0], value: e[1]}));
+      .map(e => ({name: e[0], expression: e[1]}));
+
     if (ObjectUtils.isNotEmpty(message.placeholderToMessage)) {
       Object.values(message.placeholderToMessage).forEach(icuMessage => {
         placeholders = [...placeholders, ...collectPlaceholders(icuMessage)];
       });
     }
+
     return placeholders;
   }
 
-  function prepareTagContent(translationKey: TranslationKey, templateElement: TemplateElement) {
-    const params = mapPlaceholdersToTransLocoParams(templateElement.message);
+  function prepareTagContent(translationKey: TranslationKey, templateElement: TemplateElement, parsedPlaceholdersMap: ParsedPlaceholdersMap) {
+    const params = mapPlaceholdersToTransLocoParams(parsedPlaceholdersMap);
     if (templateElement.hasHtml) {
       return ` [innerHtml]="'${translationKey.group}.${translationKey.id}' | transloco${params}"`;
     } else {
@@ -132,11 +152,12 @@ export function migrator(_options: any): Rule {
     }
   }
 
-  function updateTemplateFile(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string, localeConfigs: ParsedLocaleConfig, templateContent: string) {
+  function updateTemplateFile(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
+                              localeConfigs: ParsedLocaleConfig, parsedPlaceholdersMap: ParsedPlaceholdersMap, templateContent: string): string {
     const sourceBounds = getSourceBounds(templateElement.message);
     templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
     if (templateElement.type === 'TAG') {
-      const tagContent = prepareTagContent(translationKey, templateElement);
+      const tagContent = prepareTagContent(translationKey, templateElement, parsedPlaceholdersMap);
       templateContent = StringUtils.insertLeft(templateContent, templateElement.hasHtml ? sourceBounds.startOffset - 1 : sourceBounds.startOffset, tagContent);
     } else if (templateElement.type === 'ATTR') {
       const tagContent = `[${templateElement.name}]="'${translationKey.group}.${translationKey.id}' | transloco"`;
@@ -194,13 +215,13 @@ export function migrator(_options: any): Rule {
 
     for (const parsedTemplate of parsedTemplateFiles) {
       let templateContent = parsedTemplate.content;
-
       for (const templateElement of parsedTemplate.i18nMap) {
         const messageId = templateElement.message.id;
         const translationKey = prepareTranslationKey(messageId);
+        const placeholdersMap = parsePlaceholders(templateElement.message);
 
-        updateTransLocoFiles(translationKey, templateElement, messageId, localeConfigs, transLocoFiles);
-        templateContent = updateTemplateFile(translationKey, templateElement, messageId, localeConfigs, templateContent);
+        updateTransLocoFiles(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, transLocoFiles);
+        templateContent = updateTemplateFile(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, templateContent);
       }
 
       updateStyleFile(parsedTemplate);
@@ -217,4 +238,14 @@ export function migrator(_options: any): Rule {
 export interface TranslationKey {
   id: string;
   group: string;
+}
+
+export interface ParsedPlaceholdersMap {
+  [name: string]: ParsedPlaceholder;
+}
+
+export interface ParsedPlaceholder {
+  expression: string;
+  rawExpression: string;
+  variableName: string;
 }

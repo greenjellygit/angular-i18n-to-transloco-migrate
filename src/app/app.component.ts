@@ -17,7 +17,7 @@ export class AppComponent {
   };
   list: string[] = ['a', 'b', 'c'];
   value: 'zxc';
-  addon: {requestsCount: string};
+  addon: {requestsCount: string, requestsCountAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: string};
   post = {important: true, showNewFlag: true};
   formGroup: {
     get: (asd: string) => ({value: 0});
