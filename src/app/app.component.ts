@@ -17,7 +17,7 @@ export class AppComponent {
   };
   list: string[] = ['a', 'b', 'c'];
   value: 'zxc';
-  addon: {requestsCount: string, requestsCountAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: string};
+  addon = {requestsCount: 2, requestsCountAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: 'asd'};
   post = {important: true, showNewFlag: true};
   formGroup: {
     get: (asd: string) => ({value: 0});
@@ -33,7 +33,7 @@ export class AppComponent {
 
   updateValue($event: Event) {
     this.value = $event.target['value'];
-    this.addon.requestsCount = this.value;
+    this.addon.requestsCount = Number(this.value);
   }
 
   filterByImportant() {
