@@ -293,6 +293,14 @@ Nowy
 				</context-group>
 				<note priority="1" from="meaning">Pokaż tylko nowe posty</note>
 			</trans-unit>
+			<trans-unit id="310db0ba3813ba4bf303069e8e9e7b3f297e1741" datatype="html">
+				<source>{VAR_PLURAL, plural, =1 {Requested by <x id="INTERPOLATION" equiv-text="{{addon.requestsCount}}"/> user} other {Requested by <x id="INTERPOLATION_1" equiv-text="{{addon.requestsCountAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}}"/> users} }</source>
+				<target>{VAR_PLURAL, plural, =1 { Żądane przez <x id="INTERPOLATION" equiv-text="{{addon.requestsCount}}"/> użytkownika } other { Żądane przez <x id="INTERPOLATION_1" equiv-text="{{addon.requestsCountAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}}"/> użytkowników } }</target>
+				<context-group purpose="location">
+					<context context-type="sourcefile">src/app/app.component.html</context>
+					<context context-type="linenumber">50</context>
+				</context-group>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
