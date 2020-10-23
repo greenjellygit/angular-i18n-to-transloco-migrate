@@ -1,10 +1,17 @@
-import { Directive } from '@angular/core';
+import {Directive, Input} from '@angular/core';
 
 @Directive({
   selector: '[appCamelCase]'
 })
 export class CamelCaseDirective {
 
-  constructor() { }
+  @Input('appCamelCase')
+  public set appCamelCase(text: string) {
+    console.log(`appCamelCase - input - ${text}!`);
+  }
+
+  constructor() {
+    console.log(`appCamelCase - constructor!`);
+  }
 
 }
