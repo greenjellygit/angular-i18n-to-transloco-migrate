@@ -1,4 +1,5 @@
-import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import {logging} from '@angular-devkit/core';
+import {Rule, SchematicContext, Tree, TypedSchematicContext} from '@angular-devkit/schematics';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import {ParsedTranslation} from '@angular/localize/src/utils';
@@ -15,7 +16,13 @@ import jsBeautify = require('js-beautify');
 
 export function migrator(_options: any): Rule {
 
-  function prepareTranslationText(parsedTranslation: ParsedTranslation, message: Message, parsedPlaceholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle) {
+  function prepareTranslationText(parsedTranslation: ParsedTranslation, message: Message, parsedPlaceholdersMap: ParsedPlaceholdersMap,
+                                  localeBundle: ParsedTranslationBundle, translationKey: TranslationKey) {
+
+    if (!parsedTranslation) {
+      throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
+    }
+
     let translationText = parsedTranslation.text;
     const placeholders: string[] = parsedTranslation.placeholderNames.concat(Object.keys(message.placeholders));
 
@@ -32,7 +39,7 @@ export function migrator(_options: any): Rule {
           case 'ICU':
             const icuMessage = message.placeholderToMessage[placeholder];
             const parsedIcuTranslation = localeBundle.translations[icuMessage.id];
-            const icuToText = prepareTranslationText(parsedIcuTranslation, icuMessage, parsedPlaceholdersMap, localeBundle);
+            const icuToText = prepareTranslationText(parsedIcuTranslation, icuMessage, parsedPlaceholdersMap, localeBundle, translationKey);
             translationText = translationText.replace(`{$${placeholder}}`, icuToText);
             break;
           case 'VAR_SELECT':
@@ -54,16 +61,28 @@ export function migrator(_options: any): Rule {
     return translationText;
   }
 
-  function updateTransLocoFiles(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
-                                localeConfigs: ParsedLocaleConfig, placeholdersMap: ParsedPlaceholdersMap, transLocoFiles: TransLocoFile[]) {
+  function generateTranslations(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
+                                localeConfigs: ParsedLocaleConfig, placeholdersMap: ParsedPlaceholdersMap, transLocoFiles: TransLocoFile[]): MissingTranslationError[] {
+    const missingTranslations = [];
     for (const locoFile of transLocoFiles) {
       const localeBundle = localeConfigs[locoFile.lang].bundle;
       const parsedTranslation = localeBundle.translations[messageId];
-      const translationText = prepareTranslationText(parsedTranslation, templateElement.message, placeholdersMap, localeBundle);
+
+      let translationText: string;
+      try {
+        translationText = prepareTranslationText(parsedTranslation, templateElement.message, placeholdersMap, localeBundle, translationKey);
+      } catch (e) {
+        if (e instanceof MissingTranslationError) {
+          missingTranslations.push(e);
+          translationText = 'MISSING TRANSLATION';
+        }
+      }
 
       locoFile.entries[translationKey.group] = locoFile.entries[translationKey.group] || {} as JsonKey;
       locoFile.entries[translationKey.group][translationKey.id] = translationText;
     }
+
+    return missingTranslations;
   }
 
   function getSourceBounds(message: Message): { startOffset: number, endOffset: number } {
@@ -101,7 +120,7 @@ export function migrator(_options: any): Rule {
     const placeholders = collectPlaceholders(message);
     const parsedPlaceholdersMap: ParsedPlaceholdersMap = {};
 
-    const lastIndexOfVariableNameDifferentExpression: {[variableName: string]: number} = {};
+    const lastIndexOfVariableNameDifferentExpression: { [variableName: string]: number } = {};
 
     for (const placeholder of placeholders) {
       if (!!parsedPlaceholdersMap[placeholder.name]) {
@@ -124,7 +143,11 @@ export function migrator(_options: any): Rule {
         variableName += lastIndexOfVariableNameDifferentExpression[variableName];
       }
 
-      parsedPlaceholdersMap[placeholder.name] = {variableName, rawExpression: placeholder.expression, expression: expressionWithoutInterpolation};
+      parsedPlaceholdersMap[placeholder.name] = {
+        variableName,
+        rawExpression: placeholder.expression,
+        expression: expressionWithoutInterpolation
+      };
     }
 
     return parsedPlaceholdersMap;
@@ -152,8 +175,8 @@ export function migrator(_options: any): Rule {
     }
   }
 
-  function updateTemplateFile(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
-                              localeConfigs: ParsedLocaleConfig, parsedPlaceholdersMap: ParsedPlaceholdersMap, templateContent: string): string {
+  function updateTemplates(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
+                           localeConfigs: ParsedLocaleConfig, parsedPlaceholdersMap: ParsedPlaceholdersMap, templateContent: string): string {
     const sourceBounds = getSourceBounds(templateElement.message);
     templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
     if (templateElement.type === 'TAG') {
@@ -204,6 +227,61 @@ export function migrator(_options: any): Rule {
     }
   }
 
+  function findNotMigrateElements(message: Message): string[] {
+    let notMigrateElements = [];
+
+    if (ArrayUtils.isNotEmpty(message.nodes)) {
+      message.nodes.forEach(node => {
+        if (ObjectUtils.isNotEmpty(node['attrs'])) {
+          Object.keys(node['attrs'])
+            .filter(attrName => attrName.startsWith('*') || attrName.startsWith('[') || (attrName !== attrName.toLowerCase()))
+            .forEach(attrName => {
+              notMigrateElements.push(attrName);
+            });
+        }
+      });
+    }
+
+    if (ObjectUtils.isNotEmpty(message.placeholderToMessage)) {
+      Object.values(message.placeholderToMessage)
+        .forEach(icuMessage => {
+          notMigrateElements = [...notMigrateElements, ...findNotMigrateElements(icuMessage)];
+        });
+    }
+
+    return notMigrateElements;
+  }
+
+  function analyzeMessage(message: Message, translationKey: TranslationKey): MessageInfo {
+    const notMigrateElements = findNotMigrateElements(message);
+    return {
+      translationKey,
+      notMigrateElements,
+      needsManualChanges: notMigrateElements.length > 0
+    };
+  }
+
+  function printErrors(missingTranslationsSummary: MissingTranslationError[], logger: logging.LoggerApi, migrationInfo: MessageInfo[]) {
+    if (missingTranslationsSummary.length > 0) {
+      logger.warn('Warning - Missing translations:');
+      const groupedByLocale = ArrayUtils.groupByKey(missingTranslationsSummary, 'locale');
+      Object.keys(groupedByLocale).forEach((locale) => {
+        logger.info(`    Locale: ${locale}`);
+        Object.values(groupedByLocale[locale]).forEach((e: MissingTranslationError, index) => {
+          logger.info(`        ${index + 1}. ${e.translationKey.group}.${e.translationKey.id}`);
+        });
+      });
+    }
+
+    const needsManualChangesElements = migrationInfo.filter(value => value.needsManualChanges);
+    if (needsManualChangesElements.length > 0) {
+      logger.warn('Warning - Not supported attributes in translations:');
+      needsManualChangesElements.forEach((value, index) => {
+        logger.info(`    ${index + 1}. ${value.translationKey.group}.${value.translationKey.id}: ${value.notMigrateElements.join(', ')}`);
+      });
+    }
+  }
+
   return (tree: Tree, _context: SchematicContext) => {
     const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
       // .filter(value => value.indexOf('trial-info-bar') > -1)
@@ -212,16 +290,22 @@ export function migrator(_options: any): Rule {
 
     const localeConfigs: ParsedLocaleConfig = SchematicsUtils.getDefaultProjectLocales();
     const transLocoFiles = TransLocoUtils.initializeLocoFiles(localeConfigs);
+    const migrationInfo: MessageInfo[] = [];
+    const missingTranslationsSummary: MissingTranslationError[] = [];
 
     for (const parsedTemplate of parsedTemplateFiles) {
       let templateContent = parsedTemplate.content;
       for (const templateElement of parsedTemplate.i18nMap) {
+
         const messageId = templateElement.message.id;
         const translationKey = prepareTranslationKey(messageId);
         const placeholdersMap = parsePlaceholders(templateElement.message);
 
-        updateTransLocoFiles(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, transLocoFiles);
-        templateContent = updateTemplateFile(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, templateContent);
+        migrationInfo.push(analyzeMessage(templateElement.message, translationKey));
+
+        const missingTranslations = generateTranslations(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, transLocoFiles);
+        missingTranslationsSummary.push(...missingTranslations);
+        templateContent = updateTemplates(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, templateContent);
       }
 
       updateStyleFile(parsedTemplate);
@@ -229,6 +313,7 @@ export function migrator(_options: any): Rule {
     }
 
     TransLocoUtils.saveTransLocoFiles('src/assets/i18n/', transLocoFiles);
+    printErrors(missingTranslationsSummary, _context.logger, migrationInfo);
 
     return tree;
   };
@@ -248,4 +333,29 @@ export interface ParsedPlaceholder {
   expression: string;
   rawExpression: string;
   variableName: string;
+}
+
+export interface MessageInfo {
+  translationKey: TranslationKey;
+  notMigrateElements: string[];
+  needsManualChanges: boolean;
+}
+
+export class MissingTranslationError extends Error {
+  translationKey: TranslationKey;
+  locale: string;
+
+  constructor(public message: string, translationKey: TranslationKey, locale: string) {
+    super(message);
+
+    this.name = 'MissingTranslationError';
+    this.stack = (new Error() as any).stack;
+
+    this.translationKey = translationKey;
+    this.locale = locale;
+  }
+}
+
+export interface GenerateTranslationsSummary {
+  missingTranslations: MissingTranslationError[];
 }
