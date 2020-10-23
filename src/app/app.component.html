@@ -94,6 +94,15 @@
       <span i18n="Nagłówek stwórz nowy zespół|@@teams-edit.component.create-new">CREATE NEW</span>
     </h5>
 
+    <div i18n="To się nie uda - i18n z dyrektywą||@@not-working.directive">
+      <span [appCamelCase]="'dupa'">directive with param</span>
+      <span appCamelCase>directive </span>
+    </div>
+
+    <div i18n="To się nie uda - i18n z dyrektywą strukturalną||@@not-working.structural-directive">
+      <span *ngIf="value === '111'">structural directive</span>
+    </div>
+
     <input (change)="updateInvitationsNUmber($event)" type="number"/>
     <input (change)="updateValue($event)" type="text"/>
     <select (change)="updateSelectValue($event)" name="cars">

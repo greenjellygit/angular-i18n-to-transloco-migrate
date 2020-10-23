@@ -16,7 +16,7 @@ export class AppComponent {
     }
   };
   list: string[] = ['a', 'b', 'c'];
-  value: 'zxc';
+  public value = 'zxc';
   addon = {requestsCount: 2, requestsCountAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: 'asd'};
   post = {important: true, showNewFlag: true};
   formGroup: {
