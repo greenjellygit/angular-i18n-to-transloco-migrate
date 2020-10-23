@@ -1,4 +1,10 @@
 {
+  "no_group": {
+    "not_working_structural_directive": "\n      <span *ngIf=\"value === '111'\">Structural directive</span>\n    ",
+    "not_working_directive": "\n      <span [appCamelCase]=\"'dupa'\">Directive with param </span>\n      <span appCamelCase>Directive </span>\n    ",
+    "e1b7b1a93396f3974f248767ec6f8e9b99e2bdd3": "to provide",
+    "0580fecd3a7108db3dd65baac7d40b05e480e070": "Text content - simplest i18n tag only"
+  },
   "teams_edit_component": {
     "create_new": "CREATE NEW",
     "team_context_singular_zxc": "{formGroup, select, UNIT {UNIT} TEAM {TEAM} PROJECT {PROJECT} other {}}",
@@ -42,9 +48,5 @@
   },
   "addon_required_component": {
     "oops": "<b>Oops..</b>"
-  },
-  "no_group": {
-    "e1b7b1a93396f3974f248767ec6f8e9b99e2bdd3": "to provide",
-    "0580fecd3a7108db3dd65baac7d40b05e480e070": "Text content - simplest i18n tag only"
   }
 }
