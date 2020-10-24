@@ -14,6 +14,8 @@ import {StringUtils} from './string.utils';
 import {JsonKey, ParsedLocaleConfig, TransLocoFile, TransLocoUtils} from './trans-loco.utils';
 import jsBeautify = require('js-beautify');
 
+const MIGRATION_TOTAL_TIME = 'TOTAL_TIME';
+
 export function migrator(_options: any): Rule {
 
   function prepareTranslationText(parsedTranslation: ParsedTranslation, message: Message, parsedPlaceholdersMap: ParsedPlaceholdersMap,
@@ -300,7 +302,15 @@ export function migrator(_options: any): Rule {
     logger.info(`    - Total messages: ${stats.messagesCount}`);
   }
 
+  function printMigrationTime(start: [number, number], logger: LoggerApi) {
+    const precision = 0;
+    const elapsed = process.hrtime(start)[1] / 1000000;
+    logger.info('Successful finished after: ' + process.hrtime(start)[0] + 's ' + elapsed.toFixed(precision) + 'ms');
+  }
+
   return (tree: Tree, _context: SchematicContext) => {
+    const start = process.hrtime();
+
     const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
       .map(filePath => AngularParseUtils.parseTemplateFile(filePath));
 
@@ -334,6 +344,7 @@ export function migrator(_options: any): Rule {
 
     TransLocoUtils.saveTransLocoFiles('src/assets/i18n/', transLocoFiles);
     printErrors(missingTranslationsSummary, _context.logger, migrationInfo);
+    printMigrationTime(start, _context.logger);
 
     return tree;
   };
