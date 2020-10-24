@@ -16,13 +16,8 @@ export class AngularParseUtils {
 
   public static parseTemplateFile(filePath: string): ParsedFile {
     const content = fs.readFileSync(filePath, {encoding: 'utf-8'});
-    try {
-      const i18nMap = AngularParseUtils.retrieveI18nMap(filePath, content);
-      return {filePath, i18nMap, content, parseStatus: 'SUCCESS'};
-    } catch (a) {
-      console.warn('Cannot parse file: ' + filePath);
-      return {filePath, i18nMap: null, content, parseStatus: 'ERROR'};
-    }
+    const i18nMap = AngularParseUtils.retrieveI18nMap(filePath, content);
+    return {filePath, i18nMap, content, parseStatus: 'SUCCESS'};
   }
 
   public static findI18nAttributes(fileContent: string): html.Attribute[] {

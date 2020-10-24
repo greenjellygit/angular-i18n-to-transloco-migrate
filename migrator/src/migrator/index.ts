@@ -1,9 +1,9 @@
 import {logging} from '@angular-devkit/core';
-import {Rule, SchematicContext, Tree, TypedSchematicContext} from '@angular-devkit/schematics';
+import {LoggerApi} from '@angular-devkit/core/src/logger';
+import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import {ParsedTranslation} from '@angular/localize/src/utils';
-import {camelize} from '@ngx-i18nsupport/tooling/src/schematics/schematics-core/utility/strings';
 import {AngularParseUtils, ParsedFile, TemplateElement} from './angular-parse.utils';
 import {ArrayUtils} from './array.utils';
 import {CssUtil} from './css.util';
@@ -282,18 +282,38 @@ export function migrator(_options: any): Rule {
     }
   }
 
+  function analyzeTemplatesMessages(parsedFiles: ParsedFile[]): MessagesStats {
+    const filesWithI18n = parsedFiles.filter(value => value.i18nMap.length > 0);
+    const messagesCount = filesWithI18n.reduce((previousValue, currentValue) => previousValue += currentValue.i18nMap.length, 0);
+    return {
+      totalFiles: parsedFiles.length,
+      filesWithI18n: filesWithI18n.length,
+      messagesCount
+    };
+  }
+
+  function printStats(stats: MessagesStats, localeConfigs: ParsedLocaleConfig, logger: LoggerApi): void {
+    logger.info(`Found locales: ${Object.keys(localeConfigs).join(', ')}`);
+    logger.info('Statistics of templates:');
+    logger.info(`    - Total templates: ${stats.totalFiles}`);
+    logger.info(`    - Templates to migrate: ${stats.filesWithI18n}`);
+    logger.info(`    - Total messages: ${stats.messagesCount}`);
+  }
+
   return (tree: Tree, _context: SchematicContext) => {
     const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
-      // .filter(value => value.indexOf('trial-info-bar') > -1)
-      .map(filePath => AngularParseUtils.parseTemplateFile(filePath))
-      .filter(parsedFile => parsedFile.parseStatus === 'SUCCESS');
+      .map(filePath => AngularParseUtils.parseTemplateFile(filePath));
 
     const localeConfigs: ParsedLocaleConfig = SchematicsUtils.getDefaultProjectLocales();
     const transLocoFiles = TransLocoUtils.initializeLocoFiles(localeConfigs);
     const migrationInfo: MessageInfo[] = [];
     const missingTranslationsSummary: MissingTranslationError[] = [];
 
-    for (const parsedTemplate of parsedTemplateFiles) {
+    const templatesMessagesStats = analyzeTemplatesMessages(parsedTemplateFiles);
+    printStats(templatesMessagesStats, localeConfigs, _context.logger);
+
+    const templatesWithI18n = parsedTemplateFiles.filter(e => e.i18nMap.length > 0);
+    for (const parsedTemplate of templatesWithI18n) {
       let templateContent = parsedTemplate.content;
       for (const templateElement of parsedTemplate.i18nMap) {
 
@@ -356,6 +376,8 @@ export class MissingTranslationError extends Error {
   }
 }
 
-export interface GenerateTranslationsSummary {
-  missingTranslations: MissingTranslationError[];
+interface MessagesStats {
+  totalFiles: number;
+  filesWithI18n: number;
+  messagesCount: number;
 }
