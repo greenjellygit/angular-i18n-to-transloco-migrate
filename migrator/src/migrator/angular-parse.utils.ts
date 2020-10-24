@@ -78,7 +78,7 @@ export class AngularParseUtils {
         const source = message.sources[0];
         message.id = this.getMessageId(message);
 
-        const hasHtml = Object.keys(message.placeholders).some(placeholder => placeholder.startsWith('START_'));
+        const hasHtml = Object.keys(message.placeholders).some(placeholder => placeholder.startsWith('START_') || placeholder === 'LINE_BREAK');
         const hasInterpolation = message.placeholders.hasOwnProperty('INTERPOLATION');
         const hasICU = this.hasICU(element);
         const classes = Object.values(message.placeholders)
