@@ -22,6 +22,9 @@ export class AppComponent {
   formGroup: {
     get: (asd: string) => ({value: 0});
   };
+  formattedAvg: any;
+  data: {userCount: number} = {userCount: 15};
+  usersPercentage: any = 10;
 
   updateInvitationsNUmber($event: Event) {
     this.maxNumberOfInvitations = +$event.target['value'];
@@ -41,6 +44,10 @@ export class AppComponent {
   }
 
   filterByNew() {
+
+  }
+
+  getStyle() {
 
   }
 }
