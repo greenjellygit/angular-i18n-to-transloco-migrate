@@ -1,4 +1,7 @@
 {
+  "team_barometer_component": {
+    "tooltip": "MISSING TRANSLATION"
+  },
   "no_group": {
     "not_working_structural_directive": "\n<span *ngIf=\"value === '111'\"> Dyrektywa strukturalna </span>\n",
     "not_working_directive": "\nDyrektywa <span [appCamelCase]=\"'dupa'\"> z parametrem </span>\n <span appCamelCase> Dyrektywa </span>\n",

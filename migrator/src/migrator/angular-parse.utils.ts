@@ -6,6 +6,7 @@ import {Element, Node} from '@angular/compiler/src/render3/r3_ast';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import {Xliff1TranslationParser} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/xliff1_translation_parser';
 import * as fs from 'fs';
+import {ArrayUtils} from './array.utils';
 
 export class AngularParseUtils {
 
@@ -73,7 +74,10 @@ export class AngularParseUtils {
     for (const node of rootNodes) {
       const element = node as Element;
       if (!!element.i18n && element.i18n.constructor.name === 'Message') {
-        const type = element.constructor.name === 'TextAttribute' ? 'ATTR' : 'TAG';
+        let type: any = 'TAG';
+        if (['TextAttribute', 'BoundAttribute'].includes(element.constructor.name)) {
+          type = 'ATTR';
+        }
         const message = element.i18n as Message;
         const source = message.sources[0];
         message.id = this.getMessageId(message);
@@ -120,8 +124,12 @@ export class AngularParseUtils {
         }
       }
 
-      if (!!element.attributes) {
+      if (ArrayUtils.isNotEmpty(element.attributes)) {
         this.recursiveSearch(element.attributes, templateElements);
+      }
+
+      if (ArrayUtils.isNotEmpty(element.inputs)) {
+        this.recursiveSearch(element.inputs, templateElements);
       }
     }
   }

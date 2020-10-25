@@ -236,7 +236,7 @@ export function migrator(_options: any): Rule {
       message.nodes.forEach(node => {
         if (ObjectUtils.isNotEmpty(node['attrs'])) {
           Object.keys(node['attrs'])
-            .filter(attrName => attrName.startsWith('*') || attrName.startsWith('[') || (attrName !== attrName.toLowerCase()))
+            .filter(attrName => attrName.startsWith('*') || attrName.startsWith('[') || attrName.startsWith('(') || (attrName !== attrName.toLowerCase()))
             .forEach(attrName => {
               notMigrateElements.push(attrName);
             });
