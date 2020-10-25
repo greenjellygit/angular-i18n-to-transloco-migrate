@@ -103,6 +103,14 @@
       <span *ngIf="value === '111'">structural directive</span>
     </div>
 
+    <div *ngIf="value"
+         class="avg"
+         [style]="getStyle()"
+         matTooltipClass="multiline-tooltip"
+         matTooltipPosition="above"
+         matTooltip="Average: {{formattedAvg}}&#13;Number of people: {{data?.userCount}} ({{usersPercentage}}%)"
+         i18n-matTooltip="Średnia i liczba osób|@@team-barometer.component.tooltip"></div>
+
     <input (change)="updateInvitationsNUmber($event)" type="number"/>
     <input (change)="updateValue($event)" type="text"/>
     <select (change)="updateSelectValue($event)" name="cars">
