@@ -9,59 +9,31 @@ import {ArrayUtils} from './array.utils';
 import {CssUtil} from './css.util';
 import {FileUtils} from './file.utils';
 import {ObjectUtils} from './object.utils';
+import {ReplacePlaceholderStrategyBuilder} from './replace-placeholder-strategy/base/replace-placeholder.strategy-builder';
 import {SchematicsUtils} from './schematics.utils';
 import {StringUtils} from './string.utils';
 import {JsonKey, ParsedLocaleConfig, TransLocoFile, TransLocoUtils} from './trans-loco.utils';
 import jsBeautify = require('js-beautify');
 
-const MIGRATION_TOTAL_TIME = 'TOTAL_TIME';
+export function prepareTranslationText(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap,
+                                       localeBundle: ParsedTranslationBundle, translationKey: TranslationKey) {
+  if (!parsedTranslation) {
+    throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
+  }
+
+  const placeholderReplaceStrategyBuilder = new ReplacePlaceholderStrategyBuilder();
+  const placeholderNames: string[] = parsedTranslation.placeholderNames.concat(Object.keys(message.placeholders));
+
+  let text = parsedTranslation.text;
+  for (const placeholder of placeholderNames) {
+    const parsedPlaceholder = placeholdersMap[placeholder];
+    const replaceStrategy = placeholderReplaceStrategyBuilder.createStrategy(placeholder);
+    text = replaceStrategy.replace(text, parsedPlaceholder, message, placeholdersMap, localeBundle, translationKey);
+  }
+  return text;
+}
 
 export function migrator(_options: any): Rule {
-
-  function prepareTranslationText(parsedTranslation: ParsedTranslation, message: Message, parsedPlaceholdersMap: ParsedPlaceholdersMap,
-                                  localeBundle: ParsedTranslationBundle, translationKey: TranslationKey) {
-
-    if (!parsedTranslation) {
-      throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
-    }
-
-    let translationText = parsedTranslation.text;
-    const placeholders: string[] = parsedTranslation.placeholderNames.concat(Object.keys(message.placeholders));
-
-    if (ArrayUtils.isNotEmpty(placeholders)) {
-      placeholders.forEach(placeholder => {
-        const placeholderType = placeholder.replace(/_\d+/g, '');
-        switch (placeholderType) {
-          case 'INTERPOLATION':
-            const parsedPlaceholderInterpolation = parsedPlaceholdersMap[placeholder];
-            translationText = translationText
-              .replace(`{$${placeholder}}`, `{{${parsedPlaceholderInterpolation.variableName}}}`)
-              .replace(new RegExp(`{${placeholder}}`, 'g'), ` {${parsedPlaceholderInterpolation.variableName}} `);
-            break;
-          case 'ICU':
-            const icuMessage = message.placeholderToMessage[placeholder];
-            const parsedIcuTranslation = localeBundle.translations[icuMessage.id];
-            const icuToText = prepareTranslationText(parsedIcuTranslation, icuMessage, parsedPlaceholdersMap, localeBundle, translationKey);
-            translationText = translationText.replace(`{$${placeholder}}`, icuToText);
-            break;
-          case 'VAR_SELECT':
-          case 'VAR_PLURAL':
-            const parsedPlaceholderPlural = parsedPlaceholdersMap[placeholder];
-            const hasOthers = translationText.match(/(\S+)(?= {.+?})/g).some(e => e === 'other');
-            translationText = hasOthers ? translationText : StringUtils.remove(translationText, translationText.length - 1, 1) + ' other {}}';
-            translationText = translationText.replace(placeholder, `${parsedPlaceholderPlural.variableName}`);
-            break;
-          default:
-            translationText = translationText
-              .replace(`{$${placeholder}}`, message.placeholders[placeholder])
-              .replace(new RegExp(`{${placeholder}}`, 'g'), message.placeholders[placeholder]);
-            break;
-        }
-      });
-    }
-
-    return translationText;
-  }
 
   function generateTranslations(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
                                 localeConfigs: ParsedLocaleConfig, placeholdersMap: ParsedPlaceholdersMap, transLocoFiles: TransLocoFile[]): MissingTranslationError[] {
