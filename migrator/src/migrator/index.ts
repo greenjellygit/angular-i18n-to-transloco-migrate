@@ -9,14 +9,15 @@ import {ArrayUtils} from './array.utils';
 import {CssUtil} from './css.util';
 import {FileUtils} from './file.utils';
 import {ObjectUtils} from './object.utils';
-import {ReplacePlaceholderStrategyBuilder} from './replace-placeholder-strategy/base/replace-placeholder.strategy-builder';
+import {ReplacePlaceholderStrategyBuilder} from './replace-placeholder/base/replace-placeholder.strategy-builder';
 import {SchematicsUtils} from './schematics.utils';
 import {StringUtils} from './string.utils';
 import {JsonKey, ParsedLocaleConfig, TransLocoFile, TransLocoUtils} from './trans-loco.utils';
+import {UpdateElementStrategyBuilder} from './update-element/base/update-element.strategy-builder';
 import jsBeautify = require('js-beautify');
 
-export function prepareTranslationText(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap,
-                                       localeBundle: ParsedTranslationBundle, translationKey: TranslationKey) {
+export function replacePlaceholders(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap,
+                                    localeBundle: ParsedTranslationBundle, translationKey: TranslationKey) {
   if (!parsedTranslation) {
     throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
   }
@@ -27,8 +28,8 @@ export function prepareTranslationText(parsedTranslation: ParsedTranslation, mes
   let text = parsedTranslation.text;
   for (const placeholder of placeholderNames) {
     const parsedPlaceholder = placeholdersMap[placeholder];
-    const replaceStrategy = placeholderReplaceStrategyBuilder.createStrategy(placeholder);
-    text = replaceStrategy.replace(text, parsedPlaceholder, message, placeholdersMap, localeBundle, translationKey);
+    const replacePlaceholderStrategy = placeholderReplaceStrategyBuilder.createStrategy(placeholder);
+    text = replacePlaceholderStrategy.replace(text, parsedPlaceholder, message, placeholdersMap, localeBundle, translationKey);
   }
   return text;
 }
@@ -44,7 +45,7 @@ export function migrator(_options: any): Rule {
 
       let translationText: string;
       try {
-        translationText = prepareTranslationText(parsedTranslation, templateElement.message, placeholdersMap, localeBundle, translationKey);
+        translationText = replacePlaceholders(parsedTranslation, templateElement.message, placeholdersMap, localeBundle, translationKey);
       } catch (e) {
         if (e instanceof MissingTranslationError) {
           missingTranslations.push(e);
@@ -59,27 +60,13 @@ export function migrator(_options: any): Rule {
     return missingTranslations;
   }
 
-  function getSourceBounds(message: Message): { startOffset: number, endOffset: number } {
+  function getSourceBounds(message: Message): SourceBounds {
     const bounds: number[] = message.nodes.map(e => [e.sourceSpan, e['startSourceSpan'], e['endSourceSpan']])
       .reduce((acc, val) => [...acc, ...val], [])
       .filter(value => !!value)
       .map(value => [value.end.offset, value.start.offset])
       .reduce((acc, val) => [...acc, ...val], []);
     return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
-  }
-
-  function mapPlaceholdersToTransLocoParams(parsedPlaceholdersMap: ParsedPlaceholdersMap) {
-    const paramsArray: any[] = Object.entries(parsedPlaceholdersMap)
-      .map(e => ({name: e[0], placeholder: e[1]}))
-      .filter(e => e.name.startsWith('INTERPOLATION') || e.name.startsWith('VAR_SELECT') || e.name.startsWith('VAR_PLURAL'))
-      .map((e) => ({[`${e.placeholder.variableName}`]: e.placeholder.expression}));
-
-    const paramsObject = paramsArray.reduce((result, current) => Object.assign(result, current), {});
-
-    return paramsArray.length === 0 ? '' : ':' + JSON.stringify(paramsObject)
-      .replace(/\"/g, '')
-      .replace(/\:/g, ': ')
-      .replace(/,/g, ', ');
   }
 
   function removeInterpolation(expression: string): string {
@@ -140,27 +127,12 @@ export function migrator(_options: any): Rule {
     return placeholders;
   }
 
-  function prepareTagContent(translationKey: TranslationKey, templateElement: TemplateElement, parsedPlaceholdersMap: ParsedPlaceholdersMap) {
-    const params = mapPlaceholdersToTransLocoParams(parsedPlaceholdersMap);
-    if (templateElement.hasHtml) {
-      return ` [innerHtml]="'${translationKey.group}.${translationKey.id}' | transloco${params}"`;
-    } else {
-      return `{{'${translationKey.group}.${translationKey.id}' | transloco${params ? params + ' ' : ''}}}`;
-    }
-  }
-
-  function updateTemplates(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
-                           localeConfigs: ParsedLocaleConfig, parsedPlaceholdersMap: ParsedPlaceholdersMap, templateContent: string): string {
+  function updateTemplates(translationKey: TranslationKey, templateElement: TemplateElement, parsedPlaceholdersMap: ParsedPlaceholdersMap, templateContent: string): string {
     const sourceBounds = getSourceBounds(templateElement.message);
     templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
-    if (templateElement.type === 'TAG') {
-      const tagContent = prepareTagContent(translationKey, templateElement, parsedPlaceholdersMap);
-      templateContent = StringUtils.insertLeft(templateContent, templateElement.hasHtml ? sourceBounds.startOffset - 1 : sourceBounds.startOffset, tagContent);
-    } else if (templateElement.type === 'ATTR') {
-      const tagContent = `[${templateElement.name}]="'${translationKey.group}.${translationKey.id}' | transloco"`;
-      templateContent = StringUtils.insertLeft(templateContent, sourceBounds.startOffset, tagContent);
-    }
-    return templateContent;
+    const updateElementStrategyBuilder = new UpdateElementStrategyBuilder();
+    const updateElementStrategy = updateElementStrategyBuilder.createStrategy(templateElement.type);
+    return updateElementStrategy.update(templateContent, translationKey, templateElement, parsedPlaceholdersMap, sourceBounds);
   }
 
   function prepareTranslationKey(messageId: string): TranslationKey {
@@ -307,7 +279,7 @@ export function migrator(_options: any): Rule {
 
         const missingTranslations = generateTranslations(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, transLocoFiles);
         missingTranslationsSummary.push(...missingTranslations);
-        templateContent = updateTemplates(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, templateContent);
+        templateContent = updateTemplates(translationKey, templateElement, placeholdersMap, templateContent);
       }
 
       updateStyleFile(parsedTemplate);
@@ -363,4 +335,9 @@ interface MessagesStats {
   totalFiles: number;
   filesWithI18n: number;
   messagesCount: number;
+}
+
+export interface SourceBounds {
+  startOffset: number;
+  endOffset: number;
 }
