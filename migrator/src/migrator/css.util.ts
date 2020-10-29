@@ -4,11 +4,11 @@ const createQueryWrapper = require('query-ast');
 
 export class CssUtil {
 
-  public static encapsulateClasses(styleFileContent: string, classesToEncapsulate): string {
+  public static encapsulateClasses(styleFileContent: string, classesToEncapsulation): string {
     const astCss = parse(this.addMissingSemicolons(styleFileContent));
     const $ = createQueryWrapper(astCss);
 
-    classesToEncapsulate.forEach(className => {
+    classesToEncapsulation.forEach(className => {
       const parentSelector = this.getSelectorByClassName($, className);
       if (parentSelector.nodes.length > 0 && !this.hasHostAndDeepSelectors(parentSelector)) {
         const selectorElements = parentSelector.nodes[0].node.value;

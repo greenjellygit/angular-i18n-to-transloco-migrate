@@ -74,9 +74,9 @@ export class AngularParseUtils {
     for (const node of rootNodes) {
       const element = node as Element;
       if (!!element.i18n && element.i18n.constructor.name === 'Message') {
-        let type: any = 'TAG';
+        let type: ElementType = ElementType.TAG;
         if (['TextAttribute', 'BoundAttribute'].includes(element.constructor.name)) {
-          type = 'ATTR';
+          type = ElementType.ATTRIBUTE;
         }
         const message = element.i18n as Message;
         const source = message.sources[0];
@@ -144,11 +144,16 @@ export interface TemplateElement {
   name: string;
   startLine: number;
   startCol: number;
-  type: 'ATTR' | 'TAG';
+  type: ElementType;
   hasHtml: boolean;
   hasInterpolation: boolean;
   hasICU: boolean;
   classes: string[];
+}
+
+export enum ElementType {
+  ATTRIBUTE,
+  TAG
 }
 
 export interface ParsedFile {
