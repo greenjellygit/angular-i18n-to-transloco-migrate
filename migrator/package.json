@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "description": "A blank schematics",
   "scripts": {
-    "build": "tsc -p tsconfig.json && cd .. && schematics migrator:migrator",
-    "build-ttb": "tsc -p tsconfig.json && cd ../../teamtoolbox/atb-parent/atb-frontend && schematics migrator:migrator",
+    "build": "tsc -p tsconfig.json",
+    "run": "npm run build && cd .. && schematics migrator:migrator",
+    "run-ttb": "npm run build && cd ../../teamtoolbox/atb-parent/atb-frontend && schematics migrator:migrator",
     "xi18n": "cd ../../TeamToolbox/ttb/atb-parent/atb-frontend && ng xi18n",
-    "test": "npm run build && jasmine src/**/*_spec.js"
+    "test": "npm run build && jasmine src/**/*.spec.js"
   },
   "keywords": [
     "schematics"

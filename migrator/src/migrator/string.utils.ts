@@ -33,7 +33,7 @@ export class StringUtils {
 
   public static prepareVariableName(expression: string): string {
     const MAX_VARIABLE_LENGTH = 25;
-    const MAX_WORD_LENGTH_TO_NOT_STRIP_CONSONANTS = 8;
+    const MIN_WORD_LENGTH_TO_STRIP_CONSONANTS = 8;
     const MAX_CONSONANTS_IN_STRIPPED_WORD = 3;
 
     let variableName = expression
@@ -52,7 +52,7 @@ export class StringUtils {
       variableName = variableName
         .replace(/([A-Z]+)/g, $1 => ' ' + $1)
         .split(' ')
-        .map(e => e.length > MAX_WORD_LENGTH_TO_NOT_STRIP_CONSONANTS ? this.removeAfterConsonant(e, MAX_CONSONANTS_IN_STRIPPED_WORD) : e)
+        .map(e => e.length > MIN_WORD_LENGTH_TO_STRIP_CONSONANTS ? this.removeAfterConsonant(e, MAX_CONSONANTS_IN_STRIPPED_WORD) : e)
         .join(' ')
         .replace(/\s+/g, '');
     }

@@ -1,253 +1,25 @@
-import {logging} from '@angular-devkit/core';
-import {LoggerApi} from '@angular-devkit/core/src/logger';
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
-import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
-import {ParsedTranslation} from '@angular/localize/src/utils';
-import {AngularParseUtils, ParsedFile, TemplateElement} from './angular-parse.utils';
-import {ArrayUtils} from './array.utils';
-import {CssUtil} from './css.util';
+import {AngularParseUtils} from './angular-parse.utils';
 import {FileUtils} from './file.utils';
-import {ObjectUtils} from './object.utils';
-import {FillPlaceholderStrategyBuilder} from './fill-placeholder/base/fill-placeholder-strategy.builder';
+import {Logger} from './logging/logger';
+import {MessageInfo, MessageUtils} from './message/message.utils';
+import {PlaceholderParser} from './message/placeholder-parser';
 import {SchematicsUtils} from './schematics.utils';
-import {StringUtils} from './string.utils';
-import {JsonKey, ParsedLocaleConfig, TransLocoFile, TransLocoUtils} from './trans-loco.utils';
-import {UpdateElementStrategyBuilder} from './update-element/base/update-element.strategy-builder';
-import jsBeautify = require('js-beautify');
-
-export function replacePlaceholders(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle) {
-  if (!parsedTranslation) {
-    const translationKey = prepareTranslationKey(message.id);
-    throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
-  }
-
-  const fillPlaceholderStrategyBuilder = new FillPlaceholderStrategyBuilder();
-  const placeholderNames: string[] = parsedTranslation.placeholderNames.concat(Object.keys(message.placeholders));
-
-  let text = parsedTranslation.text;
-  for (const placeholder of placeholderNames) {
-    const fillPlaceholderStrategy = fillPlaceholderStrategyBuilder.createStrategy(placeholder);
-    text = fillPlaceholderStrategy.fill(text, placeholdersMap[placeholder], message, placeholdersMap, localeBundle);
-  }
-  return text;
-}
-
-export function prepareTranslationKey(messageId: string): TranslationKey {
-  const customGroups = ['component', 'filters', 'common.errors', 'common-headers', 'common-errors', 'common-buttons', 'common.buttons', 'common-placeholders', 'common.placeholders', 'common'];
-  const group = customGroups.find(g => messageId.indexOf(g + '.') !== -1);
-  const idParts = messageId.split(group + '.');
-
-  if (!!idParts && idParts.length === 2) {
-    return {id: StringUtils.underscore(idParts[1]), group: StringUtils.underscore(idParts[0] + group)};
-  } else {
-    return {id: StringUtils.underscore(messageId), group: 'no_group'};
-  }
-}
+import {CssDeEncapsulator} from './style/css-de-encapsulator';
+import {TemplateMigrator} from './template/template-migrator';
+import {JsonKey, ParsedLocaleConfig, TransLocoUtils} from './trans-loco.utils';
+import {GenerateTranslationSummary, TranslationGenerator} from './translation/translation-generator';
 
 export function migrator(_options: any): Rule {
 
-  function generateTranslation(message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle, parsedTranslation: ParsedTranslation): GenerateTranslationSummary {
-    try {
-      return {
-        translationText: replacePlaceholders(parsedTranslation, message, placeholdersMap, localeBundle)
-      };
-    } catch (error) {
-      if (error instanceof MissingTranslationError) {
-        return {
-          translationText: 'MISSING TRANSLATION',
-          error
-        };
-      }
-    }
-  }
-
-  function getSourceBounds(message: Message): SourceBounds {
-    const bounds: number[] = message.nodes.map(e => [e.sourceSpan, e['startSourceSpan'], e['endSourceSpan']])
-      .reduce((acc, val) => [...acc, ...val], [])
-      .filter(value => !!value)
-      .map(value => [value.end.offset, value.start.offset])
-      .reduce((acc, val) => [...acc, ...val], []);
-    return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
-  }
-
-  function removeInterpolation(expression: string): string {
-    const stripInterpolationRegex = /(?<={{)(.*?)(?=}})/;
-    if (stripInterpolationRegex.test(expression)) {
-      expression = expression.match(stripInterpolationRegex)[0];
-    }
-    return expression;
-  }
-
-  function parsePlaceholders(message: Message): ParsedPlaceholdersMap {
-    const placeholders = collectPlaceholders(message);
-    const parsedPlaceholdersMap: ParsedPlaceholdersMap = {};
-
-    const lastIndexOfVariableNameDifferentExpression: { [variableName: string]: number } = {};
-
-    for (const placeholder of placeholders) {
-      if (!!parsedPlaceholdersMap[placeholder.name]) {
-        continue;
-      }
-
-      const expressionWithoutInterpolation = removeInterpolation(placeholder.expression);
-      let variableName = StringUtils.prepareVariableName(expressionWithoutInterpolation);
-
-      const lastIndex = lastIndexOfVariableNameDifferentExpression[variableName];
-      if (lastIndex == null) {
-        lastIndexOfVariableNameDifferentExpression[variableName] = 0;
-      } else {
-        lastIndexOfVariableNameDifferentExpression[variableName]++;
-      }
-
-      const differentExpressionSameVariableName = Object.values(parsedPlaceholdersMap)
-        .some(e => e.variableName === variableName && e.expression !== placeholder.expression);
-      if (differentExpressionSameVariableName) {
-        variableName += lastIndexOfVariableNameDifferentExpression[variableName];
-      }
-
-      parsedPlaceholdersMap[placeholder.name] = {
-        variableName,
-        rawExpression: placeholder.expression,
-        expression: expressionWithoutInterpolation
-      };
-    }
-
-    return parsedPlaceholdersMap;
-  }
-
-  function collectPlaceholders(message: Message): { name: string, expression: string }[] {
-    let placeholders = Object.entries(message.placeholders)
-      .map(e => ({name: e[0], expression: e[1]}));
-
-    if (ObjectUtils.isNotEmpty(message.placeholderToMessage)) {
-      Object.values(message.placeholderToMessage).forEach(icuMessage => {
-        placeholders = [...placeholders, ...collectPlaceholders(icuMessage)];
-      });
-    }
-
-    return placeholders;
-  }
-
-  function updateTemplates(translationKey: TranslationKey, templateElement: TemplateElement, parsedPlaceholdersMap: ParsedPlaceholdersMap, templateContent: string): string {
-    const sourceBounds = getSourceBounds(templateElement.message);
-    templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
-    const updateElementStrategyBuilder = new UpdateElementStrategyBuilder();
-    const updateElementStrategy = updateElementStrategyBuilder.createStrategy(templateElement.type);
-    return updateElementStrategy.update(templateContent, translationKey, templateElement, parsedPlaceholdersMap, sourceBounds);
-  }
-
-  function removeI18nTagsFromTemplate(filePath: string, templateContent: string) {
-    const i18nAttributes = AngularParseUtils.findI18nAttributes(templateContent);
-    for (const attr of i18nAttributes) {
-      templateContent = StringUtils.removeRange(templateContent, attr.sourceSpan.start.offset, attr.sourceSpan.end.offset);
-      templateContent = StringUtils.removeWhitespacesAtIndex(templateContent, attr.sourceSpan.start.offset);
-    }
-    templateContent = jsBeautify.html(templateContent, {wrap_attributes: 'preserve-aligned', indent_size: 2});
-    FileUtils.writeToFile(templateContent, filePath);
-  }
-
-  function updateStyleFile(parsedFile: ParsedFile) {
-    const styleFilePath = ['.scss', '.css']
-      .map(fileType => parsedFile.filePath.split('.html')[0] + fileType)
-      .filter(filePath => FileUtils.isFileExists(filePath))[0];
-
-    const classessToEncapsule = Object.values(parsedFile.i18nMap)
-      .map(value => value.classes)
-      .reduce((x, y) => x.concat(y), []);
-
-    if (!!styleFilePath && classessToEncapsule.length > 0) {
-      const styleFileContent = FileUtils.loadFile(styleFilePath);
-      const updatedContent = CssUtil.encapsulateClasses(styleFileContent, [...new Set(classessToEncapsule)]);
-      FileUtils.writeToFile(updatedContent, styleFilePath);
-    }
-  }
-
-  function findNotMigrateElements(message: Message): string[] {
-    let notMigrateElements = [];
-
-    if (ArrayUtils.isNotEmpty(message.nodes)) {
-      message.nodes.forEach(node => {
-        if (ObjectUtils.isNotEmpty(node['attrs'])) {
-          Object.keys(node['attrs'])
-            .filter(attrName => attrName.startsWith('*') || attrName.startsWith('[') || attrName.startsWith('(') || (attrName !== attrName.toLowerCase()))
-            .forEach(attrName => {
-              notMigrateElements.push(attrName);
-            });
-        }
-      });
-    }
-
-    if (ObjectUtils.isNotEmpty(message.placeholderToMessage)) {
-      Object.values(message.placeholderToMessage)
-        .forEach(icuMessage => {
-          notMigrateElements = [...notMigrateElements, ...findNotMigrateElements(icuMessage)];
-        });
-    }
-
-    return notMigrateElements;
-  }
-
-  function analyzeMessage(message: Message, translationKey: TranslationKey): MessageInfo {
-    const notMigrateElements = findNotMigrateElements(message);
-    return {
-      translationKey,
-      notMigrateElements,
-      needsManualChanges: notMigrateElements.length > 0
-    };
-  }
-
-  function printErrors(generateTranslationSummaries: GenerateTranslationSummary[], logger: logging.LoggerApi, migrationInfo: MessageInfo[]) {
-    const errors = generateTranslationSummaries
-      .filter(value => value.error)
-      .map(value => value.error);
-
-    if (errors.length > 0) {
-      logger.warn('Warning - Missing translations:');
-      const groupedByLocale = ArrayUtils.groupByKey(errors, 'locale');
-      Object.keys(groupedByLocale).forEach((locale) => {
-        logger.info(`    Locale: ${locale}`);
-        Object.values(groupedByLocale[locale]).forEach((e: MissingTranslationError, index) => {
-          logger.info(`        ${index + 1}. ${e.translationKey.group}.${e.translationKey.id}`);
-        });
-      });
-    }
-
-    const needsManualChangesElements = migrationInfo.filter(value => value.needsManualChanges);
-    if (needsManualChangesElements.length > 0) {
-      logger.warn('Warning - Not supported attributes in translations:');
-      needsManualChangesElements.forEach((value, index) => {
-        logger.info(`    ${index + 1}. ${value.translationKey.group}.${value.translationKey.id}: ${value.notMigrateElements.join(', ')}`);
-      });
-    }
-  }
-
-  function analyzeTemplatesMessages(parsedFiles: ParsedFile[]): MessagesStats {
-    const filesWithI18n = parsedFiles.filter(value => value.i18nMap.length > 0);
-    const messagesCount = filesWithI18n.reduce((previousValue, currentValue) => previousValue += currentValue.i18nMap.length, 0);
-    return {
-      totalFiles: parsedFiles.length,
-      filesWithI18n: filesWithI18n.length,
-      messagesCount
-    };
-  }
-
-  function printStats(stats: MessagesStats, localeConfigs: ParsedLocaleConfig, logger: LoggerApi): void {
-    logger.info(`Found locales: ${Object.keys(localeConfigs).join(', ')}`);
-    logger.info('Statistics of templates:');
-    logger.info(`    - Total templates: ${stats.totalFiles}`);
-    logger.info(`    - Templates to migrate: ${stats.filesWithI18n}`);
-    logger.info(`    - Total messages: ${stats.messagesCount}`);
-  }
-
-  function printMigrationTime(start: [number, number], logger: LoggerApi) {
-    const precision = 0;
-    const elapsed = process.hrtime(start)[1] / 1000000;
-    logger.info('Successful finished after: ' + process.hrtime(start)[0] + 's ' + elapsed.toFixed(precision) + 'ms');
-  }
-
   return (tree: Tree, _context: SchematicContext) => {
     const start = process.hrtime();
+
+    const placeholderParser: PlaceholderParser = new PlaceholderParser();
+    const translationGenerator: TranslationGenerator = new TranslationGenerator();
+    const templateMigrator: TemplateMigrator = new TemplateMigrator();
+    const cssDeEncapsulator: CssDeEncapsulator = new CssDeEncapsulator();
+    const logger: Logger = new Logger(_context.logger);
 
     const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
       .map(filePath => AngularParseUtils.parseTemplateFile(filePath));
@@ -257,8 +29,7 @@ export function migrator(_options: any): Rule {
     const migrationInfo: MessageInfo[] = [];
     const generateTranslationSummaries: GenerateTranslationSummary[] = [];
 
-    const templatesMessagesStats = analyzeTemplatesMessages(parsedTemplateFiles);
-    printStats(templatesMessagesStats, localeConfigs, _context.logger);
+    logger.printTemplatesStats(parsedTemplateFiles, localeConfigs);
 
     const templatesWithI18n = parsedTemplateFiles.filter(e => e.i18nMap.length > 0);
     for (const parsedTemplate of templatesWithI18n) {
@@ -266,83 +37,33 @@ export function migrator(_options: any): Rule {
       for (const templateElement of parsedTemplate.i18nMap) {
 
         const message = templateElement.message;
-        const translationKey = prepareTranslationKey(message.id);
-        const placeholdersMap = parsePlaceholders(message);
+        const translationKey = MessageUtils.prepareTranslationKey(message.id);
+        const placeholdersMap = placeholderParser.parse(message);
 
-        migrationInfo.push(analyzeMessage(message, translationKey));
+        migrationInfo.push(MessageUtils.analyzeMessage(message, translationKey));
 
         for (const locoFile of transLocoFiles) {
           const localeBundle = localeConfigs[locoFile.lang].bundle;
           const parsedTranslation = localeBundle.translations[message.id];
-          const summary = generateTranslation(message, placeholdersMap, localeBundle, parsedTranslation);
+          const summary = translationGenerator.generate(message, placeholdersMap, localeBundle, parsedTranslation);
           locoFile.entries[translationKey.group] = locoFile.entries[translationKey.group] || {} as JsonKey;
           locoFile.entries[translationKey.group][translationKey.id] = summary.translationText;
           generateTranslationSummaries.push(summary);
         }
-        templateContent = updateTemplates(translationKey, templateElement, placeholdersMap, templateContent);
+        templateContent = templateMigrator.migrate(translationKey, templateElement, placeholdersMap, templateContent);
       }
 
-      updateStyleFile(parsedTemplate);
-      removeI18nTagsFromTemplate(parsedTemplate.filePath, templateContent);
+      cssDeEncapsulator.updateStyleFile(parsedTemplate);
+      const cleanedTemplate = templateMigrator.removeI18nTags(templateContent);
+      FileUtils.writeToFile(cleanedTemplate, parsedTemplate.filePath);
     }
 
     TransLocoUtils.saveTransLocoFiles('src/assets/i18n/', transLocoFiles);
-    printErrors(generateTranslationSummaries, _context.logger, migrationInfo);
-    printMigrationTime(start, _context.logger);
+
+    logger.printErrors(generateTranslationSummaries, migrationInfo);
+    logger.printMigrationTime(start);
 
     return tree;
   };
 
-}
-
-export interface TranslationKey {
-  id: string;
-  group: string;
-}
-
-export interface ParsedPlaceholdersMap {
-  [name: string]: ParsedPlaceholder;
-}
-
-export interface ParsedPlaceholder {
-  expression: string;
-  rawExpression: string;
-  variableName: string;
-}
-
-export interface MessageInfo {
-  translationKey: TranslationKey;
-  notMigrateElements: string[];
-  needsManualChanges: boolean;
-}
-
-export interface GenerateTranslationSummary {
-  translationText: string;
-  error?: MissingTranslationError;
-}
-
-export class MissingTranslationError extends Error {
-  translationKey: TranslationKey;
-  locale: string;
-
-  constructor(public message: string, translationKey: TranslationKey, locale: string) {
-    super(message);
-
-    this.name = 'MissingTranslationError';
-    this.stack = (new Error() as any).stack;
-
-    this.translationKey = translationKey;
-    this.locale = locale;
-  }
-}
-
-interface MessagesStats {
-  totalFiles: number;
-  filesWithI18n: number;
-  messagesCount: number;
-}
-
-export interface SourceBounds {
-  startOffset: number;
-  endOffset: number;
 }
