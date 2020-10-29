@@ -16,9 +16,9 @@ import {JsonKey, ParsedLocaleConfig, TransLocoFile, TransLocoUtils} from './tran
 import {UpdateElementStrategyBuilder} from './update-element/base/update-element.strategy-builder';
 import jsBeautify = require('js-beautify');
 
-export function replacePlaceholders(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap,
-                                    localeBundle: ParsedTranslationBundle, translationKey: TranslationKey) {
+export function replacePlaceholders(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle) {
   if (!parsedTranslation) {
+    const translationKey = prepareTranslationKey(message.id);
     throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
   }
 
@@ -27,37 +27,39 @@ export function replacePlaceholders(parsedTranslation: ParsedTranslation, messag
 
   let text = parsedTranslation.text;
   for (const placeholder of placeholderNames) {
-    const parsedPlaceholder = placeholdersMap[placeholder];
     const fillPlaceholderStrategy = fillPlaceholderStrategyBuilder.createStrategy(placeholder);
-    text = fillPlaceholderStrategy.fill(text, parsedPlaceholder, message, placeholdersMap, localeBundle, translationKey);
+    text = fillPlaceholderStrategy.fill(text, placeholdersMap[placeholder], message, placeholdersMap, localeBundle);
   }
   return text;
 }
 
+export function prepareTranslationKey(messageId: string): TranslationKey {
+  const customGroups = ['component', 'filters', 'common.errors', 'common-headers', 'common-errors', 'common-buttons', 'common.buttons', 'common-placeholders', 'common.placeholders', 'common'];
+  const group = customGroups.find(g => messageId.indexOf(g + '.') !== -1);
+  const idParts = messageId.split(group + '.');
+
+  if (!!idParts && idParts.length === 2) {
+    return {id: StringUtils.underscore(idParts[1]), group: StringUtils.underscore(idParts[0] + group)};
+  } else {
+    return {id: StringUtils.underscore(messageId), group: 'no_group'};
+  }
+}
+
 export function migrator(_options: any): Rule {
 
-  function generateTranslations(translationKey: TranslationKey, templateElement: TemplateElement, messageId: string,
-                                localeConfigs: ParsedLocaleConfig, placeholdersMap: ParsedPlaceholdersMap, transLocoFiles: TransLocoFile[]): MissingTranslationError[] {
-    const missingTranslations = [];
-    for (const locoFile of transLocoFiles) {
-      const localeBundle = localeConfigs[locoFile.lang].bundle;
-      const parsedTranslation = localeBundle.translations[messageId];
-
-      let translationText: string;
-      try {
-        translationText = replacePlaceholders(parsedTranslation, templateElement.message, placeholdersMap, localeBundle, translationKey);
-      } catch (e) {
-        if (e instanceof MissingTranslationError) {
-          missingTranslations.push(e);
-          translationText = 'MISSING TRANSLATION';
-        }
+  function generateTranslation(message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle, parsedTranslation: ParsedTranslation): GenerateTranslationSummary {
+    try {
+      return {
+        translationText: replacePlaceholders(parsedTranslation, message, placeholdersMap, localeBundle)
+      };
+    } catch (error) {
+      if (error instanceof MissingTranslationError) {
+        return {
+          translationText: 'MISSING TRANSLATION',
+          error
+        };
       }
-
-      locoFile.entries[translationKey.group] = locoFile.entries[translationKey.group] || {} as JsonKey;
-      locoFile.entries[translationKey.group][translationKey.id] = translationText;
     }
-
-    return missingTranslations;
   }
 
   function getSourceBounds(message: Message): SourceBounds {
@@ -135,18 +137,6 @@ export function migrator(_options: any): Rule {
     return updateElementStrategy.update(templateContent, translationKey, templateElement, parsedPlaceholdersMap, sourceBounds);
   }
 
-  function prepareTranslationKey(messageId: string): TranslationKey {
-    const customGroups = ['component', 'filters', 'common.errors', 'common-headers', 'common-errors', 'common-buttons', 'common.buttons', 'common-placeholders', 'common.placeholders', 'common'];
-    const group = customGroups.find(g => messageId.indexOf(g + '.') !== -1);
-    const idParts = messageId.split(group + '.');
-
-    if (!!idParts && idParts.length === 2) {
-      return {id: StringUtils.underscore(idParts[1]), group: StringUtils.underscore(idParts[0] + group)};
-    } else {
-      return {id: StringUtils.underscore(messageId), group: 'no_group'};
-    }
-  }
-
   function removeI18nTagsFromTemplate(filePath: string, templateContent: string) {
     const i18nAttributes = AngularParseUtils.findI18nAttributes(templateContent);
     for (const attr of i18nAttributes) {
@@ -207,10 +197,14 @@ export function migrator(_options: any): Rule {
     };
   }
 
-  function printErrors(missingTranslationsSummary: MissingTranslationError[], logger: logging.LoggerApi, migrationInfo: MessageInfo[]) {
-    if (missingTranslationsSummary.length > 0) {
+  function printErrors(generateTranslationSummaries: GenerateTranslationSummary[], logger: logging.LoggerApi, migrationInfo: MessageInfo[]) {
+    const errors = generateTranslationSummaries
+      .filter(value => value.error)
+      .map(value => value.error);
+
+    if (errors.length > 0) {
       logger.warn('Warning - Missing translations:');
-      const groupedByLocale = ArrayUtils.groupByKey(missingTranslationsSummary, 'locale');
+      const groupedByLocale = ArrayUtils.groupByKey(errors, 'locale');
       Object.keys(groupedByLocale).forEach((locale) => {
         logger.info(`    Locale: ${locale}`);
         Object.values(groupedByLocale[locale]).forEach((e: MissingTranslationError, index) => {
@@ -261,7 +255,7 @@ export function migrator(_options: any): Rule {
     const localeConfigs: ParsedLocaleConfig = SchematicsUtils.getDefaultProjectLocales();
     const transLocoFiles = TransLocoUtils.initializeLocoFiles(localeConfigs);
     const migrationInfo: MessageInfo[] = [];
-    const missingTranslationsSummary: MissingTranslationError[] = [];
+    const generateTranslationSummaries: GenerateTranslationSummary[] = [];
 
     const templatesMessagesStats = analyzeTemplatesMessages(parsedTemplateFiles);
     printStats(templatesMessagesStats, localeConfigs, _context.logger);
@@ -271,14 +265,20 @@ export function migrator(_options: any): Rule {
       let templateContent = parsedTemplate.content;
       for (const templateElement of parsedTemplate.i18nMap) {
 
-        const messageId = templateElement.message.id;
-        const translationKey = prepareTranslationKey(messageId);
-        const placeholdersMap = parsePlaceholders(templateElement.message);
+        const message = templateElement.message;
+        const translationKey = prepareTranslationKey(message.id);
+        const placeholdersMap = parsePlaceholders(message);
 
-        migrationInfo.push(analyzeMessage(templateElement.message, translationKey));
+        migrationInfo.push(analyzeMessage(message, translationKey));
 
-        const missingTranslations = generateTranslations(translationKey, templateElement, messageId, localeConfigs, placeholdersMap, transLocoFiles);
-        missingTranslationsSummary.push(...missingTranslations);
+        for (const locoFile of transLocoFiles) {
+          const localeBundle = localeConfigs[locoFile.lang].bundle;
+          const parsedTranslation = localeBundle.translations[message.id];
+          const summary = generateTranslation(message, placeholdersMap, localeBundle, parsedTranslation);
+          locoFile.entries[translationKey.group] = locoFile.entries[translationKey.group] || {} as JsonKey;
+          locoFile.entries[translationKey.group][translationKey.id] = summary.translationText;
+          generateTranslationSummaries.push(summary);
+        }
         templateContent = updateTemplates(translationKey, templateElement, placeholdersMap, templateContent);
       }
 
@@ -287,7 +287,7 @@ export function migrator(_options: any): Rule {
     }
 
     TransLocoUtils.saveTransLocoFiles('src/assets/i18n/', transLocoFiles);
-    printErrors(missingTranslationsSummary, _context.logger, migrationInfo);
+    printErrors(generateTranslationSummaries, _context.logger, migrationInfo);
     printMigrationTime(start, _context.logger);
 
     return tree;
@@ -314,6 +314,11 @@ export interface MessageInfo {
   translationKey: TranslationKey;
   notMigrateElements: string[];
   needsManualChanges: boolean;
+}
+
+export interface GenerateTranslationSummary {
+  translationText: string;
+  error?: MissingTranslationError;
 }
 
 export class MissingTranslationError extends Error {
