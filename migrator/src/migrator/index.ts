@@ -9,7 +9,7 @@ import {ArrayUtils} from './array.utils';
 import {CssUtil} from './css.util';
 import {FileUtils} from './file.utils';
 import {ObjectUtils} from './object.utils';
-import {ReplacePlaceholderStrategyBuilder} from './replace-placeholder/base/replace-placeholder.strategy-builder';
+import {FillPlaceholderStrategyBuilder} from './fill-placeholder/base/fill-placeholder-strategy.builder';
 import {SchematicsUtils} from './schematics.utils';
 import {StringUtils} from './string.utils';
 import {JsonKey, ParsedLocaleConfig, TransLocoFile, TransLocoUtils} from './trans-loco.utils';
@@ -22,14 +22,14 @@ export function replacePlaceholders(parsedTranslation: ParsedTranslation, messag
     throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
   }
 
-  const placeholderReplaceStrategyBuilder = new ReplacePlaceholderStrategyBuilder();
+  const fillPlaceholderStrategyBuilder = new FillPlaceholderStrategyBuilder();
   const placeholderNames: string[] = parsedTranslation.placeholderNames.concat(Object.keys(message.placeholders));
 
   let text = parsedTranslation.text;
   for (const placeholder of placeholderNames) {
     const parsedPlaceholder = placeholdersMap[placeholder];
-    const replacePlaceholderStrategy = placeholderReplaceStrategyBuilder.createStrategy(placeholder);
-    text = replacePlaceholderStrategy.replace(text, parsedPlaceholder, message, placeholdersMap, localeBundle, translationKey);
+    const fillPlaceholderStrategy = fillPlaceholderStrategyBuilder.createStrategy(placeholder);
+    text = fillPlaceholderStrategy.fill(text, parsedPlaceholder, message, placeholdersMap, localeBundle, translationKey);
   }
   return text;
 }

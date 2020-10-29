@@ -1,9 +1,9 @@
 import {ParsedPlaceholder} from '../index';
-import {ReplacePlaceholderStrategy} from './base/replace-placeholder.strategy';
+import {FillPlaceholderStrategy} from './base/fill-placeholder.strategy';
 
-export class ReplaceInterpolationPlaceholder extends ReplacePlaceholderStrategy {
+export class FillInterpolationPlaceholder extends FillPlaceholderStrategy {
 
-  replace(text: string, parsedPlaceholder: ParsedPlaceholder): string {
+  fill(text: string, parsedPlaceholder: ParsedPlaceholder): string {
     return text
       .replace(`{$${this.placeholder}}`, `{{${parsedPlaceholder.variableName}}}`)
       .replace(new RegExp(`{${this.placeholder}}`, 'g'), ` {${parsedPlaceholder.variableName}} `);
