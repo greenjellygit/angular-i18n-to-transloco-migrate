@@ -7,6 +7,8 @@ import {FillPlaceholderStrategyBuilder} from './fill-placeholder-strategy/base/f
 
 export class PlaceholderFiller {
 
+  private fillPlaceholderStrategyBuilder = new FillPlaceholderStrategyBuilder();
+
   public fill(message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle, parsedTranslation: ParsedTranslation): GenerateTranslationSummary {
     try {
       return {
@@ -28,12 +30,11 @@ export class PlaceholderFiller {
       throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
     }
 
-    const fillPlaceholderStrategyBuilder = new FillPlaceholderStrategyBuilder();
     const placeholderNames: string[] = parsedTranslation.placeholderNames.concat(Object.keys(message.placeholders));
 
     let text = parsedTranslation.text;
     for (const placeholder of placeholderNames) {
-      const fillPlaceholderStrategy = fillPlaceholderStrategyBuilder.createStrategy(placeholder);
+      const fillPlaceholderStrategy = this.fillPlaceholderStrategyBuilder.createStrategy(placeholder);
       text = fillPlaceholderStrategy.fill(text, placeholdersMap[placeholder], message, placeholdersMap, localeBundle);
     }
     return text;

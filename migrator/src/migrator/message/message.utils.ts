@@ -1,7 +1,7 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-import {ArrayUtils} from '../array.utils';
-import {ObjectUtils} from '../object.utils';
-import {StringUtils} from '../string.utils';
+import {ArrayUtils} from '../utils/array.utils';
+import {ObjectUtils} from '../utils/object.utils';
+import {StringUtils} from '../utils/string.utils';
 
 export class MessageUtils {
 

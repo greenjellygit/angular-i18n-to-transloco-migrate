@@ -1,13 +1,13 @@
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
-import {FileUtils} from './file.utils';
+import {FileUtils} from '../utils/file.utils';
 
-export class TransLocoUtils {
+export class TranslocoWriter {
 
-  public static initializeLocoFiles(localeConfig: ParsedLocaleConfig): TransLocoFile[] {
+  public initializeFiles(localeConfig: ParsedLocaleConfig): TransLocoFile[] {
     return Object.values(localeConfig).map(value => ({fileName: `${value.lang}.json`, lang: value.lang, entries: {}}));
   }
 
-  public static saveTransLocoFiles(directoryPath: string, transLocoFiles: TransLocoFile[]): void {
+  public saveFiles(directoryPath: string, transLocoFiles: TransLocoFile[]): void {
     for (const file of transLocoFiles) {
       FileUtils.writeJsonToFile(file.entries, directoryPath + file.fileName);
     }
