@@ -1,7 +1,7 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ParsedPlaceholdersMap, PlaceholderParser} from './placeholder-parser';
 
-describe('parsePlaceholders', () => {
+describe('PlaceholderParser', () => {
   const placeholderParser = new PlaceholderParser();
 
   it('should parse all placeholders for simple message', () => {
