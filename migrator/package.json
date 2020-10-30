@@ -7,7 +7,7 @@
     "run": "npm run build && cd .. && schematics migrator:migrator",
     "run-ttb": "npm run build && cd ../../teamtoolbox/atb-parent/atb-frontend && schematics migrator:migrator",
     "xi18n": "cd ../../TeamToolbox/ttb/atb-parent/atb-frontend && ng xi18n",
-    "test": "npm run build && jasmine src/**/*.spec.js",
+    "test": "npm run build && jasmine dist/**/*.spec.js",
     "lint": "ng lint"
   },
   "keywords": [
