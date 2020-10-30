@@ -1,7 +1,7 @@
-import {TemplateElement} from '../../angular-parse.utils';
+import {TemplateElement} from '../../angular/template-parser';
 import {SourceBounds, TranslationKey} from '../../message/message.utils';
 import {ParsedPlaceholdersMap} from '../../message/placeholder-parser';
-import {StringUtils} from '../../string.utils';
+import {StringUtils} from '../../utils/string.utils';
 import {UpdateElementStrategy} from './base/update-element.strategy';
 
 export class UpdateTagElement implements UpdateElementStrategy {

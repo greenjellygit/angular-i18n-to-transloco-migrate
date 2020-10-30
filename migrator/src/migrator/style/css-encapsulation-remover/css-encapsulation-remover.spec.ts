@@ -1,4 +1,4 @@
-import {TemplateElement} from '../../angular-parse.utils';
+import {TemplateElement} from '../../angular/template-parser';
 import {CssEncapsulationRemover} from './css-encapsulation-remover';
 
 describe('CssEncapsulationRemover', () => {

@@ -1,13 +1,14 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-import {ObjectUtils} from '../object.utils';
-import {StringUtils} from '../string.utils';
+import {ObjectUtils} from '../utils/object.utils';
+import {VariableGenerator} from './variable-generator';
 
 export class PlaceholderParser {
+
+  private variableGenerator: VariableGenerator = new VariableGenerator();
 
   public parse(message: Message): ParsedPlaceholdersMap {
     const placeholders = this.collectPlaceholders(message);
     const parsedPlaceholdersMap: ParsedPlaceholdersMap = {};
-
     const variableIndex: { [variableName: string]: number } = {};
 
     for (const placeholder of placeholders) {
@@ -16,7 +17,7 @@ export class PlaceholderParser {
       }
 
       const expressionWithoutInterpolation = this.removeInterpolation(placeholder.expression);
-      let variableName = StringUtils.prepareVariableName(expressionWithoutInterpolation);
+      let variableName = this.variableGenerator.generateFromExpression(expressionWithoutInterpolation);
 
       const differentExpressionSameVariableName = Object.values(parsedPlaceholdersMap)
         .some(e => e.variableName === variableName && e.expression !== expressionWithoutInterpolation);

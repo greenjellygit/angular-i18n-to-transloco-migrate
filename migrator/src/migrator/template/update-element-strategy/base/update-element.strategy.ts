@@ -1,4 +1,4 @@
-import {TemplateElement} from '../../../angular-parse.utils';
+import {TemplateElement} from '../../../angular/template-parser';
 import {SourceBounds, TranslationKey} from '../../../message/message.utils';
 import {ParsedPlaceholdersMap} from '../../../message/placeholder-parser';
 

@@ -1,4 +1,4 @@
-import {ElementType} from '../../../angular-parse.utils';
+import {ElementType} from '../../../angular/template-parser';
 import {UpdateAttributeElement} from '../update-attribute-element';
 import {UpdateTagElement} from '../update-tag-element';
 import {UpdateElementStrategy} from './update-element.strategy';

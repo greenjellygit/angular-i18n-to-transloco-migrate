@@ -1,8 +1,9 @@
 import {WorkspaceProject, WorkspaceSchema} from '@angular-devkit/core/src/experimental/workspace';
 import {SchematicsException} from '@angular-devkit/schematics';
+import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
+import {Xliff1TranslationParser} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/xliff1_translation_parser';
 import * as fs from 'fs';
-import {AngularParseUtils} from '../angular-parse.utils';
-import {ParsedLocaleConfig} from '../trans-loco.utils';
+import {ParsedLocaleConfig} from '../transloco/transloco-writer';
 
 export class ConfigurationReader {
 
@@ -17,7 +18,7 @@ export class ConfigurationReader {
     return Object.keys(localesConfig).map(name => ({
       lang: name,
       filePath: localesConfig[name].translation,
-      bundle: AngularParseUtils.parseXlfFile(localesConfig[name].translation)
+      bundle: this.parseXlfFile(localesConfig[name].translation)
     })).reduce((json, value) => {
       json[value.lang] = value;
       return json;
@@ -34,6 +35,11 @@ export class ConfigurationReader {
       throw new SchematicsException('Could not find Angular workspace configuration');
     }
     this.config = JSON.parse(workspaceConfig.toString());
+  }
+
+  private parseXlfFile(filePath: string): ParsedTranslationBundle {
+    const parser = new Xliff1TranslationParser();
+    return parser.parse(filePath, fs.readFileSync(filePath).toString());
   }
 
 }

@@ -1,9 +1,9 @@
 import {logging} from '@angular-devkit/core';
-import {ParsedFile} from '../angular-parse.utils';
-import {ArrayUtils} from '../array.utils';
+import {ParsedFile} from '../angular/template-parser';
+import {ArrayUtils} from '../utils/array.utils';
 import {MessageInfo} from '../message/message.utils';
-import {ParsedLocaleConfig} from '../trans-loco.utils';
 import {GenerateTranslationSummary, MissingTranslationError} from '../translation/placeholder-filler/placeholder-filler';
+import {ParsedLocaleConfig} from '../transloco/transloco-writer';
 
 export class Logger {
 

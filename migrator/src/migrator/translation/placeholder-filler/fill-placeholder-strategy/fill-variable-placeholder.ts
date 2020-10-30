@@ -1,5 +1,5 @@
 import {ParsedPlaceholder} from '../../../message/placeholder-parser';
-import {StringUtils} from '../../../string.utils';
+import {StringUtils} from '../../../utils/string.utils';
 import {FillPlaceholderStrategy} from './base/fill-placeholder.strategy';
 
 export class FillVariablePlaceholder extends FillPlaceholderStrategy {

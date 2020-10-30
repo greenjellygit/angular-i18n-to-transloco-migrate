@@ -1,8 +1,10 @@
-import {ParsedFile} from '../angular-parse.utils';
-import {FileUtils} from '../file.utils';
+import {ParsedFile} from '../angular/template-parser';
+import {FileUtils} from '../utils/file.utils';
 import {CssEncapsulationRemover} from './css-encapsulation-remover/css-encapsulation-remover';
 
 export class StyleMigrator {
+
+  private cssEncapsulationRemover: CssEncapsulationRemover = new CssEncapsulationRemover();
 
   public updateStyleFile(parsedFile: ParsedFile) {
     const styleFilePath = ['scss', 'css']
@@ -10,9 +12,8 @@ export class StyleMigrator {
         .filter(filePath => FileUtils.isFileExists(filePath));
 
     if (styleFilePath.length > 0) {
-      const cssEncapsulationRemover: CssEncapsulationRemover = new CssEncapsulationRemover();
       const styleFileContent = FileUtils.loadFile(styleFilePath[0]);
-      const updatedStyleFile = cssEncapsulationRemover.remove(styleFileContent, parsedFile.i18nMap);
+      const updatedStyleFile = this.cssEncapsulationRemover.remove(styleFileContent, parsedFile.i18nMap);
       if (updatedStyleFile !== styleFileContent) {
         FileUtils.writeToFile(updatedStyleFile, styleFilePath[0]);
       }
