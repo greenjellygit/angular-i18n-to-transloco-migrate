@@ -1,4 +1,4 @@
-import {ParsedPlaceholder} from '../../message/placeholder-parser';
+import {ParsedPlaceholder} from '../../../message/placeholder-parser';
 import {FillPlaceholderStrategy} from './base/fill-placeholder.strategy';
 
 export class FillInterpolationPlaceholder extends FillPlaceholderStrategy {

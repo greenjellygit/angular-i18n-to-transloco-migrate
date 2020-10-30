@@ -1,5 +1,5 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
-import {ParsedPlaceholder} from '../../message/placeholder-parser';
+import {ParsedPlaceholder} from '../../../message/placeholder-parser';
 import {FillPlaceholderStrategy} from './base/fill-placeholder.strategy';
 
 export class FillHtmlPlaceholder extends FillPlaceholderStrategy {

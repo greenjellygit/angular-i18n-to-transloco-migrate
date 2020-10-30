@@ -3,7 +3,7 @@ import {ParsedFile} from '../angular-parse.utils';
 import {ArrayUtils} from '../array.utils';
 import {MessageInfo} from '../message/message.utils';
 import {ParsedLocaleConfig} from '../trans-loco.utils';
-import {GenerateTranslationSummary, MissingTranslationError} from '../translation/translation-generator';
+import {GenerateTranslationSummary, MissingTranslationError} from '../translation/placeholder-filler/placeholder-filler';
 
 export class Logger {
 

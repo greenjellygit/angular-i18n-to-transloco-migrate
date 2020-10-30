@@ -1,6 +1,6 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
-import {ParsedPlaceholder, ParsedPlaceholdersMap} from '../../../message/placeholder-parser';
+import {ParsedPlaceholder, ParsedPlaceholdersMap} from '../../../../message/placeholder-parser';
 
 export abstract class FillPlaceholderStrategy {
 

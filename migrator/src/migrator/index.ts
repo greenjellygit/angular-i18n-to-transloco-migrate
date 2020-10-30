@@ -1,33 +1,35 @@
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {AngularParseUtils} from './angular-parse.utils';
+import {ConfigurationReader} from './angular/configuration-reader';
 import {FileUtils} from './file.utils';
 import {Logger} from './logging/logger';
 import {MessageInfo, MessageUtils} from './message/message.utils';
 import {PlaceholderParser} from './message/placeholder-parser';
-import {SchematicsUtils} from './schematics.utils';
-import {CssDeEncapsulator} from './style/css-de-encapsulator';
+import {StyleMigrator} from './style/style-migrator';
 import {TemplateMigrator} from './template/template-migrator';
-import {JsonKey, ParsedLocaleConfig, TransLocoUtils} from './trans-loco.utils';
-import {GenerateTranslationSummary, TranslationGenerator} from './translation/translation-generator';
+import {ParsedLocaleConfig, TransLocoUtils} from './trans-loco.utils';
+import {GenerateTranslationSummary} from './translation/placeholder-filler/placeholder-filler';
+import {TranslationGenerator} from './translation/translation-generator';
 
 export function migrator(_options: any): Rule {
 
   return (tree: Tree, _context: SchematicContext) => {
     const start = process.hrtime();
 
+    const configurationReader: ConfigurationReader = new ConfigurationReader();
     const placeholderParser: PlaceholderParser = new PlaceholderParser();
-    const translationGenerator: TranslationGenerator = new TranslationGenerator();
     const templateMigrator: TemplateMigrator = new TemplateMigrator();
-    const cssDeEncapsulator: CssDeEncapsulator = new CssDeEncapsulator();
+    const styleMigrator: StyleMigrator = new StyleMigrator();
+    const translationGenerator: TranslationGenerator = new TranslationGenerator();
     const logger: Logger = new Logger(_context.logger);
 
     const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
       .map(filePath => AngularParseUtils.parseTemplateFile(filePath));
 
-    const localeConfigs: ParsedLocaleConfig = SchematicsUtils.getDefaultProjectLocales();
+    const localeConfigs: ParsedLocaleConfig = configurationReader.getLocales();
     const transLocoFiles = TransLocoUtils.initializeLocoFiles(localeConfigs);
     const migrationInfo: MessageInfo[] = [];
-    const generateTranslationSummaries: GenerateTranslationSummary[] = [];
+    const summary: GenerateTranslationSummary[] = [];
 
     logger.printTemplatesStats(parsedTemplateFiles, localeConfigs);
 
@@ -42,25 +44,18 @@ export function migrator(_options: any): Rule {
 
         migrationInfo.push(MessageUtils.analyzeMessage(message, translationKey));
 
-        for (const locoFile of transLocoFiles) {
-          const localeBundle = localeConfigs[locoFile.lang].bundle;
-          const parsedTranslation = localeBundle.translations[message.id];
-          const summary = translationGenerator.generate(message, placeholdersMap, localeBundle, parsedTranslation);
-          locoFile.entries[translationKey.group] = locoFile.entries[translationKey.group] || {} as JsonKey;
-          locoFile.entries[translationKey.group][translationKey.id] = summary.translationText;
-          generateTranslationSummaries.push(summary);
-        }
+        summary.push(...translationGenerator.generate(message, translationKey, transLocoFiles, localeConfigs, placeholdersMap));
         templateContent = templateMigrator.migrate(translationKey, templateElement, placeholdersMap, templateContent);
       }
+      styleMigrator.updateStyleFile(parsedTemplate);
 
-      cssDeEncapsulator.updateStyleFile(parsedTemplate);
       const cleanedTemplate = templateMigrator.removeI18nTags(templateContent);
       FileUtils.writeToFile(cleanedTemplate, parsedTemplate.filePath);
     }
 
     TransLocoUtils.saveTransLocoFiles('src/assets/i18n/', transLocoFiles);
 
-    logger.printErrors(generateTranslationSummaries, migrationInfo);
+    logger.printErrors(summary, migrationInfo);
     logger.printMigrationTime(start);
 
     return tree;
