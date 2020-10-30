@@ -5,26 +5,31 @@ import {MessageUtils, TranslationKey} from '../../message/message.utils';
 import {ParsedPlaceholdersMap} from '../../message/placeholder-parser';
 import {FillPlaceholderStrategyBuilder} from './fill-placeholder-strategy/base/fill-placeholder-strategy.builder';
 
+
 export class PlaceholderFiller {
 
+  private readonly MISSING_TRANSLATION = 'MISSING TRANSLATION';
   private fillPlaceholderStrategyBuilder = new FillPlaceholderStrategyBuilder();
 
   public fill(message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle, parsedTranslation: ParsedTranslation): GenerateTranslationSummary {
+    let result: string;
+    let error: MissingTranslationError;
+
     try {
-      return {
-        translationText: this.fillPlaceholders(parsedTranslation, message, placeholdersMap, localeBundle)
-      };
-    } catch (error) {
-      if (error instanceof MissingTranslationError) {
-        return {
-          translationText: 'MISSING TRANSLATION',
-          error
-        };
+      result = this.fillPlaceholders(parsedTranslation, message, placeholdersMap, localeBundle);
+    } catch (e) {
+      if (e instanceof MissingTranslationError) {
+        result = this.MISSING_TRANSLATION;
+        error = e;
       }
     }
+    return {
+      translationText: result,
+      error
+    };
   }
 
-  public fillPlaceholders(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle) {
+  public fillPlaceholders(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle): string {
     if (!parsedTranslation) {
       const translationKey = MessageUtils.prepareTranslationKey(message.id);
       throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);

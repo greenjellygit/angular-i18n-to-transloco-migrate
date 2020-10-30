@@ -8,7 +8,8 @@ export class TranslationGenerator {
 
   private placeholderFiller: PlaceholderFiller = new PlaceholderFiller();
 
-  public generate(message: Message, translationKey: TranslationKey, transLocoFiles: TransLocoFile[], localeConfigs: ParsedLocaleConfig, placeholdersMap: ParsedPlaceholdersMap) {
+  public generate(message: Message, translationKey: TranslationKey, transLocoFiles: TransLocoFile[],
+                  localeConfigs: ParsedLocaleConfig, placeholdersMap: ParsedPlaceholdersMap): GenerateTranslationSummary[] {
     const translations: GenerateTranslationSummary[] = [];
     for (const locoFile of transLocoFiles) {
       const localeBundle = localeConfigs[locoFile.lang].bundle;

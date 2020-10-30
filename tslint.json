@@ -115,6 +115,11 @@
     "no-output-rename": true,
     "no-outputs-metadata-property": true,
     "template-banana-in-box": true,
+    "typedef": [
+      true,
+      "call-signature",
+      "property-declaration"
+    ],
     "typedef-whitespace": {
       "options": [
         {
