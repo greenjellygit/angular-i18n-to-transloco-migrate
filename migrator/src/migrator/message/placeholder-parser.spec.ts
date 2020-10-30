@@ -1,26 +1,20 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
+import {MessageHelper} from '../utils/test.utils';
 import {ParsedPlaceholdersMap, PlaceholderParser} from './placeholder-parser';
 
 describe('PlaceholderParser', () => {
   const placeholderParser = new PlaceholderParser();
 
   it('should parse all placeholders for simple message', () => {
-    const message: Message = {
-      id: 'id',
-      customId: 'customId',
-      legacyIds: null,
-      meaning: '',
-      description: '',
-      placeholders: {
+    const message = MessageHelper.builder()
+      .id('id')
+      .placeholders({
         INTERPOLATION: '{{company.name}}',
         INTERPOLATION_1: '{{accountBalance}}',
         VAR_SELECT: '{{userName | uppercase}}',
         VAR_PLURAL: `notification[5].text + ' :)'`
-      },
-      placeholderToMessage: {},
-      nodes: [],
-      sources: []
-    };
+      })
+      .build();
 
     const result: ParsedPlaceholdersMap = {
       INTERPOLATION: {
@@ -50,47 +44,33 @@ describe('PlaceholderParser', () => {
   });
 
   it('should parse all placeholders for nested icu placeholders', () => {
-    const message: Message = {
-      id: 'id',
-      customId: 'customId',
-      legacyIds: null,
-      meaning: '',
-      description: '',
-      placeholders: {
+
+    const pluralMessage = MessageHelper.builder()
+      .id('id')
+      .placeholders({
+        VAR_PLURAL: '{{user.lastName}}'
+      })
+      .build();
+
+    const selectMessage = MessageHelper.builder()
+      .id('id')
+      .placeholders({
+        VAR_SELECT: '{{user.firstName}}'
+      })
+      .placeholderToMessage({
+        ICU: pluralMessage
+      })
+      .build();
+
+    const message = MessageHelper.builder()
+      .id('id')
+      .placeholders({
         INTERPOLATION: '{{company.name}}'
-      },
-      placeholderToMessage: {
-        ICU: {
-          id: 'id',
-          customId: 'customId',
-          legacyIds: null,
-          meaning: '',
-          description: '',
-          placeholders: {
-            VAR_SELECT: '{{user.firstName}}'
-          },
-          nodes: [],
-          sources: [],
-          placeholderToMessage: {
-            ICU: {
-              id: 'id',
-              customId: 'customId',
-              legacyIds: null,
-              meaning: '',
-              description: '',
-              placeholders: {
-                VAR_PLURAL: '{{user.lastName}}'
-              },
-              nodes: [],
-              sources: [],
-              placeholderToMessage: {}
-            }
-          }
-        }
-      },
-      nodes: [],
-      sources: []
-    };
+      })
+      .placeholderToMessage({
+        ICU: selectMessage
+      })
+      .build();
 
     const result: ParsedPlaceholdersMap = {
       INTERPOLATION: {
@@ -115,36 +95,25 @@ describe('PlaceholderParser', () => {
   });
 
   it('should create same variable names for same expressions', () => {
-    const message: Message = {
-      id: 'id',
-      customId: 'customId',
-      legacyIds: null,
-      meaning: '',
-      description: '',
-      placeholders: {
+    const nestedIcu = MessageHelper.builder()
+      .id('id')
+      .placeholders({
+        VAR_SELECT: '{{company.id}}'
+      })
+      .build();
+
+    const message = MessageHelper.builder()
+      .id('id')
+      .placeholders({
         INTERPOLATION: '{{company.id}}',
         INTERPOLATION_1: 'company.id',
         INTERPOLATION_2: 'company.postalCodes',
         INTERPOLATION_3: 'company.postalCodesssssssssssssss'
-      },
-      placeholderToMessage: {
-        ICU: {
-          id: 'id',
-          customId: 'customId',
-          legacyIds: null,
-          meaning: '',
-          description: '',
-          placeholders: {
-            VAR_SELECT: '{{company.id}}'
-          },
-          nodes: [],
-          sources: [],
-          placeholderToMessage: {}
-        }
-      },
-      nodes: [],
-      sources: []
-    };
+      })
+      .placeholderToMessage({
+        ICU: nestedIcu
+      })
+      .build();
 
     const parsed = placeholderParser.parse(message);
 
