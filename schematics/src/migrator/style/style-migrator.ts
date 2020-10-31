@@ -13,7 +13,7 @@ export class StyleMigrator {
 
     if (styleFilePath.length > 0) {
       const styleFileContent = FileUtils.loadFile(styleFilePath[0]);
-      const updatedStyleFile = this.cssEncapsulationRemover.remove(styleFileContent, parsedFile.i18nMap);
+      const updatedStyleFile = this.cssEncapsulationRemover.remove(styleFileContent, parsedFile.templateElements);
       if (updatedStyleFile !== styleFileContent) {
         FileUtils.writeToFile(updatedStyleFile, styleFilePath[0]);
       }

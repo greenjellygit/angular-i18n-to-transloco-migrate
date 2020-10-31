@@ -39,10 +39,10 @@ export class Migrator {
 
     this.logger.printTemplatesStats(parsedTemplateFiles, localeConfigs);
 
-    const templatesWithI18n = parsedTemplateFiles.filter(e => e.i18nMap.length > 0);
+    const templatesWithI18n = parsedTemplateFiles.filter(e => e.templateElements.length > 0);
     for (const parsedTemplate of templatesWithI18n) {
       let templateContent = parsedTemplate.content;
-      for (const templateElement of parsedTemplate.i18nMap) {
+      for (const templateElement of parsedTemplate.templateElements) {
 
         const message = templateElement.message;
         const translationKey = MessageUtils.prepareTranslationKey(message.id);

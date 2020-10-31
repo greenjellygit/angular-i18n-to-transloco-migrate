@@ -1,6 +1,8 @@
 import {DEFAULT_INTERPOLATION_CONFIG, parseTemplate} from '@angular/compiler';
 import {computeDigest} from '@angular/compiler/src/i18n/digest';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
+import {ParseError} from '@angular/compiler/src/parse_util';
+import * as t from '@angular/compiler/src/render3/r3_ast';
 import {Element, Node} from '@angular/compiler/src/render3/r3_ast';
 import * as fs from 'fs';
 import {ArrayUtils} from '../utils/array.utils';
@@ -10,7 +12,7 @@ export class TemplateParser {
   public parse(filePath: string): ParsedFile {
     const content = fs.readFileSync(filePath, {encoding: 'utf-8'});
     const i18nMap = this.retrieveI18nMap(filePath, content);
-    return {filePath, i18nMap, content, parseStatus: 'SUCCESS'};
+    return {filePath, templateElements: i18nMap, content, parseStatus: 'SUCCESS'};
   }
 
   private retrieveI18nMap(filePath: string, fileContent: string): TemplateElement[] {
@@ -29,11 +31,11 @@ export class TemplateParser {
       .sort((a, b) => b.startLine - a.startLine || b.startCol - a.startCol);
   }
 
-  private getMessageId(element: Message) {
+  private getMessageId(element: Message): string {
     return element.customId || computeDigest(element as Message);
   }
 
-  private recursiveSearch(rootNodes: Node[], templateElements: TemplateElement[]) {
+  private recursiveSearch(rootNodes: Node[], templateElements: TemplateElement[]): void {
     for (const node of rootNodes) {
       const element = node as Element;
       if (!!element.i18n && element.i18n.constructor.name === 'Message') {
@@ -42,20 +44,13 @@ export class TemplateParser {
           type = ElementType.ATTRIBUTE;
         }
         const message = element.i18n as Message;
-        const source = message.sources[0];
         message.id = this.getMessageId(message);
 
-        const hasHtml = Object.keys(message.placeholders).some(placeholder => placeholder.startsWith('START_') || placeholder === 'LINE_BREAK');
-        const hasInterpolation = message.placeholders.hasOwnProperty('INTERPOLATION');
-        const hasICU = this.hasICU(element);
-        const classes = Object.values(message.placeholders)
-          .filter(e => e.includes('class=')).map(e => {
-            return e.match(/class="(.*?)"/g)
-              .map(k => k.replace('class=', '').replace(/"/g, '').split(' '))
-              .reduce((x, y) => x.concat(y), []);
-          })
-          .reduce((x, y) => x.concat(y), []);
+        const hasHtml = Object.keys(message.placeholders)
+          .some(placeholder => placeholder.startsWith('START_') || placeholder === 'LINE_BREAK');
+        const classes = this.getClasses(message);
 
+        const source = message.sources[0];
         const templateElement: TemplateElement = {
           message,
           name: element.name,
@@ -63,8 +58,6 @@ export class TemplateParser {
           startCol: source.startCol,
           startLine: source.startLine,
           hasHtml,
-          hasInterpolation,
-          hasICU,
           classes
         };
 
@@ -97,6 +90,20 @@ export class TemplateParser {
     }
   }
 
+  private getClasses(message: Message): string[] {
+    return Object.values(message.placeholders)
+      .filter(e => e.includes('class='))
+      .map(e => {
+        return e.match(/class="(.*?)"/g)
+          .map(k => k.replace('class=', '')
+            .replace(/"/g, '')
+            .split(' ')
+          )
+          .reduce((x, y) => x.concat(y), []);
+      })
+      .reduce((x, y) => x.concat(y), []);
+  }
+
   private hasICU(value: Element): boolean {
     return value.i18n && value.i18n['placeholderToMessage'] && value.i18n['placeholderToMessage'].hasOwnProperty('ICU');
   }
@@ -115,14 +122,20 @@ export interface TemplateElement {
   startCol: number;
   type: ElementType;
   hasHtml: boolean;
-  hasInterpolation: boolean;
-  hasICU: boolean;
   classes: string[];
 }
 
 export interface ParsedFile {
   filePath: string;
-  i18nMap: TemplateElement[];
+  templateElements: TemplateElement[];
   content: string;
   parseStatus: 'ERROR' | 'SUCCESS';
+}
+
+export interface ParsedTemplate {
+  errors?: ParseError[];
+  nodes: t.Node[];
+  styleUrls: string[];
+  styles: string[];
+  ngContentSelectors: string[];
 }
