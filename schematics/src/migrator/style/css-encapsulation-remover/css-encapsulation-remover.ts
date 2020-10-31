@@ -1,5 +1,5 @@
-import {TemplateElement} from '../../angular/template-parser';
 import {ArrayUtils} from '../../utils/array.utils';
+import {StringUtils} from '../../utils/string.utils';
 
 const gonzales = require('gonzales-pe');
 
@@ -11,21 +11,15 @@ export interface Node {
 
 export class CssEncapsulationRemover {
 
-  public remove(styleFileContent: string, i18nMap: TemplateElement[]): string {
-    const cssClasses = Object.values(i18nMap)
-      .map(value => value.classes)
-      .reduce((x, y) => x.concat(y), []);
-
-    if (cssClasses.length > 0) {
-      return this.removeEncapsulation(styleFileContent, [...new Set(cssClasses)]);
+  public remove(styleFileContent: string, classes: string[]): string {
+    if (StringUtils.isBlank(styleFileContent)) {
+      return styleFileContent;
     }
-  }
 
-  private removeEncapsulation(styleFileContent: string, classesToEncapsulation: string[]): string {
     const astCss: Node = gonzales.parse(this.addMissingSemicolons(styleFileContent), {syntax: 'scss'});
 
     const parentSelectors: Node[] = [];
-    for (const className of classesToEncapsulation) {
+    for (const className of new Set(classes)) {
       astCss.forEach((node: Node) => {
         if (this.hasChildByClassName(node, className)) {
           const selectorNode = this.getChildOfType(node, 'selector');
@@ -46,10 +40,11 @@ export class CssEncapsulationRemover {
   }
 
   private hasRemovedEncapsulation(nodes: Node[]): boolean {
-    const selectors = nodes.map(n => n.content)
-      .filter(n => Array.isArray(n));
-    const selectorNames = ArrayUtils.flatten(selectors)
-      .map(n => n.content);
+    const selectorNames = nodes.map(n => n.content)
+      .filter(n => Array.isArray(n))
+      .map(n => n as Array<Node>)
+      .flat(e => e)
+      .map((n: Node) => n.content);
     return selectorNames.includes('host') && selectorNames.includes('ng-deep');
   }
 

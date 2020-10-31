@@ -25,7 +25,7 @@ export class FileUtils {
     fs.writeFileSync(filePath, content, 'utf8');
   }
 
-  static isFileExists(filePath: string) {
+  public static isFileExists(filePath: string): boolean {
     return fs.existsSync(filePath);
   }
 

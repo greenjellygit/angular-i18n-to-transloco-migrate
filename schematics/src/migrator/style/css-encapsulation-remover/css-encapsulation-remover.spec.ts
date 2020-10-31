@@ -1,4 +1,3 @@
-import {TemplateElement} from '../../angular/template-parser';
 import {CssEncapsulationRemover} from './css-encapsulation-remover';
 
 describe('CssEncapsulationRemover', () => {
@@ -38,13 +37,9 @@ describe('CssEncapsulationRemover', () => {
     }
   `;
 
-    const templateElements: TemplateElement[] = [
-      {
-        classes: ['aaa', 'ddd']
-      } as TemplateElement
-    ];
+    const classesUsedInMessage = ['aaa', 'ddd'];
 
-    expect(cssEncapsulationRemover.remove(scssSource, templateElements))
+    expect(cssEncapsulationRemover.remove(scssSource, classesUsedInMessage))
       .toEqual(scssResult);
   });
 
@@ -69,13 +64,9 @@ describe('CssEncapsulationRemover', () => {
     }
   `;
 
-    const templateElements: TemplateElement[] = [
-      {
-        classes: ['aaa']
-      } as TemplateElement
-    ];
+    const classesUsedInMessage = ['aaa'];
 
-    expect(cssEncapsulationRemover.remove(scssSource, templateElements))
+    expect(cssEncapsulationRemover.remove(scssSource, classesUsedInMessage))
       .toEqual(scssResult);
   });
 });
