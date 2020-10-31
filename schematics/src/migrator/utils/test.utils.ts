@@ -1,5 +1,4 @@
 import {Message, MessageSpan} from '@angular/compiler/src/i18n/i18n_ast';
-import {Node} from '@angular/compiler/src/render3/r3_ast';
 
 export class MessageHelper {
 
