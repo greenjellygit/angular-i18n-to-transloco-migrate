@@ -1,3 +1,4 @@
+import {computeDigest} from '@angular/compiler/src/i18n/digest';
 import {Message, Node as I18nNode, TagPlaceholder} from '@angular/compiler/src/i18n/i18n_ast';
 import {
   BoundAttribute,
@@ -42,13 +43,14 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
     const result: TemplateMessage[] = [];
     this.pushIfNotEmpty(visitAll(this, element.attributes), result);
     this.pushIfNotEmpty(visitAll(this, element.children), result);
-    this.pushIfNotEmpty(visitAll(this, element.references), result);
     this.pushIfNotEmpty(visitAll(this, element.inputs), result);
 
     if (!!element.i18n && element.i18n.constructor.name === Message.name) {
       const message = element.i18n as Message;
+      message.id = this.prepareMessageId(message);
       const hasHtml = this.hasHtml(message);
       const classes = this.getClasses(message.nodes);
+      this.setMessageIds(message.placeholderToMessage);
       result.push(new TemplateElementMessage(message, hasHtml, classes));
     }
 
@@ -57,16 +59,14 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
 
   visitTemplate(template: Template): TemplateMessage[] {
     const result: TemplateMessage[] = [];
-    this.pushIfNotEmpty(visitAll(this, template.attributes), result);
     this.pushIfNotEmpty(visitAll(this, template.children), result);
-    this.pushIfNotEmpty(visitAll(this, template.references), result);
-    this.pushIfNotEmpty(visitAll(this, template.variables), result);
     return result;
   }
 
   visitTextAttribute(attribute: TextAttribute): TemplateMessage[] {
     if (attribute.i18n) {
       const message = attribute.i18n as Message;
+      message.id = this.prepareMessageId(message);
       return [new TemplateAttrMessage(message, attribute.name)];
     }
   }
@@ -85,6 +85,13 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
 
   visitReference(reference: Reference): any { }
 
+  private setMessageIds(placeholderToMessage: { [name: string]: Message }): void {
+    Object.values(placeholderToMessage)
+      .forEach((icuMessage: Message) => {
+        icuMessage.id = this.prepareMessageId(icuMessage);
+      });
+  }
+
   private hasHtml(message: Message): boolean {
     return Object.keys(message.placeholders).some(placeholder => placeholder.startsWith('START_') || placeholder === 'LINE_BREAK');
   }
@@ -100,8 +107,12 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
 
   private pushIfNotEmpty(attributes: TemplateMessage[][], result: TemplateMessage[]): void {
     if (Array.isArray(attributes) && attributes.length > 0) {
-      result.push(...ArrayUtils.flatten(attributes));
+      result.push(...attributes.flat(e => e));
     }
+  }
+
+  private prepareMessageId(element: Message): string {
+    return element.customId || computeDigest(element as Message);
   }
 
 }

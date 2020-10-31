@@ -19,10 +19,10 @@ export class MessageUtils {
 
   public static getSourceBounds(message: Message): SourceBounds {
     const bounds: number[] = message.nodes.map(e => [e.sourceSpan, e['startSourceSpan'], e['endSourceSpan']])
-      .reduce((acc, val) => [...acc, ...val], [])
+      .flat(e => e)
       .filter(value => !!value)
       .map(value => [value.end.offset, value.start.offset])
-      .reduce((acc, val) => [...acc, ...val], []);
+      .flat(e => e);
     return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
   }
 

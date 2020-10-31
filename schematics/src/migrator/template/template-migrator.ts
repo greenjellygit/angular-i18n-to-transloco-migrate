@@ -1,6 +1,6 @@
 import {HtmlParser, ParseTreeResult} from '@angular/compiler';
 import * as html from '@angular/compiler/src/ml_parser/ast';
-import {TemplateElement} from '../angular/template-parser';
+import {TemplateMessage} from '../angular/template-message-visitor';
 import {MessageUtils, TranslationKey} from '../message/message.utils';
 import {ParsedPlaceholdersMap} from '../message/placeholder-parser';
 import {StringUtils} from '../utils/string.utils';
@@ -11,11 +11,11 @@ export class TemplateMigrator {
 
   private updateElementStrategyBuilder = new UpdateElementStrategyBuilder();
 
-  public migrate(translationKey: TranslationKey, templateElement: TemplateElement, parsedPlaceholdersMap: ParsedPlaceholdersMap, templateContent: string): string {
-    const sourceBounds = MessageUtils.getSourceBounds(templateElement.message);
+  public migrate(translationKey: TranslationKey, templateMessage: TemplateMessage, parsedPlaceholdersMap: ParsedPlaceholdersMap, templateContent: string): string {
+    const sourceBounds = MessageUtils.getSourceBounds(templateMessage.message);
     templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
-    const updateElementStrategy = this.updateElementStrategyBuilder.createStrategy(templateElement.type);
-    return updateElementStrategy.update(templateContent, translationKey, templateElement, parsedPlaceholdersMap, sourceBounds);
+    const updateElementStrategy = this.updateElementStrategyBuilder.createStrategy(templateMessage);
+    return updateElementStrategy.update(templateContent, translationKey, templateMessage, parsedPlaceholdersMap, sourceBounds);
   }
 
   public removeI18nTags(templateContent: string): string {

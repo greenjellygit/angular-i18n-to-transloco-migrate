@@ -50,7 +50,8 @@ export class Migrator {
 
         migrationInfo.push(MessageUtils.analyzeMessage(message, translationKey));
 
-        summary.push(...this.translationGenerator.generate(message, translationKey, transLocoFiles, localeConfigs, placeholdersMap));
+        this.translationGenerator.generate(message, translationKey, transLocoFiles, localeConfigs, placeholdersMap)
+          .forEach(value => summary.push(value));
         templateContent = this.templateMigrator.migrate(translationKey, templateElement, placeholdersMap, templateContent);
       }
       this.styleMigrator.updateStyleFile(parsedTemplate);

@@ -102,7 +102,9 @@ describe('TemplateMessageVisitor', () => {
     const MESSAGE_4 = 'message_4';
     const MESSAGE_5 = 'message_5';
 
-    const templateSource = `<span i18n="@@${MESSAGE_4}" i18n-title="@@${MESSAGE_5}" title="title">hello</span>
+    const templateSource = `<span i18n="@@${MESSAGE_4}"
+                                  title="title"
+                                  i18n-title="@@${MESSAGE_5}">hello</span>
                             <div>
                                 <input placeholder="placeholder" i18n-placeholder="@@${MESSAGE_3}"/>
                                 <div i18n-title="@@${MESSAGE_2}" title="title">
