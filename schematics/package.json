@@ -1,10 +1,10 @@
 {
-  "name": "migrator",
+  "name": "@greenjelly/schematics",
   "version": "0.0.0",
   "description": "A blank schematics",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "run": "npm run build && cd .. && schematics migrator:migrator",
+    "run": "npm run build && cd .. && schematics schematics:migrator",
     "run-ttb": "npm run build && cd ../../teamtoolbox/atb-parent/atb-frontend && schematics migrator:migrator",
     "xi18n": "cd ../../TeamToolbox/ttb/atb-parent/atb-frontend && ng xi18n",
     "test": "npm run build && jasmine dist/**/*.spec.js",

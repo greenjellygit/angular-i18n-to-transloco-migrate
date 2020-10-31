@@ -26,7 +26,7 @@ export class Migrator {
     this.logger = new Logger(logger);
   }
 
-  public migrateProject() {
+  public migrateProject(): void {
     const start = process.hrtime();
 
     const parsedTemplateFiles = FileUtils.findFiles('src/**/*.html')
