@@ -1,4 +1,5 @@
 import {TemplateElement} from '../../angular/template-parser';
+import {ArrayUtils} from '../../utils/array.utils';
 
 const gonzales = require('gonzales-pe');
 
@@ -44,16 +45,12 @@ export class CssEncapsulationRemover {
     return astCss.toString();
   }
 
-  private hasRemovedEncapsulation(nodes: Node[]) {
+  private hasRemovedEncapsulation(nodes: Node[]): boolean {
     const selectors = nodes.map(n => n.content)
       .filter(n => Array.isArray(n));
-    const selectorNames = this.flatten(selectors)
+    const selectorNames = ArrayUtils.flatten(selectors)
       .map(n => n.content);
     return selectorNames.includes('host') && selectorNames.includes('ng-deep');
-  }
-
-  private flatten(arrayOfArrays) {
-    return arrayOfArrays.reduce((flat, subElem) => flat.concat(Array.isArray(subElem) ? this.flatten(subElem) : subElem), []);
   }
 
   private addMissingSemicolons(cssContent: string): string {

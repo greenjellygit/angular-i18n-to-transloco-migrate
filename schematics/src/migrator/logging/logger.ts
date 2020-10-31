@@ -50,8 +50,8 @@ export class Logger {
   }
 
   private analyzeTemplatesMessages(parsedFiles: ParsedFile[]): MessagesStats {
-    const filesWithI18n = parsedFiles.filter(value => value.i18nMap.length > 0);
-    const messagesCount = filesWithI18n.reduce((previousValue, currentValue) => previousValue += currentValue.i18nMap.length, 0);
+    const filesWithI18n = parsedFiles.filter(value => value.templateElements.length > 0);
+    const messagesCount = filesWithI18n.reduce((previousValue, currentValue) => previousValue += currentValue.templateElements.length, 0);
     return {
       totalFiles: parsedFiles.length,
       filesWithI18n: filesWithI18n.length,

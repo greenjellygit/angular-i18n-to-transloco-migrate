@@ -11,4 +11,22 @@ export class ArrayUtils {
     }), {});
   }
 
+  public static flatten(arrayOfArrays: any[]): any[] {
+    return arrayOfArrays.reduce((flat, subElem) => flat.concat(Array.isArray(subElem) ? this.flatten(subElem) : subElem), []);
+  }
+
 }
+
+declare global {
+  interface Array<T> {
+    flat(selector): T;
+  }
+}
+
+interface Array<T> {
+  flat(selector): T;
+}
+
+Array.prototype.flat = function(selector): any[] {
+  return this.reduce((prev, next) => (selector(prev) || prev).concat(selector(next)), []);
+};
