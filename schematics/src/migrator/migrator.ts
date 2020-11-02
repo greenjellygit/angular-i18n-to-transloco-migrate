@@ -13,6 +13,7 @@ import {FileUtils} from './utils/file.utils';
 
 export class Migrator {
 
+  private logger: Logger;
   private configurationReader: ConfigurationReader = new ConfigurationReader();
   private templateParser: TemplateParser = new TemplateParser();
   private translationGenerator: TranslationGenerator = new TranslationGenerator();
@@ -20,7 +21,6 @@ export class Migrator {
   private templateMigrator: TemplateMigrator = new TemplateMigrator();
   private styleMigrator: StyleMigrator = new StyleMigrator();
   private translocoWriter = new TranslocoWriter();
-  private logger: Logger;
 
   constructor(logger: logging.LoggerApi) {
     this.logger = new Logger(logger);

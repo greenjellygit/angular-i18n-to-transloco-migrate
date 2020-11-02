@@ -13,7 +13,7 @@ export class UpdateTagElement implements UpdateElementStrategy {
   }
 
   private prepareTagContent(translationKey: TranslationKey, templateElementMessage: TemplateElementMessage, parsedPlaceholdersMap: ParsedPlaceholdersMap): string {
-    const params = this.mapPlaceholdersToTransLocoParams(parsedPlaceholdersMap);
+    const params = this.mapPlaceholdersToTranslocoParams(parsedPlaceholdersMap);
     if (templateElementMessage.hasHtml) {
       return ` [innerHtml]="'${translationKey.group}.${translationKey.id}' | transloco${params}"`;
     } else {
@@ -21,7 +21,7 @@ export class UpdateTagElement implements UpdateElementStrategy {
     }
   }
 
-  private mapPlaceholdersToTransLocoParams(parsedPlaceholdersMap: ParsedPlaceholdersMap): string {
+  private mapPlaceholdersToTranslocoParams(parsedPlaceholdersMap: ParsedPlaceholdersMap): string {
     const paramsArray: any[] = Object.entries(parsedPlaceholdersMap)
       .map(e => ({name: e[0], placeholder: e[1]}))
       .filter(e => e.name.startsWith('INTERPOLATION') || e.name.startsWith('VAR_SELECT') || e.name.startsWith('VAR_PLURAL'))

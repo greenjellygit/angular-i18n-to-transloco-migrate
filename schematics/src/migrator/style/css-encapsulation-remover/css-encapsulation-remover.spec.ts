@@ -3,7 +3,7 @@ import {CssEncapsulationRemover} from './css-encapsulation-remover';
 describe('CssEncapsulationRemover', () => {
   const cssEncapsulationRemover = new CssEncapsulationRemover();
 
-  it('should remove encapsulation of class used in translations', () => {
+  it('should remove encapsulation of classes used in translations', () => {
 
     const scssSource = `
     .aaa {

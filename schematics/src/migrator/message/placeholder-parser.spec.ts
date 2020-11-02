@@ -20,22 +20,18 @@ describe('PlaceholderParser', () => {
       INTERPOLATION: {
         variableName: 'companyName',
         expression: 'company.name',
-        rawExpression: '{{company.name}}'
       },
       INTERPOLATION_1: {
         variableName: 'accountBalance',
         expression: 'accountBalance',
-        rawExpression: '{{accountBalance}}'
       },
       VAR_SELECT: {
         variableName: 'userNameUppercase',
         expression: 'userName | uppercase',
-        rawExpression: '{{userName | uppercase}}'
       },
       VAR_PLURAL: {
         variableName: 'notification5Text',
         expression: `notification[5].text + ' :)'`,
-        rawExpression: `notification[5].text + ' :)'`
       }
     };
 
@@ -76,17 +72,14 @@ describe('PlaceholderParser', () => {
       INTERPOLATION: {
         variableName: 'companyName',
         expression: 'company.name',
-        rawExpression: '{{company.name}}'
       },
       VAR_SELECT: {
         variableName: 'userFirstName',
         expression: 'user.firstName',
-        rawExpression: '{{user.firstName}}'
       },
       VAR_PLURAL: {
         variableName: 'userLastName',
         expression: 'user.lastName',
-        rawExpression: '{{user.lastName}}'
       }
     };
 

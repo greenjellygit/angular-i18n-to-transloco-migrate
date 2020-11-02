@@ -16,7 +16,6 @@ import {
   visitAll,
   Visitor
 } from '@angular/compiler/src/render3/r3_ast';
-import {ArrayUtils} from '../utils/array.utils';
 import {ObjectUtils} from '../utils/object.utils';
 
 export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
