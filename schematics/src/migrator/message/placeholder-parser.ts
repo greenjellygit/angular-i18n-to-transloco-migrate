@@ -28,7 +28,6 @@ export class PlaceholderParser {
 
       parsedPlaceholdersMap[placeholder.name] = {
         variableName,
-        rawExpression: placeholder.expression,
         expression: expressionWithoutInterpolation
       };
     }
@@ -65,6 +64,5 @@ export interface ParsedPlaceholdersMap {
 
 export interface ParsedPlaceholder {
   expression: string;
-  rawExpression: string;
   variableName: string;
 }

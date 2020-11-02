@@ -20,12 +20,10 @@ describe('PlaceholderFiller', () => {
       INTERPOLATION: {
         variableName: 'userNameUppercase',
         expression: 'user.name | uppercase',
-        rawExpression: '{{user.name | uppercase}}'
       },
       INTERPOLATION_1: {
         variableName: 'accountBalance',
         expression: 'accountBalance',
-        rawExpression: '{{accountBalance}}'
       }
     };
 
@@ -73,12 +71,11 @@ describe('PlaceholderFiller', () => {
     const usersCountPlaceholder = {
       variableName: 'usersCount',
       expression: 'users.count',
-      rawExpression: '{{users.count}}'
     };
 
     const message = MessageHelper.builder()
       .placeholders({
-        INTERPOLATION: usersCountPlaceholder.rawExpression
+        INTERPOLATION: usersCountPlaceholder.expression
       })
       .placeholderToMessage({
         ICU: icuMessage

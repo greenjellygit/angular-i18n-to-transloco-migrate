@@ -16,8 +16,8 @@ describe('TemplateMessageVisitor', () => {
                                    placeholder="world"
                                    i18n-placeholder="@@${ATTR_PLACEHOLDER_ID}"/>
                             <app-test i18n="@@${ELEMENT_ID}"
-                                      someBounded="asd"
-                                      i18n-someBounded="@@${ATTR_CUSTOM_ID}">:)</app-test>`;
+                                      customAttribute="asd"
+                                      i18n-customAttribute="@@${ATTR_CUSTOM_ID}">:)</app-test>`;
 
     const template = parse(templateSource);
     const result = templateMessageVisitor.visitNodes(template.nodes);
