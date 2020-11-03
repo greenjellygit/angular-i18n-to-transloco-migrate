@@ -1,10 +1,10 @@
-export class VariableGenerator {
+export class VariableNameGenerator {
 
   private readonly MAX_VARIABLE_LENGTH = 25;
   private readonly MIN_WORD_LENGTH_TO_STRIP_CONSONANTS = 8;
   private readonly MAX_CONSONANTS_IN_STRIPPED_WORD = 3;
 
-  public generateFromExpression(expression: string): string {
+  public generate(expression: string): string {
 
     let variableName = expression
       .replace(/[_.'-+)(\]\[]+/g, ' ')

@@ -7,7 +7,7 @@ export class UpdateAttributeElement implements UpdateElementStrategy {
 
   update(templateContent: string, templateMessage: TemplateMessage, sourceBounds: SourceBounds): string {
     const templateAttrMessage = templateMessage as TemplateAttrMessage;
-    const tagContent = `[${templateAttrMessage.attrName}]="'${templateMessage.key.group}.${templateMessage.key.id}' | transloco"`;
+    const tagContent = `[${templateAttrMessage.attrName}]="'${templateMessage.key.asText()}' | transloco"`;
     return StringUtils.insertLeft(templateContent, sourceBounds.startOffset, tagContent);
   }
 

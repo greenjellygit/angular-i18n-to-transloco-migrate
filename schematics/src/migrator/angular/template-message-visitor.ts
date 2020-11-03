@@ -129,7 +129,7 @@ export abstract class TemplateMessage {
   placeholders: ParsedPlaceholdersMap;
 
   protected constructor(message: Message, placeholders: ParsedPlaceholdersMap) {
-    this.key = MessageUtils.prepareTranslationKey(message.id);
+    this.key = MessageUtils.prepareTranslationKey(message);
     this.message = message;
     this.placeholders = placeholders;
   }

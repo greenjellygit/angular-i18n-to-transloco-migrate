@@ -12,10 +12,14 @@ export class TranslationGenerator {
       const localeBundle = localeConfigs[locoFile.lang].bundle;
       const parsedTranslation = localeBundle.translations[templateMessage.message.id];
       const translation = this.placeholderFiller.fill(templateMessage, localeBundle, parsedTranslation);
-      locoFile.entries[templateMessage.key.group] = locoFile.entries[templateMessage.key.group] || {} as JsonKey;
-      locoFile.entries[templateMessage.key.group][templateMessage.key.id] = translation.translationText;
+      this.addToTranslocoFile(locoFile, templateMessage, translation);
       this.generateTranslationSummaries.push(translation);
     }
+  }
+
+  private addToTranslocoFile(locoFile: TransLocoFile, templateMessage: TemplateMessage, translation: GenerateTranslationSummary): void {
+    locoFile.entries[templateMessage.key.group] = locoFile.entries[templateMessage.key.group] || {} as JsonKey;
+    locoFile.entries[templateMessage.key.group][templateMessage.key.id] = translation.translationText;
   }
 
   public getSummary(): GenerateTranslationSummary[] {

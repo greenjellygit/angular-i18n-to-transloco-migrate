@@ -15,9 +15,9 @@ export class UpdateTagElement implements UpdateElementStrategy {
   private prepareTagContent(templateElementMessage: TemplateElementMessage): string {
     const params = this.mapPlaceholdersToTranslocoParams(templateElementMessage.placeholders);
     if (templateElementMessage.hasHtml) {
-      return ` [innerHtml]="'${templateElementMessage.key.group}.${templateElementMessage.key.id}' | transloco${params}"`;
+      return ` [innerHtml]="'${templateElementMessage.key.asText()}' | transloco${params}"`;
     } else {
-      return `{{'${templateElementMessage.key.group}.${templateElementMessage.key.id}' | transloco${params ? params + ' ' : ''}}}`;
+      return `{{'${templateElementMessage.key.asText()}' | transloco${params ? params + ' ' : ''}}}`;
     }
   }
 
