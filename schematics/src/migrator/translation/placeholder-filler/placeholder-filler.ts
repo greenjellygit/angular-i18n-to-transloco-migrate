@@ -1,6 +1,7 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import {ParsedTranslation} from '@angular/localize/src/utils';
+import {TemplateMessage} from '../../angular/template-message-visitor';
 import {MessageUtils, TranslationKey} from '../../message/message.utils';
 import {ParsedPlaceholdersMap} from '../../message/placeholder-parser';
 import {FillPlaceholderStrategyBuilder} from './fill-placeholder-strategy/base/fill-placeholder-strategy.builder';
@@ -11,12 +12,12 @@ export class PlaceholderFiller {
   private readonly MISSING_TRANSLATION = 'MISSING TRANSLATION';
   private fillPlaceholderStrategyBuilder = new FillPlaceholderStrategyBuilder();
 
-  public fill(message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle, parsedTranslation: ParsedTranslation): GenerateTranslationSummary {
+  public fill(templateMessage: TemplateMessage, localeBundle: ParsedTranslationBundle, parsedTranslation: ParsedTranslation): GenerateTranslationSummary {
     let result: string;
     let error: MissingTranslationError;
 
     try {
-      result = this.fillPlaceholders(parsedTranslation, message, placeholdersMap, localeBundle);
+      result = this.fillPlaceholders(parsedTranslation, templateMessage.message, templateMessage.placeholders, localeBundle);
     } catch (e) {
       if (e instanceof MissingTranslationError) {
         result = this.MISSING_TRANSLATION;

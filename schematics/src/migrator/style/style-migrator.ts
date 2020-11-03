@@ -12,7 +12,7 @@ export class StyleMigrator {
         .map(extType => parsedFile.filePath.split('.html')[0] + `.${extType}`)
         .filter(filePath => FileUtils.isFileExists(filePath));
 
-    const cssClasses = parsedFile.templateElements
+    const cssClasses = parsedFile.templateMessages
       .filter((e: TemplateElementMessage) => !!e.classes && e.classes.length > 0)
       .map((e: TemplateElementMessage) => e.classes)
       .flat(e => e);

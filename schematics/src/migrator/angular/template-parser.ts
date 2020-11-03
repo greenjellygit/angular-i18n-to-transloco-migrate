@@ -12,7 +12,7 @@ export class TemplateParser {
     const content = fs.readFileSync(filePath, {encoding: 'utf-8'});
     const template = this.getTemplate(content, filePath);
     const templateElements = this.templateMessageVisitor.visitNodes(template.nodes);
-    return {filePath, content, templateElements};
+    return {filePath, content, templateMessages: templateElements};
   }
 
   private getTemplate(fileContent: string, filePath: string): ParsedTemplate {
@@ -28,7 +28,7 @@ export class TemplateParser {
 export interface ParsedFile {
   filePath: string;
   content: string;
-  templateElements: TemplateMessage[];
+  templateMessages: TemplateMessage[];
 }
 
 export interface ParsedTemplate {

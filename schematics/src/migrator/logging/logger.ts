@@ -1,15 +1,19 @@
 import {logging} from '@angular-devkit/core';
 import {ParsedFile} from '../angular/template-parser';
-import {ArrayUtils} from '../utils/array.utils';
 import {MessageInfo} from '../message/message.utils';
 import {GenerateTranslationSummary, MissingTranslationError} from '../translation/placeholder-filler/placeholder-filler';
 import {ParsedLocaleConfig} from '../transloco/transloco-writer';
+import {ArrayUtils} from '../utils/array.utils';
 
 export class Logger {
 
-  constructor(private logger: logging.LoggerApi) { }
+  private startTime;
 
-  public printErrors(generateTranslationSummaries: GenerateTranslationSummary[], migrationInfo: MessageInfo[]) {
+  constructor(private logger: logging.LoggerApi) {
+    this.startTime = process.hrtime();
+  }
+
+  public printTranslationSummary(generateTranslationSummaries: GenerateTranslationSummary[]): void {
     const errors = generateTranslationSummaries
       .filter(value => value.error)
       .map(value => value.error);
@@ -24,13 +28,17 @@ export class Logger {
         });
       });
     }
+  }
 
+  public printMigrationSummary(migrationInfo: MessageInfo[]): void {
     const needsManualChangesElements = migrationInfo.filter(value => value.needsManualChanges);
     if (needsManualChangesElements.length > 0) {
       this.logger.warn('Warning - Not supported attributes in translations:');
       needsManualChangesElements.forEach((value, index) => {
         this.logger.info(`    ${index + 1}. ${value.translationKey.group}.${value.translationKey.id}: ${value.notMigrateElements.join(', ')}`);
       });
+    } else {
+      this.logger.info('Success - all templates migrated.');
     }
   }
 
@@ -43,15 +51,15 @@ export class Logger {
     this.logger.info(`    - Total messages: ${stats.messagesCount}`);
   }
 
-  public printMigrationTime(start: [number, number]) {
+  public printMigrationTime(): void {
     const precision = 0;
-    const elapsed = process.hrtime(start)[1] / 1000000;
-    this.logger.info('Successful finished after: ' + process.hrtime(start)[0] + 's ' + elapsed.toFixed(precision) + 'ms');
+    const elapsed = process.hrtime(this.startTime)[1] / 1000000;
+    this.logger.info('Successful finished after: ' + process.hrtime(this.startTime)[0] + 's ' + elapsed.toFixed(precision) + 'ms');
   }
 
   private analyzeTemplatesMessages(parsedFiles: ParsedFile[]): MessagesStats {
-    const filesWithI18n = parsedFiles.filter(value => value.templateElements.length > 0);
-    const messagesCount = filesWithI18n.reduce((previousValue, currentValue) => previousValue += currentValue.templateElements.length, 0);
+    const filesWithI18n = parsedFiles.filter(value => value.templateMessages.length > 0);
+    const messagesCount = filesWithI18n.reduce((previousValue, currentValue) => previousValue += currentValue.templateMessages.length, 0);
     return {
       totalFiles: parsedFiles.length,
       filesWithI18n: filesWithI18n.length,
