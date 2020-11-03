@@ -32,7 +32,7 @@ export class PlaceholderFiller {
 
   public fillPlaceholders(parsedTranslation: ParsedTranslation, message: Message, placeholdersMap: ParsedPlaceholdersMap, localeBundle: ParsedTranslationBundle): string {
     if (!parsedTranslation) {
-      const translationKey = MessageUtils.prepareTranslationKey(message.id);
+      const translationKey = MessageUtils.prepareTranslationKey(message);
       throw new MissingTranslationError('Missing translation', translationKey, localeBundle.locale);
     }
 

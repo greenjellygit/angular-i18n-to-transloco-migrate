@@ -7,7 +7,7 @@ import {ArrayUtils} from '../utils/array.utils';
 
 export class Logger {
 
-  private startTime;
+  private readonly startTime;
 
   constructor(private logger: logging.LoggerApi) {
     this.startTime = process.hrtime();
@@ -24,7 +24,7 @@ export class Logger {
       Object.keys(groupedByLocale).forEach((locale) => {
         this.logger.info(`    Locale: ${locale}`);
         Object.values(groupedByLocale[locale]).forEach((e: MissingTranslationError, index) => {
-          this.logger.info(`        ${index + 1}. ${e.translationKey.group}.${e.translationKey.id}`);
+          this.logger.info(`        ${index + 1}. ${e.translationKey.asText()}`);
         });
       });
     }
@@ -35,7 +35,7 @@ export class Logger {
     if (needsManualChangesElements.length > 0) {
       this.logger.warn('Warning - Not supported attributes in translations:');
       needsManualChangesElements.forEach((value, index) => {
-        this.logger.info(`    ${index + 1}. ${value.translationKey.group}.${value.translationKey.id}: ${value.notMigrateElements.join(', ')}`);
+        this.logger.info(`    ${index + 1}. ${value.translationKey.asText()}: ${value.notMigrateElements.join(', ')}`);
       });
     } else {
       this.logger.info('Success - all templates migrated.');

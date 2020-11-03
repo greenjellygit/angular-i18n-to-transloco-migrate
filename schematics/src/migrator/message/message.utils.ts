@@ -6,15 +6,15 @@ import {StringUtils} from '../utils/string.utils';
 
 export class MessageUtils {
 
-  public static prepareTranslationKey(messageId: string): TranslationKey {
+  public static prepareTranslationKey(message: Message): TranslationKey {
     const customGroups = ['component', 'filters', 'common.errors', 'common-headers', 'common-errors', 'common-buttons', 'common.buttons', 'common-placeholders', 'common.placeholders', 'common'];
-    const group = customGroups.find(g => messageId.indexOf(g + '.') !== -1);
-    const idParts = messageId.split(group + '.');
+    const group = customGroups.find(g => message.id.indexOf(g + '.') !== -1);
+    const idParts = message.id.split(group + '.');
 
     if (!!idParts && idParts.length === 2) {
-      return {id: StringUtils.underscore(idParts[1]), group: StringUtils.underscore(idParts[0] + group)};
+      return new TranslationKey(StringUtils.underscore(idParts[1]), StringUtils.underscore(idParts[0] + group));
     } else {
-      return {id: StringUtils.underscore(messageId), group: 'no_group'};
+      return new TranslationKey(StringUtils.underscore(message.id), 'no_group');
     }
   }
 
@@ -63,9 +63,18 @@ export class MessageUtils {
 
 }
 
-export interface TranslationKey {
+export class TranslationKey {
   id: string;
   group: string;
+
+  constructor(id: string, group: string) {
+    this.id = id;
+    this.group = group;
+  }
+
+  public asText(): string {
+    return `${this.group}.${this.id}`;
+  }
 }
 
 export interface MessageInfo {
