@@ -1,5 +1,6 @@
 import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
 import {ParsedTranslation} from '@angular/localize/src/utils';
+import {TemplateElementMessage, TemplateMessage} from '../../angular/template-message-visitor';
 import {ParsedPlaceholdersMap} from '../../message/placeholder-parser';
 import {MessageHelper} from '../../utils/test.utils';
 import {PlaceholderFiller} from './placeholder-filler';
@@ -10,6 +11,7 @@ describe('PlaceholderFiller', () => {
 
   it('should fill interpolation placeholders', () => {
     const message = MessageHelper.builder()
+      .id('hello.world')
       .placeholders({
         INTERPOLATION: '{{company.name}}',
         INTERPOLATION_1: '{{accountBalance}}'
@@ -34,13 +36,16 @@ describe('PlaceholderFiller', () => {
       text: 'Hello {$INTERPOLATION}! Your account balance is {$INTERPOLATION_1}.'
     } as ParsedTranslation;
 
-    const result = placeholderFiller.fill(message, placeholdersMap, localeBundle, parsedTranslation);
+    const templateMessage: TemplateMessage = new TemplateElementMessage(message, placeholdersMap, true, []);
+
+    const result = placeholderFiller.fill(templateMessage, localeBundle, parsedTranslation);
     expect(result.translationText)
       .toEqual('Hello {{userNameUppercase}}! Your account balance is {{accountBalance}}.');
   });
 
   it('should fill html placeholders', () => {
     const message = MessageHelper.builder()
+      .id('hello.world')
       .placeholders({
         START_TAG_SPAN: '<span class="welcome-container">',
         CLOSE_TAG_SPAN: '</span>'
@@ -55,7 +60,9 @@ describe('PlaceholderFiller', () => {
       text: '{$START_TAG_SPAN}Greetings! Have a nice day!{$CLOSE_TAG_SPAN}'
     } as ParsedTranslation;
 
-    const result = placeholderFiller.fill(message, placeholdersMap, localeBundle, parsedTranslation);
+    const templateMessage: TemplateMessage = new TemplateElementMessage(message, placeholdersMap, true, []);
+
+    const result = placeholderFiller.fill(templateMessage, localeBundle, parsedTranslation);
     expect(result.translationText)
       .toEqual('<span class="welcome-container">Greetings! Have a nice day!</span>');
   });
@@ -74,6 +81,7 @@ describe('PlaceholderFiller', () => {
     };
 
     const message = MessageHelper.builder()
+      .id('hello.world')
       .placeholders({
         INTERPOLATION: usersCountPlaceholder.expression
       })
@@ -102,7 +110,9 @@ describe('PlaceholderFiller', () => {
       text: 'You can invite {$INTERPOLATION} {$ICU} to your account.'
     } as ParsedTranslation;
 
-    const result = placeholderFiller.fill(message, placeholdersMap, localeBundle, parsedTranslation);
+    const templateMessage: TemplateMessage = new TemplateElementMessage(message, placeholdersMap, false, []);
+
+    const result = placeholderFiller.fill(templateMessage, localeBundle, parsedTranslation);
     expect(result.translationText)
       .toEqual('You can invite {{usersCount}} {usersCount, plural, =1 {user} other {users} to your account.');
   });

@@ -16,9 +16,13 @@ import {
   visitAll,
   Visitor
 } from '@angular/compiler/src/render3/r3_ast';
+import {MessageUtils, TranslationKey} from '../message/message.utils';
+import {ParsedPlaceholdersMap, PlaceholderParser} from '../message/placeholder-parser';
 import {ObjectUtils} from '../utils/object.utils';
 
 export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
+
+  private placeholderParser = new PlaceholderParser();
 
   visitNodes(nodes: Node[]): TemplateMessage[] {
     const result = [];
@@ -34,7 +38,8 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
   visitBoundAttribute(attribute: BoundAttribute): TemplateMessage[] {
     if (attribute.i18n) {
       const message = attribute.i18n as Message;
-      return [new TemplateAttrMessage(message, attribute.name)];
+      const parsedPlaceholders = this.placeholderParser.parse(message);
+      return [new TemplateAttrMessage(message, parsedPlaceholders, attribute.name)];
     }
   }
 
@@ -50,7 +55,8 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
       const hasHtml = this.hasHtml(message);
       const classes = this.getClasses(message.nodes);
       this.setMessageIds(message.placeholderToMessage);
-      result.push(new TemplateElementMessage(message, hasHtml, classes));
+      const parsedPlaceholders = this.placeholderParser.parse(message);
+      result.push(new TemplateElementMessage(message, parsedPlaceholders, hasHtml, classes));
     }
 
     return result;
@@ -66,7 +72,8 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
     if (attribute.i18n) {
       const message = attribute.i18n as Message;
       message.id = this.prepareMessageId(message);
-      return [new TemplateAttrMessage(message, attribute.name)];
+      const parsedPlaceholders = this.placeholderParser.parse(message);
+      return [new TemplateAttrMessage(message, parsedPlaceholders, attribute.name)];
     }
   }
 
@@ -117,18 +124,22 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
 }
 
 export abstract class TemplateMessage {
+  key: TranslationKey;
   message: Message;
+  placeholders: ParsedPlaceholdersMap;
 
-  protected constructor(message: Message) {
+  protected constructor(message: Message, placeholders: ParsedPlaceholdersMap) {
+    this.key = MessageUtils.prepareTranslationKey(message.id);
     this.message = message;
+    this.placeholders = placeholders;
   }
 }
 
 export class TemplateAttrMessage extends TemplateMessage {
   attrName: string;
 
-  constructor(message: Message, attrName: string) {
-    super(message);
+  constructor(message: Message, placeholders: ParsedPlaceholdersMap, attrName: string) {
+    super(message, placeholders);
     this.attrName = attrName;
   }
 }
@@ -137,8 +148,8 @@ export class TemplateElementMessage extends TemplateMessage {
   hasHtml: boolean;
   classes: string[];
 
-  constructor(message: Message, hasHtml: boolean, classes: string[]) {
-    super(message);
+  constructor(message: Message, placeholders: ParsedPlaceholdersMap, hasHtml: boolean, classes: string[]) {
+    super(message, placeholders);
     this.hasHtml = hasHtml;
     this.classes = classes;
   }

@@ -1,4 +1,5 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
+import {TemplateMessage} from '../angular/template-message-visitor';
 import {ArrayUtils} from '../utils/array.utils';
 import {ObjectUtils} from '../utils/object.utils';
 import {StringUtils} from '../utils/string.utils';
@@ -26,10 +27,10 @@ export class MessageUtils {
     return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
   }
 
-  public static analyzeMessage(message: Message, translationKey: TranslationKey): MessageInfo {
-    const notMigrateElements = this.findNonMigratableAttributes(message);
+  public static analyzeMessage(templateMessage: TemplateMessage): MessageInfo {
+    const notMigrateElements = this.findNonMigratableAttributes(templateMessage.message);
     return {
-      translationKey,
+      translationKey: templateMessage.key,
       notMigrateElements,
       needsManualChanges: notMigrateElements.length > 0
     };
