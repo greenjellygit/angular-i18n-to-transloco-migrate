@@ -13,7 +13,6 @@ export class MessageBuilder {
   private _customId: string;
   private _description: string;
   private _id: string;
-  private _legacyIds: string[];
   private _meaning: string;
   private _nodes: any[] = [];
   private _placeholderToMessage: { [p: string]: Message };
@@ -33,11 +32,6 @@ export class MessageBuilder {
   public id(value: string): MessageBuilder {
     this._id = value;
     this._customId = value;
-    return this;
-  }
-
-  public legacyIds(value: string[]): MessageBuilder {
-    this._legacyIds = value;
     return this;
   }
 

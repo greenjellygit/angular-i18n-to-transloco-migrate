@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {$e} from 'codelyzer/angular/styles/chars';
 
 @Component({
   selector: 'app-root',
@@ -8,8 +7,8 @@ import {$e} from 'codelyzer/angular/styles/chars';
 })
 export class AppComponent {
 
-  maxNumberOfInvitations: number = 1;
-  numberOfUsersLimit: number = 100;
+  maxNumberOfInvitations = 1;
+  numberOfUsersLimit = 100;
   objSelect: any = {
     context: {
       value: 'UNIT'
@@ -26,28 +25,28 @@ export class AppComponent {
   data: {userCount: number} = {userCount: 15};
   usersPercentage: any = 10;
 
-  updateInvitationsNUmber($event: Event) {
+  updateInvitationsNUmber($event: Event): void {
     this.maxNumberOfInvitations = +$event.target['value'];
   }
 
-  updateSelectValue($event: Event) {
+  updateSelectValue($event: Event): void {
     this.objSelect.context.value = $event.target['value'];
   }
 
-  updateValue($event: Event) {
+  updateValue($event: Event): void {
     this.value = $event.target['value'];
     this.addon.requestsCount = Number(this.value);
   }
 
-  filterByImportant() {
+  filterByImportant(): void {
 
   }
 
-  filterByNew() {
+  filterByNew(): void {
 
   }
 
-  getStyle() {
+  getStyle(): void {
 
   }
 }
