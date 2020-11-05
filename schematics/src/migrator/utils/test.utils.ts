@@ -67,7 +67,9 @@ export class MessageBuilder {
   }
 
   public build(): Message {
-    return new Message(this._nodes, this._placeholders, this._placeholderToMessage, this._meaning, this._description, this._customId);
+    const message = new Message(this._nodes, this._placeholders, this._placeholderToMessage, this._meaning, this._description, this._customId);
+    message.sources = this._sources;
+    return message;
   }
 
 }

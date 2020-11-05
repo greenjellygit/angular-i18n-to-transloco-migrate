@@ -1,3 +1,4 @@
+import {underscore} from '@angular-devkit/core/src/utils/strings';
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {ObjectUtils} from '../utils/object.utils';
 import {VariableNameGenerator} from './variable-name-generator';
@@ -37,7 +38,7 @@ export class PlaceholderParser {
 
   private collectPlaceholders(message: Message): { name: string, expression: string }[] {
     let placeholders = Object.entries(message.placeholders)
-      .map(e => ({name: e[0], expression: e[1]}));
+      .map(e => ({name: underscore(e[0]).toUpperCase(), expression: e[1]}));
 
     if (ObjectUtils.isNotEmpty(message.placeholderToMessage)) {
       Object.values(message.placeholderToMessage).forEach(icuMessage => {
@@ -64,5 +65,5 @@ export interface ParsedPlaceholdersMap {
 
 export interface ParsedPlaceholder {
   expression: string;
-  variableName: string;
+  variableName?: string;
 }

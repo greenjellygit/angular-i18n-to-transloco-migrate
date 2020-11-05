@@ -123,7 +123,7 @@ describe('TemplateMessageVisitor', () => {
   });
 
   function parse(templateSource: string): ParsedTemplate {
-    return parseTemplate(templateSource, null, {
+    return parseTemplate(templateSource, 'test.html', {
       interpolationConfig: DEFAULT_INTERPOLATION_CONFIG,
       preserveWhitespaces: true,
       leadingTriviaChars: []
