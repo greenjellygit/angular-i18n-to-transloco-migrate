@@ -1,11 +1,11 @@
 import {logging} from '@angular-devkit/core';
-import {ConfigurationReader} from './angular/configuration-reader';
+import {ConfigurationReader, ParsedLocaleConfig} from './angular/configuration-reader';
 import {TemplateParser} from './angular/template-parser';
 import {Logger} from './logging/logger';
 import {StyleMigrator} from './style/style-migrator';
 import {TemplateMigrator} from './template/template-migrator';
 import {TranslationGenerator} from './translation/translation-generator';
-import {ParsedLocaleConfig, TranslocoWriter} from './transloco/transloco-writer';
+import {TranslocoWriter} from './transloco/transloco-writer';
 import {FileUtils} from './utils/file.utils';
 
 export class Migrator {

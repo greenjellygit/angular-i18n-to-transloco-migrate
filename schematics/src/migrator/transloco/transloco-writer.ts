@@ -1,4 +1,4 @@
-import {ParsedTranslationBundle} from '@angular/localize/src/tools/src/translate/translation_files/translation_parsers/translation_parser';
+import {ParsedLocaleConfig} from '../angular/configuration-reader';
 import {FileUtils} from '../utils/file.utils';
 
 export class TranslocoWriter {
@@ -27,14 +27,4 @@ export interface TransLocoEntries {
 
 export interface JsonKey {
   [key: string]: string;
-}
-
-export interface ParsedLocaleConfig {
-  [lang: string]: LocaleConfig;
-}
-
-export interface LocaleConfig {
-  lang: string;
-  filePath: string;
-  bundle: ParsedTranslationBundle;
 }

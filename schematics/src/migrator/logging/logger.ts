@@ -1,8 +1,8 @@
 import {logging} from '@angular-devkit/core';
+import {ParsedLocaleConfig} from '../angular/configuration-reader';
 import {ParsedFile} from '../angular/template-parser';
 import {MessageInfo} from '../message/message.utils';
 import {GenerateTranslationSummary, MissingTranslationError} from '../translation/placeholder-filler/placeholder-filler';
-import {ParsedLocaleConfig} from '../transloco/transloco-writer';
 import {ArrayUtils} from '../utils/array.utils';
 
 export class Logger {
@@ -27,6 +27,8 @@ export class Logger {
           this.logger.info(`        ${index + 1}. ${e.translationKey.asText()}`);
         });
       });
+    } else {
+      this.logger.info('Success - All translations generated');
     }
   }
 
@@ -38,7 +40,7 @@ export class Logger {
         this.logger.info(`    ${index + 1}. ${value.translationKey.asText()}: ${value.notMigrateElements.join(', ')}`);
       });
     } else {
-      this.logger.info('Success - all templates migrated.');
+      this.logger.info('Success - All templates migrated');
     }
   }
 

@@ -1,5 +1,6 @@
+import {ParsedLocaleConfig} from '../angular/configuration-reader';
 import {TemplateMessage} from '../angular/template-message-visitor';
-import {JsonKey, ParsedLocaleConfig, TransLocoFile} from '../transloco/transloco-writer';
+import {JsonKey, TransLocoFile} from '../transloco/transloco-writer';
 import {GenerateTranslationSummary, PlaceholderFiller} from './placeholder-filler/placeholder-filler';
 
 export class TranslationGenerator {
@@ -9,9 +10,8 @@ export class TranslationGenerator {
 
   public generate(templateMessage: TemplateMessage, transLocoFiles: TransLocoFile[], localeConfigs: ParsedLocaleConfig): void {
     for (const locoFile of transLocoFiles) {
-      const localeBundle = localeConfigs[locoFile.lang].bundle;
-      const parsedTranslation = localeBundle.translations[templateMessage.message.id];
-      const translation = this.placeholderFiller.fill(templateMessage, localeBundle, parsedTranslation);
+      const parsedLocaleConfig = localeConfigs[locoFile.lang];
+      const translation = this.placeholderFiller.fill(templateMessage, parsedLocaleConfig);
       this.addToTranslocoFile(locoFile, templateMessage, translation);
       this.generateTranslationSummaries.push(translation);
     }

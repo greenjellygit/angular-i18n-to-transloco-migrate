@@ -1,4 +1,5 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
+import * as path from 'path';
 import {TemplateMessage} from '../angular/template-message-visitor';
 import {ArrayUtils} from '../utils/array.utils';
 import {ObjectUtils} from '../utils/object.utils';
@@ -7,6 +8,23 @@ import {StringUtils} from '../utils/string.utils';
 export class MessageUtils {
 
   public static prepareTranslationKey(message: Message): TranslationKey {
+    return this.get(message);
+    // return this.getWithCustomGroups(message);
+  }
+
+  private static get(message: Message): TranslationKey {
+    const fileName = this.getFileName(message);
+    return new TranslationKey(StringUtils.underscore(message.id), StringUtils.underscore(fileName));
+  }
+
+  private static getFileName(message: Message): string {
+    if (!!message?.sources && !!message.sources[0] && !!message.sources[0].filePath) {
+      return path.basename(message.sources[0].filePath, '.html');
+    }
+    return 'no_name';
+  }
+
+  private static getWithCustomGroups(message: Message): TranslationKey {
     const customGroups = ['component', 'filters', 'common.errors', 'common-headers', 'common-errors', 'common-buttons', 'common.buttons', 'common-placeholders', 'common.placeholders', 'common'];
     const group = customGroups.find(g => message.id.indexOf(g + '.') !== -1);
     const idParts = message.id.split(group + '.');
@@ -45,7 +63,7 @@ export class MessageUtils {
           Object.keys(node['attrs'])
             .filter(attrName => attrName.startsWith('*') || attrName.startsWith('[') || attrName.startsWith('(') || (attrName !== attrName.toLowerCase()))
             .forEach(attrName => {
-              notMigrateElements.push(attrName);
+              notMigrateElements = [...new Set([...notMigrateElements, attrName])];
             });
         }
       });
