@@ -11,8 +11,8 @@ export class TemplateMigrator {
   private updateElementStrategyBuilder = new UpdateElementStrategyBuilder();
   private migrationInfos: MessageInfo[] = [];
 
-  public migrate(templateMessage: TemplateMessage, templateContent: string): string {
-    this.migrationInfos.push(MessageUtils.analyzeMessage(templateMessage));
+  public migrate(templateMessage: TemplateMessage, templateContent: string, selectorPrefix: string): string {
+    this.migrationInfos.push(MessageUtils.analyzeMessage(templateMessage, selectorPrefix));
     const sourceBounds = MessageUtils.getSourceBounds(templateMessage.message);
     templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
     const updateElementStrategy = this.updateElementStrategyBuilder.createStrategy(templateMessage);

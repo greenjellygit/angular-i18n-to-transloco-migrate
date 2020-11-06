@@ -35,7 +35,7 @@ export class Migrator {
 
       for (const templateMessage of parsedTemplate.templateMessages) {
         this.translationGenerator.generate(templateMessage, transLocoFiles, localeConfigs);
-        templateContent = this.templateMigrator.migrate(templateMessage, templateContent);
+        templateContent = this.templateMigrator.migrate(templateMessage, templateContent, this.configurationReader.getSelectorPrefix());
       }
 
       this.styleMigrator.updateStyleFile(parsedTemplate);

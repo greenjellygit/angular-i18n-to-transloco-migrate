@@ -45,8 +45,8 @@ export class MessageUtils {
     return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
   }
 
-  public static analyzeMessage(templateMessage: TemplateMessage): MessageInfo {
-    const notMigrateElements = this.findNonMigratableAttributes(templateMessage.message);
+  public static analyzeMessage(templateMessage: TemplateMessage, selectorPrefix: string): MessageInfo {
+    const notMigrateElements = this.findNonMigrateElements(templateMessage.message, selectorPrefix);
     return {
       translationKey: templateMessage.key,
       notMigrateElements,
@@ -54,7 +54,7 @@ export class MessageUtils {
     };
   }
 
-  private static findNonMigratableAttributes(message: Message): string[] {
+  private static findNonMigrateElements(message: Message, selectorPrefix: string): string[] {
     let notMigrateElements = [];
 
     if (ArrayUtils.isNotEmpty(message.nodes)) {
@@ -62,9 +62,7 @@ export class MessageUtils {
         if (ObjectUtils.isNotEmpty(node['attrs'])) {
           Object.keys(node['attrs'])
             .filter(attrName => attrName.startsWith('*') || attrName.startsWith('[') || attrName.startsWith('(') || (attrName !== attrName.toLowerCase()))
-            .forEach(attrName => {
-              notMigrateElements = [...new Set([...notMigrateElements, attrName])];
-            });
+            .forEach(attrName => notMigrateElements.push(attrName));
         }
       });
     }
@@ -72,11 +70,19 @@ export class MessageUtils {
     if (ObjectUtils.isNotEmpty(message.placeholderToMessage)) {
       Object.values(message.placeholderToMessage)
         .forEach(icuMessage => {
-          notMigrateElements = [...notMigrateElements, ...this.findNonMigratableAttributes(icuMessage)];
+          notMigrateElements = [...notMigrateElements, ...this.findNonMigrateElements(icuMessage, selectorPrefix)];
         });
     }
 
-    return notMigrateElements;
+    if (ObjectUtils.isNotEmpty(message.placeholders)) {
+      Object.keys(message.placeholders)
+        .map(placeholder => placeholder.toLowerCase())
+        .filter(placeholder => placeholder.startsWith('start_tag'))
+        .filter(selector => selector.startsWith(`start_tag_${selectorPrefix}-`) || selector.startsWith(`start_tag_mat-`))
+        .forEach(selector => notMigrateElements.push(selector.split('start_tag_')[1]));
+    }
+
+    return [...new Set([...notMigrateElements])];
   }
 
 }

@@ -35,7 +35,7 @@ export class Logger {
   public printMigrationSummary(migrationInfo: MessageInfo[]): void {
     const needsManualChangesElements = migrationInfo.filter(value => value.needsManualChanges);
     if (needsManualChangesElements.length > 0) {
-      this.logger.warn('Warning - Not supported attributes in translations:');
+      this.logger.warn('Warning - Not supported elements (tags, attributes) in translations:');
       needsManualChangesElements.forEach((value, index) => {
         this.logger.info(`    ${index + 1}. ${value.translationKey.asText()}: ${value.notMigrateElements.join(', ')}`);
       });
