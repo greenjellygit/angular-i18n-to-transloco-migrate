@@ -1,6 +1,7 @@
-import {ParseSourceSpan} from '@angular/compiler';
+import {DEFAULT_INTERPOLATION_CONFIG, ParseSourceSpan, parseTemplate} from '@angular/compiler';
 import {Node} from '@angular/compiler/src/i18n/i18n_ast';
-import {TemplateAttrMessage, TemplateElementMessage} from '../angular/template-message-visitor';
+import {TemplateAttrMessage, TemplateElementMessage, TemplateMessageVisitor} from '../angular/template-message-visitor';
+import {ParsedTemplate} from '../angular/template-parser';
 import {ParsedPlaceholdersMap} from '../message/placeholder-parser';
 import {MessageHelper} from '../utils/test.utils';
 import {TemplateMigrator} from './template-migrator';
@@ -20,7 +21,7 @@ describe('TemplateMigrator', () => {
 
     const templateMessage: TemplateElementMessage = new TemplateElementMessage(message, {}, false, []);
 
-    const migratedTemplate = templateMigrator.migrate(templateMessage, source);
+    const migratedTemplate = templateMigrator.migrate(templateMessage, source, 'app');
     const cleanedTemplate = templateMigrator.removeI18nAttributes(migratedTemplate);
 
     expect(cleanedTemplate)
@@ -45,7 +46,7 @@ describe('TemplateMigrator', () => {
 
     const templateMessage: TemplateElementMessage = new TemplateElementMessage(message, parsedPlaceholdersMap, false, []);
 
-    const migratedTemplate = templateMigrator.migrate(templateMessage, source);
+    const migratedTemplate = templateMigrator.migrate(templateMessage, source, 'app');
     const cleanedTemplate = templateMigrator.removeI18nAttributes(migratedTemplate);
 
     expect(cleanedTemplate)
@@ -64,7 +65,7 @@ describe('TemplateMigrator', () => {
 
     const templateMessage: TemplateElementMessage = new TemplateElementMessage(message, {}, true, []);
 
-    const migratedTemplate = templateMigrator.migrate(templateMessage, source);
+    const migratedTemplate = templateMigrator.migrate(templateMessage, source, 'app');
     const cleanedTemplate = templateMigrator.removeI18nAttributes(migratedTemplate);
 
     expect(cleanedTemplate)
@@ -83,11 +84,42 @@ describe('TemplateMigrator', () => {
 
     const templateMessage: TemplateAttrMessage = new TemplateAttrMessage(message, {}, 'title');
 
-    const migratedTemplate = templateMigrator.migrate(templateMessage, source);
+    const migratedTemplate = templateMigrator.migrate(templateMessage, source, 'app');
     const cleanedTemplate = templateMigrator.removeI18nAttributes(migratedTemplate);
 
     expect(cleanedTemplate)
       .toEqual(result);
   });
+
+  it('should found not migrated elements', () => {
+    const source = `<div i18n>
+                        <span myDirective></span>
+                        <app-test></app-test>
+                        <mat-input></mat-input>
+                        <span [innerHTML]="html" (click)="onClick()"></span>
+                    </div>`;
+
+    const parsedSource = parse(source);
+    const messages = new TemplateMessageVisitor().visitNodes(parsedSource.nodes);
+
+    templateMigrator.migrate(messages[0], source, 'app');
+    const notMigratedElements = templateMigrator.getSummary()
+      .filter(value => value.notMigrateElements)
+      .flat(value => value.notMigrateElements);
+
+    expect(notMigratedElements).toContain('myDirective');
+    expect(notMigratedElements).toContain('app-test');
+    expect(notMigratedElements).toContain('mat-input');
+    expect(notMigratedElements).toContain('(click)');
+    expect(notMigratedElements).toContain('[innerHTML]');
+  });
+
+  function parse(templateSource: string): ParsedTemplate {
+    return parseTemplate(templateSource, 'test.html', {
+      interpolationConfig: DEFAULT_INTERPOLATION_CONFIG,
+      preserveWhitespaces: true,
+      leadingTriviaChars: []
+    });
+  }
 
 });

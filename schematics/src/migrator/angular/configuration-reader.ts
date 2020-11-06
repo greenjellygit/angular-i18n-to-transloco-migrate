@@ -27,6 +27,10 @@ export class ConfigurationReader {
     return ArrayUtils.propToKey(parsedLocales, 'lang');
   }
 
+  public getSelectorPrefix(): string {
+    return this.getDefaultProject().prefix;
+  }
+
   private getDefaultProject(): WorkspaceProject {
     return this.config.projects[this.config.defaultProject];
   }
