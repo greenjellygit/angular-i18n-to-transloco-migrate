@@ -39,6 +39,9 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
     if (attribute.i18n) {
       const message = attribute.i18n as Message;
       const parsedPlaceholders = this.placeholderParser.parse(message);
+      if (ObjectUtils.isNotEmpty(parsedPlaceholders)) {
+        console.log(123);
+      }
       return [new TemplateAttrMessage(message, parsedPlaceholders, attribute.name)];
     }
   }
@@ -73,6 +76,9 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
       const message = attribute.i18n as Message;
       message.id = this.prepareMessageId(message);
       const parsedPlaceholders = this.placeholderParser.parse(message);
+      if (ObjectUtils.isNotEmpty(parsedPlaceholders)) {
+        console.log(123);
+      }
       return [new TemplateAttrMessage(message, parsedPlaceholders, attribute.name)];
     }
   }
@@ -118,7 +124,7 @@ export class TemplateMessageVisitor implements Visitor<TemplateMessage[]> {
   }
 
   private prepareMessageId(element: Message): string {
-    return element.customId || computeDigest(element as Message);
+    return element.customId || computeDigest(element);
   }
 
 }
