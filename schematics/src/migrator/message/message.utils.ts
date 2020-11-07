@@ -1,5 +1,6 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import * as path from 'path';
+import {SourceBounds} from '../angular/template-message-visitor';
 import {StringUtils} from '../utils/string.utils';
 import {ParsedPlaceholdersMap} from './placeholder-parser';
 
@@ -73,7 +74,3 @@ export class TranslationKey {
   }
 }
 
-export interface SourceBounds {
-  startOffset: number;
-  endOffset: number;
-}

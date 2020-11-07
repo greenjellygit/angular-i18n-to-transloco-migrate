@@ -19,7 +19,7 @@ export class Logger {
       .map(value => value.error);
 
     if (errors.length > 0) {
-      this.logger.warn('Warning - Missing translations:');
+      this.logger.warn('Warning - Missing translations (will be replaced by original template content):');
       const groupedByLocale = ArrayUtils.groupByKey(errors, 'locale');
       Object.keys(groupedByLocale).forEach((locale) => {
         this.logger.info(`    Locale: ${locale}`);

@@ -1,6 +1,5 @@
-import {TemplateElementMessage, TemplateMessage} from '../../angular/template-message-visitor';
-import {MessageUtils, SourceBounds} from '../../message/message.utils';
-import {ParsedPlaceholdersMap} from '../../message/placeholder-parser';
+import {SourceBounds, TemplateElementMessage, TemplateMessage} from '../../angular/template-message-visitor';
+import {MessageUtils} from '../../message/message.utils';
 import {StringUtils} from '../../utils/string.utils';
 import {UpdateElementStrategy} from './base/update-element.strategy';
 

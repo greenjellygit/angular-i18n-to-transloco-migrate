@@ -1,5 +1,4 @@
-import {TemplateMessage} from '../../../angular/template-message-visitor';
-import {SourceBounds} from '../../../message/message.utils';
+import {SourceBounds, TemplateMessage} from '../../../angular/template-message-visitor';
 
 export abstract class UpdateElementStrategy {
 
