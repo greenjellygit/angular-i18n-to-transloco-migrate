@@ -1,7 +1,6 @@
-import {DEFAULT_INTERPOLATION_CONFIG, ParseSourceSpan, parseTemplate} from '@angular/compiler';
+import {ParseSourceSpan} from '@angular/compiler';
 import {Node} from '@angular/compiler/src/i18n/i18n_ast';
-import {TemplateAttrMessage, TemplateElementMessage, TemplateMessageVisitor} from '../angular/template-message-visitor';
-import {ParsedTemplate} from '../angular/template-parser';
+import {TemplateAttrMessage, TemplateElementMessage} from '../angular/template-message-visitor';
 import {ParsedPlaceholdersMap} from '../message/placeholder-parser';
 import {MessageHelper} from '../utils/test.utils';
 import {TemplateMigrator} from './template-migrator';
@@ -91,35 +90,30 @@ describe('TemplateMigrator', () => {
       .toEqual(result);
   });
 
-  it('should found not migrated elements', () => {
-    const source = `<div i18n>
-                        <span myDirective></span>
-                        <app-test></app-test>
-                        <mat-input></mat-input>
-                        <span [innerHTML]="html" (click)="onClick()"></span>
-                    </div>`;
+  it('should migrate template attribute with placeholder', () => {
+    const source = `<div matTooltip="{{isGreen() ? greenValue : redValue}}" i18n-matTooltip="@@color-tooltip"></div>`;
+    const result = `<div [matTooltip]="'color_component.color_tooltip' | transloco:{isGreen: isGreen() ? greenValue : redValue}"></div>`;
 
-    const parsedSource = parse(source);
-    const messages = new TemplateMessageVisitor().visitNodes(parsedSource.nodes);
+    const message = MessageHelper.builder()
+      .id('color-tooltip')
+      .nodes([{sourceSpan: {start: {offset: 5, file: {}}, end: {offset: 55}} as ParseSourceSpan} as Node])
+      .sources([{filePath: 'color.component.html'} as any])
+      .build();
 
-    templateMigrator.migrate(messages[0], source, 'app');
-    const notMigratedElements = templateMigrator.getSummary()
-      .filter(value => value.notMigrateElements)
-      .flat(value => value.notMigrateElements);
+    const parsedPlaceholdersMap: ParsedPlaceholdersMap = {
+      INTERPOLATION: {
+        expression: 'isGreen() ? greenValue : redValue',
+        variableName: 'isGreen'
+      }
+    };
 
-    expect(notMigratedElements).toContain('myDirective');
-    expect(notMigratedElements).toContain('app-test');
-    expect(notMigratedElements).toContain('mat-input');
-    expect(notMigratedElements).toContain('(click)');
-    expect(notMigratedElements).toContain('[innerHTML]');
+    const templateMessage: TemplateAttrMessage = new TemplateAttrMessage(message, parsedPlaceholdersMap, 'matTooltip');
+
+    const migratedTemplate = templateMigrator.migrate(templateMessage, source, 'app');
+    const cleanedTemplate = templateMigrator.removeI18nAttributes(migratedTemplate);
+
+    expect(cleanedTemplate)
+      .toEqual(result);
   });
-
-  function parse(templateSource: string): ParsedTemplate {
-    return parseTemplate(templateSource, 'test.html', {
-      interpolationConfig: DEFAULT_INTERPOLATION_CONFIG,
-      preserveWhitespaces: true,
-      leadingTriviaChars: []
-    });
-  }
 
 });

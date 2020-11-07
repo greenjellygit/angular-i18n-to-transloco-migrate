@@ -1,7 +1,7 @@
 import {logging} from '@angular-devkit/core';
 import {ParsedLocaleConfig} from '../angular/configuration-reader';
 import {ParsedFile} from '../angular/template-parser';
-import {MessageInfo} from '../message/message.utils';
+import {MessageInfo} from '../message/message-analyzer';
 import {GenerateTranslationSummary, MissingTranslationError} from '../translation/placeholder-filler/placeholder-filler';
 import {ArrayUtils} from '../utils/array.utils';
 
