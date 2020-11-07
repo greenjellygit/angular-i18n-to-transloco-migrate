@@ -19,11 +19,14 @@ export class AppComponent {
   addon = {requestsCount: 2, requestsCountAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: 'asd'};
   post = {important: true, showNewFlag: true};
   formGroup: {
-    get: (asd: string) => ({value: 0});
+    get: (asd: string) => ({ value: 0 });
   };
   formattedAvg: any;
-  data: {userCount: number} = {userCount: 15};
+  data: { userCount: number } = {userCount: 15};
   usersPercentage: any = 10;
+  detailsOfLoggedUser: string;
+  response: any;
+  loggedUserId: any;
 
   updateInvitationsNUmber($event: Event): void {
     this.maxNumberOfInvitations = +$event.target['value'];
@@ -49,4 +52,9 @@ export class AppComponent {
   getStyle(): void {
 
   }
+
+  isAssignToMeDisabled(): boolean {
+    return true;
+  }
+
 }
