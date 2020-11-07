@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {$e} from 'codelyzer/angular/styles/chars';
 
 @Component({
   selector: 'app-root',
@@ -8,8 +7,8 @@ import {$e} from 'codelyzer/angular/styles/chars';
 })
 export class AppComponent {
 
-  maxNumberOfInvitations: number = 1;
-  numberOfUsersLimit: number = 100;
+  maxNumberOfInvitations = 1;
+  numberOfUsersLimit = 100;
   objSelect: any = {
     context: {
       value: 'UNIT'
@@ -20,34 +19,42 @@ export class AppComponent {
   addon = {requestsCount: 2, requestsCountAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: 'asd'};
   post = {important: true, showNewFlag: true};
   formGroup: {
-    get: (asd: string) => ({value: 0});
+    get: (asd: string) => ({ value: 0 });
   };
   formattedAvg: any;
-  data: {userCount: number} = {userCount: 15};
+  data: { userCount: number } = {userCount: 15};
   usersPercentage: any = 10;
+  detailsOfLoggedUser: string;
+  response: any;
+  loggedUserId: any;
 
-  updateInvitationsNUmber($event: Event) {
+  updateInvitationsNUmber($event: Event): void {
     this.maxNumberOfInvitations = +$event.target['value'];
   }
 
-  updateSelectValue($event: Event) {
+  updateSelectValue($event: Event): void {
     this.objSelect.context.value = $event.target['value'];
   }
 
-  updateValue($event: Event) {
+  updateValue($event: Event): void {
     this.value = $event.target['value'];
     this.addon.requestsCount = Number(this.value);
   }
 
-  filterByImportant() {
+  filterByImportant(): void {
 
   }
 
-  filterByNew() {
+  filterByNew(): void {
 
   }
 
-  getStyle() {
+  getStyle(): void {
 
   }
+
+  isAssignToMeDisabled(): boolean {
+    return true;
+  }
+
 }

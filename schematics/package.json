@@ -1,12 +1,15 @@
 {
-  "name": "migrator",
+  "name": "@greenjelly/schematics",
   "version": "0.0.0",
   "description": "A blank schematics",
   "scripts": {
-    "build": "tsc -p tsconfig.json && cd .. && schematics migrator:migrator",
-    "build-ttb": "tsc -p tsconfig.json && cd ../../teamtoolbox/atb-parent/atb-frontend && schematics migrator:migrator",
+    "build": "tsc -p tsconfig.json",
+    "run": "npm run build && cd .. && schematics schematics:migrator",
+    "run-ttb": "npm run build && cd ../../teamtoolbox/atb-parent/atb-frontend && schematics ../../../i18n-migrate-test/schematics:migrator",
+    "run-other": "npm run build && cd ../../../priv/talkeat-ui && schematics ../../isol/i18n-migrate-test/schematics:migrator",
     "xi18n": "cd ../../TeamToolbox/ttb/atb-parent/atb-frontend && ng xi18n",
-    "test": "npm run build && jasmine src/**/*_spec.js"
+    "test": "npm run build && jasmine src/**/*.spec.js",
+    "lint": "ng lint"
   },
   "keywords": [
     "schematics"
@@ -21,9 +24,8 @@
     "@types/js-beautify": "^1.11.0",
     "@types/scss-parser": "^1.0.0",
     "fs": "0.0.1-security",
+    "gonzales-pe": "^4.3.0",
     "js-beautify": "^1.13.0",
-    "query-ast": "^1.0.3",
-    "scss-parser": "^1.0.4",
     "typescript": "~3.7.4"
   },
   "devDependencies": {

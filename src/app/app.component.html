@@ -111,6 +111,16 @@
          matTooltip="Average: {{formattedAvg}}&#13;Number of people: {{data?.userCount}} ({{usersPercentage}}%)"
          i18n-matTooltip="Średnia i liczba osób|@@team-barometer.component.tooltip"></div>
 
+    <mat-checkbox *ngIf="!detailsOfLoggedUser && response?.assignedUser?.id !== loggedUserId"
+                  [disabled]="isAssignToMeDisabled()"
+                  matTooltip="{{isAssignToMeDisabled() ? 'Mark the comment as being visible for user being handled first, this will start a new thread' : 'Only one person can be assigned per thread, make sure you want to override current assignee'}}"
+                  i18n-matTooltip="Tooltip checkboxa do przypisania siebie do obsługi|@@happiness-user-details.component.assign-to-me-tooltip"
+                  formControlName="assignToMe"
+                  color="primary"
+                  i18n="Przypisz obsługę do mnie|@@happiness-user-details.component.assign-to-me">
+      Assign to me
+    </mat-checkbox>
+
     <input (change)="updateInvitationsNUmber($event)" type="number"/>
     <input (change)="updateValue($event)" type="text"/>
     <select (change)="updateSelectValue($event)" name="cars">
