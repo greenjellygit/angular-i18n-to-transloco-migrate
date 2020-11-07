@@ -1,15 +1,36 @@
 import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import * as path from 'path';
-import {TemplateMessage} from '../angular/template-message-visitor';
-import {ArrayUtils} from '../utils/array.utils';
-import {ObjectUtils} from '../utils/object.utils';
 import {StringUtils} from '../utils/string.utils';
+import {ParsedPlaceholdersMap} from './placeholder-parser';
 
 export class MessageUtils {
 
   public static prepareTranslationKey(message: Message): TranslationKey {
     return this.get(message);
     // return this.getWithCustomGroups(message);
+  }
+
+  public static getSourceBounds(message: Message): SourceBounds {
+    const bounds: number[] = message.nodes.map(e => [e.sourceSpan, e['startSourceSpan'], e['endSourceSpan']])
+      .flat(e => e)
+      .filter(value => !!value)
+      .map(value => [value.end.offset, value.start.offset])
+      .flat(e => e);
+    return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
+  }
+
+  public static mapPlaceholdersToTranslocoParams(parsedPlaceholdersMap: ParsedPlaceholdersMap): string {
+    const paramsArray: any[] = Object.entries(parsedPlaceholdersMap)
+      .map(e => ({name: e[0], placeholder: e[1]}))
+      .filter(e => e.name.startsWith('INTERPOLATION') || e.name.startsWith('VAR_SELECT') || e.name.startsWith('VAR_PLURAL'))
+      .map((e) => ({[`${e.placeholder.variableName}`]: e.placeholder.expression}));
+
+    const paramsObject = paramsArray.reduce((result, current) => Object.assign(result, current), {});
+
+    return paramsArray.length === 0 ? '' : ':' + JSON.stringify(paramsObject)
+      .replace(/\"/g, '')
+      .replace(/([^ ])\:/g, '$1: ')
+      .replace(/,/g, ', ');
   }
 
   private static get(message: Message): TranslationKey {
@@ -36,55 +57,6 @@ export class MessageUtils {
     }
   }
 
-  public static getSourceBounds(message: Message): SourceBounds {
-    const bounds: number[] = message.nodes.map(e => [e.sourceSpan, e['startSourceSpan'], e['endSourceSpan']])
-      .flat(e => e)
-      .filter(value => !!value)
-      .map(value => [value.end.offset, value.start.offset])
-      .flat(e => e);
-    return {startOffset: Math.min(...bounds), endOffset: Math.max(...bounds)};
-  }
-
-  public static analyzeMessage(templateMessage: TemplateMessage, selectorPrefix: string): MessageInfo {
-    const notMigrateElements = this.findNonMigrateElements(templateMessage.message, selectorPrefix);
-    return {
-      translationKey: templateMessage.key,
-      notMigrateElements,
-      needsManualChanges: notMigrateElements.length > 0
-    };
-  }
-
-  private static findNonMigrateElements(message: Message, selectorPrefix: string): string[] {
-    let notMigrateElements = [];
-
-    if (ArrayUtils.isNotEmpty(message.nodes)) {
-      message.nodes.forEach(node => {
-        if (ObjectUtils.isNotEmpty(node['attrs'])) {
-          Object.keys(node['attrs'])
-            .filter(attrName => attrName.startsWith('*') || attrName.startsWith('[') || attrName.startsWith('(') || (attrName !== attrName.toLowerCase()))
-            .forEach(attrName => notMigrateElements.push(attrName));
-        }
-      });
-    }
-
-    if (ObjectUtils.isNotEmpty(message.placeholderToMessage)) {
-      Object.values(message.placeholderToMessage)
-        .forEach(icuMessage => {
-          notMigrateElements = [...notMigrateElements, ...this.findNonMigrateElements(icuMessage, selectorPrefix)];
-        });
-    }
-
-    if (ObjectUtils.isNotEmpty(message.placeholders)) {
-      Object.keys(message.placeholders)
-        .map(placeholder => placeholder.toLowerCase())
-        .filter(placeholder => placeholder.startsWith('start_tag'))
-        .filter(selector => selector.startsWith(`start_tag_${selectorPrefix}-`) || selector.startsWith(`start_tag_mat-`))
-        .forEach(selector => notMigrateElements.push(selector.split('start_tag_')[1]));
-    }
-
-    return [...new Set([...notMigrateElements])];
-  }
-
 }
 
 export class TranslationKey {
@@ -99,12 +71,6 @@ export class TranslationKey {
   public asText(): string {
     return `${this.group}.${this.id}`;
   }
-}
-
-export interface MessageInfo {
-  translationKey: TranslationKey;
-  notMigrateElements: string[];
-  needsManualChanges: boolean;
 }
 
 export interface SourceBounds {
