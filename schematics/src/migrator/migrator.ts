@@ -34,7 +34,7 @@ export class Migrator {
       let templateContent = parsedTemplate.content;
 
       for (const templateMessage of parsedTemplate.templateMessages) {
-        this.translationGenerator.generate(templateMessage, transLocoFiles, localeConfigs);
+        this.translationGenerator.generate(templateMessage, transLocoFiles, localeConfigs, templateContent);
         templateContent = this.templateMigrator.migrate(templateMessage, templateContent, this.configurationReader.getSelectorPrefix());
       }
 

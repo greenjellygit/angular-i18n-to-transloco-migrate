@@ -127,11 +127,13 @@ export abstract class TemplateMessage {
   key: TranslationKey;
   message: Message;
   placeholders: ParsedPlaceholdersMap;
+  sourceBounds: SourceBounds;
 
   protected constructor(message: Message, placeholders: ParsedPlaceholdersMap) {
     this.key = MessageUtils.prepareTranslationKey(message);
     this.message = message;
     this.placeholders = placeholders;
+    this.sourceBounds = MessageUtils.getSourceBounds(message);
   }
 }
 
@@ -153,4 +155,9 @@ export class TemplateElementMessage extends TemplateMessage {
     this.hasHtml = hasHtml;
     this.classes = classes;
   }
+}
+
+export interface SourceBounds {
+  startOffset: number;
+  endOffset: number;
 }

@@ -8,10 +8,10 @@ export class TranslationGenerator {
   private placeholderFiller: PlaceholderFiller = new PlaceholderFiller();
   private generateTranslationSummaries: GenerateTranslationSummary[] = [];
 
-  public generate(templateMessage: TemplateMessage, transLocoFiles: TransLocoFile[], localeConfigs: ParsedLocaleConfig): void {
+  public generate(templateMessage: TemplateMessage, transLocoFiles: TransLocoFile[], localeConfigs: ParsedLocaleConfig, templateContent: string): void {
     for (const locoFile of transLocoFiles) {
       const parsedLocaleConfig = localeConfigs[locoFile.lang];
-      const translation = this.placeholderFiller.fill(templateMessage, parsedLocaleConfig);
+      const translation = this.placeholderFiller.fill(templateMessage, parsedLocaleConfig, templateContent);
       this.addToTranslocoFile(locoFile, templateMessage, translation);
       this.generateTranslationSummaries.push(translation);
     }

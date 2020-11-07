@@ -1,5 +1,5 @@
-import {TemplateAttrMessage, TemplateMessage} from '../../angular/template-message-visitor';
-import {MessageUtils, SourceBounds} from '../../message/message.utils';
+import {SourceBounds, TemplateAttrMessage, TemplateMessage} from '../../angular/template-message-visitor';
+import {MessageUtils} from '../../message/message.utils';
 import {StringUtils} from '../../utils/string.utils';
 import {UpdateElementStrategy} from './base/update-element.strategy';
 

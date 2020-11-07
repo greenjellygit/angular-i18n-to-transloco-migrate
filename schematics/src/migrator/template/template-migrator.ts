@@ -2,7 +2,6 @@ import {HtmlParser, ParseTreeResult} from '@angular/compiler';
 import * as html from '@angular/compiler/src/ml_parser/ast';
 import {TemplateMessage} from '../angular/template-message-visitor';
 import {MessageAnalyzer, MessageInfo} from '../message/message-analyzer';
-import {MessageUtils} from '../message/message.utils';
 import {StringUtils} from '../utils/string.utils';
 import {UpdateElementStrategyBuilder} from './update-element-strategy/base/update-element.strategy-builder';
 import jsBeautify = require('js-beautify');
@@ -15,7 +14,7 @@ export class TemplateMigrator {
 
   public migrate(templateMessage: TemplateMessage, templateContent: string, selectorPrefix: string): string {
     this.migrationInfos.push(this.messageAnalyzer.analyze(templateMessage, selectorPrefix));
-    const sourceBounds = MessageUtils.getSourceBounds(templateMessage.message);
+    const sourceBounds = templateMessage.sourceBounds;
     templateContent = StringUtils.remove(templateContent, sourceBounds.startOffset, sourceBounds.endOffset - sourceBounds.startOffset);
     const updateElementStrategy = this.updateElementStrategyBuilder.createStrategy(templateMessage);
     return updateElementStrategy.update(templateContent, templateMessage, sourceBounds);
